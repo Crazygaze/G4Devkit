@@ -7,7 +7,8 @@ G4 is the code name for the game I'm working on, inspired by Notch's [0x10c](htt
 One of the key components of the game is the existence of in-game computers that the players will be able to program to help them out with daily activities or maybe even play little games.
 Since not all players will have the will or perhaps the skill to code their own things, a default Operating System is provided that will be able to perform all basic activities.
 
-The OS is open source, providing an example of a complex application for the virtual computer.
+The OS is open source, providing an example of a complex application for the virtual computer. The OS also serves as a proof of concept as development progresses, and is in constant evolution.
+
 The computer's architecture is named APCPU-32, unless I come up with a better name later.
 
 ### Virtual Computer Basic Features ###
@@ -23,7 +24,6 @@ The computer's architecture is named APCPU-32, unless I come up with a better na
 	* DiskController - Allows attaching up to 4 disks
 - Other devices will come in the future as development progresses, and technical specifications will be available for whoever wishes to code anything using them
 
-
 ### Advanced features for the nerds ###
 
 When booting, the computer assumes easy to use defaults, so players can easily code something small in assembly if they wish.
@@ -34,26 +34,24 @@ Advanced features are but hidden by default. Those features allow the creation o
 * Capable of preemptive multitasking
 * Fast context switching
 * Several interrupts available (IRQ, Divide by zero, Access violation, Illegal instruction, System Call, etc)
-
+* Devices that use memory mapping allow changing the mapping, instead of using fixed locations
  
 ### What's in this repository ###
 
-* Code for the Operating System
-* Miscellaneous samples showing up to code for the virtual machine
+* The Operating System source code
+* Miscellaneous samples showing how to code for the virtual machine
 
 ### What's NOT in this repository ###
 
 * DevKit binaries. Those are available as a separate download
 
-
 ### How to get it up and running ###
 
-* Clone this repository
-* Download the DevKitBinaries
+1. Clone this repository
+2. Download the DevKitBinaries, and unpack the zip to the repository root folder, overwriting the contents of the DevKit folder.
+3. Double click <Root>/DevKit/bin/run_all.bat
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+
 
 ### How do I get set up? ###
 
