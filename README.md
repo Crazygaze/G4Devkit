@@ -50,6 +50,10 @@ Advanced features are but hidden by default. Those features allow the creation o
 1. Clone this repository
 2. Download the DevKitBinaries, and unpack the zip to the repository root folder, overwriting the contents of the DevKit folder.
 3. Double click <Root>/DevKit/bin/run_all.bat
+	* This will launch the two required processes with default parameters
+		* The Server (HostingServer.exe)
+		* The IDE/Simulator (APCPUSim.exe)
+		
 
 
 
