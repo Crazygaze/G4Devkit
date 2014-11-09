@@ -10,6 +10,21 @@ Since not all players will have the will or perhaps the skill to code their own 
 The OS is open source, providing an example of a complex application for the virtual computer.
 The computer's architecture is named APCPU-32, unless I come up with a better name later.
 
+### Virtual Computer Basic Features ###
+
+* 32-bits CPU with 16 global registers, and FPU (floating point operations)
+* Instruction set loosely inspired by ARM, with some other sources of inspiration mixed in, trying to provide a balance between ease of use and efficiency on the hosting side
+
+### Advanced features for the nerds ###
+
+When booting, the computer assumes easy to use defaults, so players can easily code something small in assembly if they wish.
+Advanced features are but hidden by default. Those features allow the creation of proper operating systems. Some of those features:
+
+* User / Supervisor mode
+* Memory protection, allowing running several processes.
+* Capable of preemptive multitasking
+* Fast context switching
+ 
 ### What's in this repository ###
 
 * Code for the Operating System
