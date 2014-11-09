@@ -43,7 +43,7 @@ Advanced features are but hidden by default. Those features allow the creation o
 
 ### What's NOT in this repository ###
 
-* DevKit binaries. Those are available as a separate download
+* DevKit binaries. Those are available as a separate download, as I want to keep binaries out of the repository as much as possible.
 
 ### How to get it up and running ###
 
@@ -61,22 +61,3 @@ Advanced features are but hidden by default. Those features allow the creation o
 	* Server Manager
 		* Here you can create new virtual machines, delete existing ones, and open simulators windows for those virtual machines.
 
-### How do I get set up? ###
-
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
-
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
