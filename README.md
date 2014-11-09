@@ -14,6 +14,14 @@ The computer's architecture is named APCPU-32, unless I come up with a better na
 
 * 32-bits CPU with 16 global registers, and FPU (floating point operations)
 * Instruction set loosely inspired by ARM, with some other sources of inspiration mixed in, trying to provide a balance between ease of use and efficiency on the hosting side
+* Allows connecting up to 128 devices to the computer. Default devices installed on every computer are:
+** CPU  - The cpu itself is seen as a device)
+** Clock/Timers
+** Screen - Text mode, 80x25, 16 colours)
+** Keyboard
+** NetworkCard - Allows communicating with other computers, and doubles up as a debug port when using the DevKit
+** DiskController - Allows attaching up to 4 disks
+
 
 ### Advanced features for the nerds ###
 
@@ -24,6 +32,8 @@ Advanced features are but hidden by default. Those features allow the creation o
 * Memory protection, allowing running several processes.
 * Capable of preemptive multitasking
 * Fast context switching
+* Several interrupts available (IRQ, Divide by zero, Access violation, Illegal instruction, System Call, etc)
+
  
 ### What's in this repository ###
 
