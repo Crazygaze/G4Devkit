@@ -1,8 +1,23 @@
-# README #
+# G4 DevkKit#
+
 
 This README would normally document whatever steps are necessary to get your application up and running.
 
-### What is this repository for? ###
+### What's G4 ###
+
+G4 is the code name for the game I'm working on, inspired by Notch's [0x10c](http://en.wikipedia.org/wiki/0x10c).
+
+
+### What's in this repository ###
+
+* Code for the APCPU Operating System
+* Miscellaneous samples showing up to code for the virtual machine
+
+
+### How to get it up and running ###
+
+* Clone this repository
+* Download the DevKitBinaries
 
 * Quick summary
 * Version
