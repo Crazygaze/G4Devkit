@@ -4,14 +4,20 @@
 
 G4 is the code name for the game I'm working on, inspired by Notch's [0x10c](http://en.wikipedia.org/wiki/0x10c).
 
-One of the key components of the game is the existence of in-game computers that the players will be able to program to help them out.
+One of the key components of the game is the existence of in-game computers that the players will be able to program to help them out with daily activities or maybe even play little games.
 Since not all players will have the will or perhaps the skill to code their own things, a default Operating System is provided that will be able to perform all basic activities.
 
+The OS is open source, providing an example of a complex application for the virtual computer.
+The computer's architecture is named APCPU-32, unless I come up with a better name later.
 
 ### What's in this repository ###
 
-* Code for the APCPU Operating System
+* Code for the Operating System
 * Miscellaneous samples showing up to code for the virtual machine
+
+### What's NOT in this repository ###
+
+* DevKit binaries. Those are available as a separate download
 
 
 ### How to get it up and running ###
