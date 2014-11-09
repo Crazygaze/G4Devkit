@@ -1,11 +1,11 @@
 # G4 DevkKit#
 
-
-This README would normally document whatever steps are necessary to get your application up and running.
-
 ### What's G4 ###
 
 G4 is the code name for the game I'm working on, inspired by Notch's [0x10c](http://en.wikipedia.org/wiki/0x10c).
+
+One of the key components of the game is the existence of in-game computers that the players will be able to program to help them out.
+Since not all players will have the will or perhaps the skill to code their own things, a default Operating System is provided that will be able to perform all basic activities.
 
 
 ### What's in this repository ###
