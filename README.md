@@ -21,9 +21,7 @@ The computer's architecture is named APCPU-32, unless I come up with a better na
 	* Keyboard
 	* NetworkCard - Allows communicating with other computers, and doubles up as a debug port when using the DevKit
 	* DiskController - Allows attaching up to 4 disks
-- Derping
-
-
+- Other devices will come in the future as development progresses, and technical specifications will be available for whoever wishes to code anything using them
 
 
 ### Advanced features for the nerds ###
