@@ -54,8 +54,12 @@ Advanced features are but hidden by default. Those features allow the creation o
 		* The Server (HostingServer.exe)
 		* The IDE/Simulator (APCPUSim.exe)
 4. **The Server is at the moment using 4 hardcoded ports (28000...28005)**
-
-
+5 The IDE should show 3 windows
+	* APCPU IDE - Main window, where you can manage the project, code, debug, etc
+	* APCPU Simulator - Where you can interact with the virtual computer
+		* Double click the tree on the left to open interaction windows for the several devices (where applicable)
+	* Server Manager
+		* Here you can create new virtual machines, delete existing ones, and open simulators windows for those virtual machines.
 
 ### How do I get set up? ###
 
