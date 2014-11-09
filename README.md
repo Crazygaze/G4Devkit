@@ -53,7 +53,7 @@ Advanced features are but hidden by default. Those features allow the creation o
 	* This will launch the two required processes with default parameters
 		* The Server (HostingServer.exe)
 		* The IDE/Simulator (APCPUSim.exe)
-		
+4. **The Server is at the moment using 4 hardcoded ports (28000...28005)**
 
 
 
