@@ -14,15 +14,16 @@ The computer's architecture is named APCPU-32, unless I come up with a better na
 ### Virtual Computer Basic Features ###
 
 * 32-bits CPU with 16 global registers, and FPU (floating point operations)
+	* Available CPU speed and amount of RAM per virtual computer not decided yet. Will depend on server hosting costs.
 * Instruction set loosely inspired by ARM, with some other sources of inspiration mixed in, trying to provide a balance between ease of use and efficiency on the hosting side
-+ Allows connecting up to 128 devices to the computer. Default devices installed on every computer are:
+* Allows connecting up to 128 devices to the computer. Default devices installed on every computer are:
 	* CPU  - The cpu itself is seen as a device)
 	* Clock/Timers
 	* Screen - Text mode, 80x25, 16 colours)
 	* Keyboard
 	* NetworkCard - Allows communicating with other computers, and doubles up as a debug port when using the DevKit
 	* DiskController - Allows attaching up to 4 disks
-- Other devices will come in the future as development progresses, and technical specifications will be available for whoever wishes to code anything using them
+* Other devices will come in the future as development progresses, and technical specifications will be available for whoever wishes to code anything using them
 
 ### Advanced features for the nerds ###
 
