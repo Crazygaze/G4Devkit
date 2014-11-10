@@ -96,6 +96,11 @@ Still work in progress, although it is allowing the creating of the OS.
 * Very simple debugger
 	* You can set breakpoints in C/Assembly files, and inspect the registers, but it doesn't allow watching variables.
 * Parallel compilation. On my machine it takes 1-2 seconds to rebuild the entire Operating System. Results may vary :)
+* Command console that allows some things not yet available with the UI
+	* Type 'help' and it will show a list of commands
+	* In short, at the moment it allows some degree of:
+		* Memory inspection while debugging,
+		* Profilling. It allows enabling profiling, collect a snapshot, and log results.
 
 ### Known problems ###
 * Code completion sometimes causes the IDE to crash. **SAVE OFTEN**. This mostly happens when typing "." inside comments, as it will try code completion and trigger what it seems to be a multithreaded related bug in libclang.
@@ -108,9 +113,9 @@ Still work in progress, although it is allowing the creating of the OS.
 * **CTRL + ALT + F7** - Full rebuild
 * **CTRL + F7** - Compile only the current file
 * **F5** - Starts the program. **Once running it, it won't let you edit code unless you detach the debugger. Click the big red "STOP" button on the top bar.**
-
-
-
-
-
-
+* **CTRL + S** - Save your bacon. **SAVE YOUR BACON!**
+* **SHIFT + ALT + O** - Go to file. Start typing and it will filter
+* **SHIFT + ALT + O** - Go to file. Start typing and it will filter
+* **SHIFT + ALT + S** - Find symbol. Start typing and it will filter
+* **CTRL + F** - Find in current file
+* **CTRL + SHIFT + F** - Find in workspace
