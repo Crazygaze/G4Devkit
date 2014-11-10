@@ -78,6 +78,7 @@ What is in the OS at the moment:
 		* **CTRL+SHIFT+N** : Switch the next application
 		* **CTRL+SHIFT+P** : Switch the previous application
 	* "testapp1...5" - Sample applications that don't do anything other than loop.
+* Every process that desires to write to the screen has it's own screen buffer, and the kernel will map the focused process's buffer to the Screen Device.
 * Both the OS and sample applications are linked in one single binary, but the kernel and application still have their own memory areas
 	* This still allows effective memory protection, as the kernel launches a couple of processes
 	* This is required at the moment, otherwise the OS itself would need code to load other processes from disk
