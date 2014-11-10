@@ -11,6 +11,7 @@ The OS is open source, providing an example of a complex application for the vir
 
 The computer's architecture is named APCPU-32, unless I come up with a better name later.
 
+
 ### Virtual Computer Basic Features ###
 
 * 32-bits CPU with 16 global registers, and FPU (floating point operations)
@@ -19,7 +20,7 @@ The computer's architecture is named APCPU-32, unless I come up with a better na
 * Allows connecting up to 128 devices to the computer. Default devices installed on every computer are:
 	* CPU  - The cpu itself is seen as a device)
 	* Clock/Timers
-	* Screen - Text mode, 80x25, 16 colours)
+	* Screen - Text mode, 80x25, 16 colours. VGA style
 	* Keyboard
 	* NetworkCard - Allows communicating with other computers, and doubles up as a debug port when using the DevKit
 	* DiskController - Allows attaching up to 4 disks
@@ -37,6 +38,10 @@ Advanced features are but hidden by default. Those features allow the creation o
 * Several interrupts available (IRQ, Divide by zero, Access violation, Illegal instruction, System Call, etc)
 * Devices that use memory mapping allow changing the mapping, instead of using fixed locations
  
+### The instruction set, and Devices specifications ###
+
+* I will be providing detailed information about the architecture, enabling people to code their own tools if they require, or change the OS. In the meanwhile, all I have is this README file.
+
 ### What's in this repository ###
 
 * The Operating System source code. **THIS IS COMPLEX**
