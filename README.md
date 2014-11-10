@@ -97,6 +97,7 @@ What is in the OS at the moment:
 * Drivers for all the default devices exist, although some things are not tested
 	* The network card allows communicating with other virtual machines, although I didn't test that yet in the VM, and there is no code in the OS for that. The network card at the moment is only used as a debug port to send text logs to the simulator.
 	* The Disk controller driver is there, but is not doing anything at the moment. There is code included for a file system [FatFS](http://elm-chan.org/fsw/ff/00index_e.html), but I haven't integrated it yet into the OS.
+	* The Screen device pretty much works like a text mode VGA. It allows blinking characters, but that's not support by the simulator yet.
 
 ## DevKit ##
 
