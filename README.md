@@ -127,3 +127,6 @@ Still work in progress, although it is allowing the creating of the OS.
 * **CTRL + SHIFT + G** - Goto the file in the #include statement under the cursor.
 * **CTRL + '-'** - Goto to previous cursor position. **WORK IN PROGRESS**
 * **CTRL + SHIFT +  '-'** - Goto to next cursor position. **WORK IN PROGRESS**
+* **CTRL + SPACE** - Explicitly show auto complete dialog if applicable
+* **CTRL + SHIFT + SPACE** - Explicitly show the call tip for the current function call you are typing
+
