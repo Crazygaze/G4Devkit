@@ -71,8 +71,8 @@ What is in the OS at the moment:
 * Multiple processes allowed, with several threads per process.
 * Message queues allowing the kernel to send messages to the processes/threads
 * The booting process initializes the kernel, and launches some predefined test processes
-	* "idle" - Process that grabs any unused cpu cycles and halts the cpu until an IRQ happens
-	* "sysstats" - Shows miscellaneous system stats, and doubles up as an crude explorer, allowing changing between applications
+	* "idle" - Process that grabs any unused cpu cycles and halts the cpu until an IRQ happens. It allows calculating the cpu usage.
+	* "sysstats" - Shows miscellaneous system stats, and doubles up as an crude explorer, allowing changing between applications. This is also the application showing updating the status bar.
 	* "testapp1...5" - Sample applications that don't do anything other than loop.
 * Both the OS and sample applications are linked in one single binary, but the kernel and application still have their own memory areas
 	* This still allows effective memory protection, as the kernel launches a couple of processes
