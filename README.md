@@ -1,4 +1,4 @@
-# G4 DevkKit#
+# G4 DevKit#
 
 ### What's G4 ###
 
@@ -11,6 +11,7 @@ The OS is open source, providing an example of a complex application for the vir
 
 The computer's architecture is named APCPU-32, unless I come up with a better name later.
 
+**NOTE:** The DevKit binaries available in the downloads section are only for Windows 64-bits at the moment. I'll make 32-bits binaries available soon.
 
 ### Virtual Computer Basic Features ###
 
@@ -155,3 +156,4 @@ are typing
 * Setting/Removing breakpoints while the process is already in the "break" state will sometimes cause it to never go past that instruction. Stop the debugging and remove all breakpoints.
 * The several tree controls used, such as in the Project window, Devices in the simulator, and the Server Manager will often automatically refresh and cause some annoying things when you try to click them.
 	* The Server Manager allows disabling the automatic refresh, and provides a button for explicit refresh
+* The C compiler is a port from [VBCC](http://www.compilers.de/vbcc.html) . It's quite usable, but the port still has bugs which causes it generate invalid code in some situations. I'm fixing whatever I find as I develop the OS.
