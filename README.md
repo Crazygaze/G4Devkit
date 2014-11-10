@@ -62,7 +62,7 @@ Advanced features are but hidden by default. Those features allow the creation o
 	* Server Manager
 		* Here you can create new virtual machines, delete existing ones, and open simulators windows for those virtual machines.
 
-## Operating System status ##
+### Operating System status ###
 
 The OS is currently being developed as a proof of concept for the virtual computer architecture, and will evolve and change as the virtual computer specifications change to better suit the gameplay.
 It already has some features present in modern Operating Systems, such as preemptive multitasking and memory protection.
@@ -84,3 +84,22 @@ What is in the OS at the moment:
 	* This still allows effective memory protection, as the kernel launches a couple of processes
 	* This is required at the moment, otherwise the OS itself would need code to load other processes from disk
 	* As the OS evolves, it might allow loading processes from a disk once there is enough support for that (as-in, code in the OS to load and resolve symbols, etc)
+
+## DevKit ##
+
+Still work in progress, although it is allowing the creating of the OS.
+
+### Features ###
+* Project management
+* Code completion
+* Code navigation
+* Very simple debugger
+	* You can set breakpoints in C/Assembly files, and inspect the registers, but it doesn't allow watching variables.
+
+
+
+### Known problems ###
+* Code completion sometimes causes the IDE to crash. **SAVE OFTEN**. This mostly happens when typing "." inside comments, as it will try code completion and trigger what it seems to be a multithreaded related bug in libclang.
+* Setting/Removing breakpoints while the process is already in the "break" state will sometimes cause it to never go past that instruction. Stop the debugging and remove all breakpoints.
+
+###
