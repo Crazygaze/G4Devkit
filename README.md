@@ -1,4 +1,4 @@
-# G4 DevkKit#
+# G4 DevKit#
 
 ### What's G4 ###
 
