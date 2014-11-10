@@ -39,8 +39,9 @@ Advanced features are but hidden by default. Those features allow the creation o
  
 ### What's in this repository ###
 
-* The Operating System source code
-* Miscellaneous samples showing how to code for the virtual machine
+* The Operating System source code. **THIS IS COMPLEX**
+* Miscellaneous samples showing small scale coding
+	* A minimal "hello world" example provided, entirely in assembly.
 
 ### What's NOT in this repository ###
 
@@ -68,6 +69,7 @@ The OS is currently being developed as a proof of concept for the virtual comput
 It already has some features present in modern Operating Systems, such as preemptive multitasking and memory protection.
 What is in the OS at the moment:
 
+### What's in and working / kind of working ###
 * Preemptive kernel
 * Multiple processes allowed, with several threads per process.
 * Message queues allowing the kernel to send messages to the processes/threads
@@ -85,11 +87,18 @@ What is in the OS at the moment:
 	* This is required at the moment, otherwise the OS itself would need code to load other processes from disk
 	* As the OS evolves, it might allow loading processes from a disk once there is enough support for that (as-in, code in the OS to load and resolve symbols, etc)
 
+### Work in progress or not tested ###
+
+* Drivers for all the default devices exist, although some things are not tested
+	* The network card allows communicating with other virtual machines, although I didn't test that yet in the VM, and there is no code in the OS for that. The network at the moment is only used as a debug port to send text logs to the simulator.
+	* The Disk controller driver is there, but is not doing anything at the moment. There is code included for a file system [FatFS](http://elm-chan.org/fsw/ff/00index_e.html), but I haven't integrated it yet into the OS.
+
 ## DevKit ##
 
 Still work in progress, although it is allowing the creating of the OS.
 
 ### Features ###
+
 * Project management
 * Code completion
 * Code navigation
@@ -103,13 +112,8 @@ Still work in progress, although it is allowing the creating of the OS.
 		* Basic profilling. It allows enabling profiling, collect a snapshot, and log results.
 		*  Allows checking function sizes, to decrease code size
 
-### Known problems ###
-* Code completion sometimes causes the IDE to crash. **SAVE OFTEN**. This mostly happens when typing "." inside comments, as it will try code completion and trigger what it seems to be a multithreaded related bug in libclang.
-* Setting/Removing breakpoints while the process is already in the "break" state will sometimes cause it to never go past that instruction. Stop the debugging and remove all breakpoints.
-* The several tree controls used, such as in the Project window, Devices in the simulator, and the Server Manager will often automatically refresh and cause some annoying things when you try to click them.
-	* The Server Manager allows disabling the automatic refresh, and provides a button for explicit refresh
-
 ### Available shortcuts ###
+
 * **F7** - Build workspace. This should compile only what changed, but not sure it's working properly at the moment. Since it only takes 1-2 seconds to build the entire OS on my machine, I always do a full rebuild
 * **CTRL + ALT + F7** - Full rebuild
 * **CTRL + F7** - Compile only the current file
@@ -129,4 +133,11 @@ Still work in progress, although it is allowing the creating of the OS.
 * **CTRL + SHIFT +  '-'** - Goto to next cursor position. **WORK IN PROGRESS**
 * **CTRL + SPACE** - Explicitly show auto complete dialog if applicable
 * **CTRL + SHIFT + SPACE** - Explicitly show the call tip for the current function call you are typing
+
+### Known problems ###
+
+* Code completion sometimes causes the IDE to crash. **SAVE OFTEN**. This mostly happens when typing "." inside comments, as it will try code completion and trigger what it seems to be a multithreaded related bug in libclang.
+* Setting/Removing breakpoints while the process is already in the "break" state will sometimes cause it to never go past that instruction. Stop the debugging and remove all breakpoints.
+* The several tree controls used, such as in the Project window, Devices in the simulator, and the Server Manager will often automatically refresh and cause some annoying things when you try to click them.
+	* The Server Manager allows disabling the automatic refresh, and provides a button for explicit refresh
 
