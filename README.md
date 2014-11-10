@@ -97,9 +97,9 @@ Still work in progress, although it is allowing the creating of the OS.
 	* You can set breakpoints in C/Assembly files, and inspect the registers, but it doesn't allow watching variables.
 
 
-
 ### Known problems ###
 * Code completion sometimes causes the IDE to crash. **SAVE OFTEN**. This mostly happens when typing "." inside comments, as it will try code completion and trigger what it seems to be a multithreaded related bug in libclang.
 * Setting/Removing breakpoints while the process is already in the "break" state will sometimes cause it to never go past that instruction. Stop the debugging and remove all breakpoints.
+* The several tree controls used, such as in the Project window, Devices in the simulator, and the Server Manager will often automatically refresh and cause some annoying things when you try to click them.
+	* The Server Manager allows disabling the automatic refresh, and provides a button for explicit refresh
 
-###
