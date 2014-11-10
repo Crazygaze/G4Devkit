@@ -1,7 +1,7 @@
 @echo off
-CALL :normalise "%~dp0\..\..\samples\apcpuos\apcpuos.apcpuwsp"
-start %~dp0\APCPUSim.exe workspace="%TempDir%" servermanager=127.0.0.1:28000 opensimulator %*
+CALL :normalise "%~dp0\..\.."
+start "" "%RootDir%\DevKit\bin\APCPUSim.exe" workspace="%RootDir%\samples\apcpuos\apcpuos.apcpuwsp" servermanager=127.0.0.1:28000 opensimulator %*
 
 :normalise
-SET "TempDir=%~f1"
+SET "RootDir=%~f1"
 GOTO :EOF
