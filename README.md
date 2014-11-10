@@ -11,6 +11,7 @@ The OS is open source, providing an example of a complex application for the vir
 
 The computer's architecture is named APCPU-32, unless I come up with a better name later.
 
+**NOTE:** The DevKit binaries available in the downloads section are only for Windows 64-bits at the moment. I'll make 32-bits binaries available soon.
 
 ### Virtual Computer Basic Features ###
 
