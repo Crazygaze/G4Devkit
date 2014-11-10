@@ -63,13 +63,18 @@ Advanced features are but hidden by default. Those features allow the creation o
 
 ## Operating System status ##
 
-The OS is currently being developed as a proof of concept for the virtual computer architecture, and will evolve and change as the virtual computer specifications change to better suit the game.
+The OS is currently being developed as a proof of concept for the virtual computer architecture, and will evolve and change as the virtual computer specifications change to better suit the gameplay.
+It already has some features present in modern Operating Systems, such as preemptive multitasking and memory protection.
 What is in the OS at the moment:
 
 * Preemptive kernel
+* Multiple processes allowed, with several threads per process.
+* Message queues allowing the kernel to send messages to the processes/threads
 * The booting process initializes the kernel, and launches some predefined test processes
-* One of the processes (sysstats) shows miscellaneous system stats, and kind of double up as an cruse explorer, allowing changing between applications
+	* "idle" - Process that grabs any unused cpu cycles and halts the cpu until an IRQ happens
+	* "sysstats" - Shows miscellaneous system stats, and doubles up as an crude explorer, allowing changing between applications
+	* "testapp1...5" - Sample applications that don't do anything other than loop.
 * Both the OS and sample applications are linked in one single binary, but the kernel and application still have their own memory areas
 	* This still allows effective memory protection, as the kernel launches a couple of processes
 	* This is required at the moment, otherwise the OS itself would need code to load other processes from disk
-	* As the OS evolves, it might allow loading processes from a disk
+	* As the OS evolves, it might allow loading processes from a disk once there is enough support for that (as-in, code in the OS to load and resolve symbols, etc)
