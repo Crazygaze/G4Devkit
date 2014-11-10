@@ -70,9 +70,13 @@ What is in the OS at the moment:
 * Preemptive kernel
 * Multiple processes allowed, with several threads per process.
 * Message queues allowing the kernel to send messages to the processes/threads
-* The booting process initializes the kernel, and launches some predefined test processes
+* The booting process initializes the kernel, and launches some predefined test processes. The blue status bar indicates what process has focus, its cpu usage, and system wide cpu usage. The existing processes are:
 	* "idle" - Process that grabs any unused cpu cycles and halts the cpu until an IRQ happens. It allows calculating the cpu usage.
-	* "sysstats" - Shows miscellaneous system stats, and doubles up as an crude explorer, allowing changing between applications. This is also the application showing updating the status bar.
+	* "sysstats" - Shows miscellaneous system stats, and doubles up as an crude explorer, allowing changing between applications. This is also the application showing updating the status bar. It has a couple of keyboard shortcuts to test things
+		* **CTRL + SHIFT + S** : Give focus to the sysstats application and switch between what stats are displayed (cpu usage, memory, kernel memory, etc)
+		* **BACKSPACE** : If the sysstats has focus, it will return focus to the previous process
+		* **CTRL+SHIFT+N** : Switch the next application
+		* **CTRL+SHIFT+P** : Switch the previous application
 	* "testapp1...5" - Sample applications that don't do anything other than loop.
 * Both the OS and sample applications are linked in one single binary, but the kernel and application still have their own memory areas
 	* This still allows effective memory protection, as the kernel launches a couple of processes
