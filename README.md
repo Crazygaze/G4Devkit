@@ -112,7 +112,14 @@ Still work in progress, although it is allowing the creating of the OS.
 		* Basic profilling. It allows enabling profiling, collect a snapshot, and log results.
 		*  Allows checking function sizes, to decrease code size
 
+### Peculiar things you NEED to pay attention to ###
+
+* A workspace can have several projects. If it has more than one executable, you can specify the one to launch (There is a dropdown box named "Startup")
+* You need to explicitly set what file is to be used as a boot file, as the linker needs to know that file needs to be linked first. This is necessary as the boot file should contain something required by the architecture. You can set the boot file by right clicking an ASM file and picking "Boot File" from the context menu. See the provided Hello World" sample for an explanation of what the boot file needs.
+
 ### Available shortcuts ###
+
+They mostly emulate Visual Studio and/or Visual Assist shortcuts
 
 * **F7** - Build workspace. This should compile only what changed, but not sure it's working properly at the moment. Since it only takes 1-2 seconds to build the entire OS on my machine, I always do a full rebuild
 * **CTRL + ALT + F7** - Full rebuild
@@ -132,7 +139,9 @@ Still work in progress, although it is allowing the creating of the OS.
 * **CTRL + '-'** - Goto to previous cursor position. **WORK IN PROGRESS**
 * **CTRL + SHIFT +  '-'** - Goto to next cursor position. **WORK IN PROGRESS**
 * **CTRL + SPACE** - Explicitly show auto complete dialog if applicable
-* **CTRL + SHIFT + SPACE** - Explicitly show the call tip for the current function call you are typing
+* **CTRL + SHIFT + SPACE** - Explicitly show the call tip for the current function call you 
+are typing
+* **CTRL + SHIFT + R** - Do a full reparse of the workspace, to refresh the code completion/navigation database and syntax colorizing.
 
 ### Known problems ###
 
@@ -140,4 +149,3 @@ Still work in progress, although it is allowing the creating of the OS.
 * Setting/Removing breakpoints while the process is already in the "break" state will sometimes cause it to never go past that instruction. Stop the debugging and remove all breakpoints.
 * The several tree controls used, such as in the Project window, Devices in the simulator, and the Server Manager will often automatically refresh and cause some annoying things when you try to click them.
 	* The Server Manager allows disabling the automatic refresh, and provides a button for explicit refresh
-
