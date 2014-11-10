@@ -61,3 +61,15 @@ Advanced features are but hidden by default. Those features allow the creation o
 	* Server Manager
 		* Here you can create new virtual machines, delete existing ones, and open simulators windows for those virtual machines.
 
+## Operating System status ##
+
+The OS is currently being developed as a proof of concept for the virtual computer architecture, and will evolve and change as the virtual computer specifications change to better suit the game.
+What is in the OS at the moment:
+
+* Preemptive kernel
+* The booting process initializes the kernel, and launches some predefined test processes
+* One of the processes (sysstats) shows miscellaneous system stats, and kind of double up as an cruse explorer, allowing changing between applications
+* Both the OS and sample applications are linked in one single binary, but the kernel and application still have their own memory areas
+	* This still allows effective memory protection, as the kernel launches a couple of processes
+	* This is required at the moment, otherwise the OS itself would need code to load other processes from disk
+	* As the OS evolves, it might allow loading processes from a disk
