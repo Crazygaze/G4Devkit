@@ -44,7 +44,7 @@ Advanced features are hidden by default. Those features allow the creation of pr
  
 ### The instruction set, and Devices specifications ###
 
-* I will be providing detailed information about the architecture, enabling people to code their own tools if they require, or change the OS. In the meanwhile, all I have is this README file.
+* I will be providing detailed information about the architecture, enabling people to code their own tools if they require, or change the OS. In the meantime, all I have is this README file.
 
 ### What's in this repository ###
 
