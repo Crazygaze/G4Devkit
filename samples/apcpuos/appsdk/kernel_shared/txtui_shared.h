@@ -138,7 +138,7 @@ void txtui_fastPrintAtXY(TxtCanvas* cv, int x, int y, const char *str);
 void txtui_printfAtXY(TxtCanvas* cv, int x, int y, const char *fmt, ...);
 void txtui_printNumberAtXY(TxtCanvas* cv, int x, int y, int number);
 void txtui_printFloatNumberAtXY(TxtCanvas* cv, int x, int y, float number);
-void txtui_printCharAtXY(TxtCanvas* cv, int x, int y, char ch);
+void txtui_printCharAtXY(TxtCanvas* cv, int x, int y, unsigned char ch);
 
 /*! Used internally to update the status bar.
 No need to call it directly

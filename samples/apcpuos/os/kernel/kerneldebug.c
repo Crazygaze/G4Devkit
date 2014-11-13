@@ -9,10 +9,12 @@
 #include "hw/hwnic.h"
 #include <stdarg_shared.h>
 #include <stdio_shared.h>
+#include <string_shared.h>
+#include "oslogo.h"
 #include "appsdk/kernel_shared/txtui_shared.h"
 
 static int krn_bootLog_x;
-static int krn_bootLog_y;
+static int krn_bootLog_y = OSLOGO_HEIGHT;
 
 int krn_debugOutput(const char* fmt, ...)
 {
@@ -24,6 +26,18 @@ int krn_debugOutput(const char* fmt, ...)
 	return hw_nic_sendDebugV("kernel: %s", buf);
 }
 
+/*! Scrolls up 1 line
+*/
+static void krn_checkScroll(void)
+{
+	if (krn_bootLog_y < rootCanvas.height)
+		return;		
+	memmove(rootCanvas.data, rootCanvas.data+rootCanvas.stride,
+		txtui_getBuferSize(&rootCanvas) -
+		(rootCanvas.width*2)*(krn_bootLog_y-rootCanvas.height+1));
+	krn_bootLog_y = rootCanvas.height-1;
+}
+
 void krn_bootLog(const char* fmt, ...)
 {
 	va_list ap;
@@ -31,6 +45,7 @@ void krn_bootLog(const char* fmt, ...)
 	char* out = &buf[0];
 	va_start(ap, fmt);	
 	vsprintf(buf, fmt, ap);
+	krn_checkScroll();
 	krn_bootLog_x += txtui_printAtXY(&rootCanvas, krn_bootLog_x,
 		krn_bootLog_y, buf);
 	char* p=buf;

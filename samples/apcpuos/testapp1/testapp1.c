@@ -1,4 +1,4 @@
-/*!
+/**
  *	As its name suggest, testapp1 is used as a sample and test
  *	Built on top of defaultOS, it runs a loop that does nothing but increments a
  *	variable
@@ -16,7 +16,7 @@
 
 #include "app_txtui.h" // Display to the screen
 
-/*!
+/**
  *	Used for derp purpose (derp count: 1)
  *	This variable will increments itself in the loop
  *
@@ -26,7 +26,7 @@ static int derp;
 
 // TODO : REMOVE THIS
 
-/*!
+/**
  *	Overall size of the stack
  *	Used for log purpose
  *
@@ -34,21 +34,21 @@ static int derp;
  */
 static u32 stackSize;
 
-/*!
+/**
  *	Used for log purpose
  *
  *	@property usedStackSize
  */
 static u32 usedStackSize;
 
-/*!
+/**
  *	Used for log purpose
  *
  *	@property freeStackSize
  */
 static u32 freeStackSize;
 
-/*!
+/**
  *	Loop to log the stack infos
  *
  *	@method updateStackInfo
@@ -60,7 +60,7 @@ void updateStackInfo(void)
 	freeStackSize = stackSize - usedStackSize;
 }
 
-/*!
+/**
  *	Log memory and stack usage
  *
  *	@method logmem
@@ -68,14 +68,14 @@ void updateStackInfo(void)
 void logmem(void)
 {
 	size_t
-		/*!
+		/**
 		 *	Used memoru
 		 *
 		 *	@property usedmem
 		 */
 		usedmem,
 
-		/*!
+		/**
 		 *	Memory available
 		 *
 		 *	@property freemem
@@ -83,7 +83,7 @@ void logmem(void)
 		 */
 		freemem,
 
-		/*!
+		/**
 		 *	Max allocation of the memory
 		 *
 		 *	@property maxalloc
@@ -100,9 +100,10 @@ void logmem(void)
 		stackSize - usedStackSize);
 }
 
-#define ARRAY_SIZE 10 // can this go to 11?
+// can this go to 11?
+#define ARRAY_SIZE 10 
 
-/*!
+/**
  *	Used for thread managment.
  *	Test the thread criticalSection.
  *
@@ -111,14 +112,14 @@ void logmem(void)
  */
 CriticalSection cs;
 
-/*!
+/**
  *	Index of the array, used in loop that test the critical section
  *
  *	@property array_index
  */
 int array_index;
 
-/*!
+/**
  *	Array that contains thread id and its value
  *
  *	@property array
@@ -126,8 +127,8 @@ int array_index;
 int array[ARRAY_SIZE];
 
 
-/*!
- * 	Main application
+/**
+ * 	Main application 
  *	Critical section test.
  *
  *	@method myThread
@@ -139,14 +140,14 @@ static void myThread(void* data)
 	 * Log current thread handle
 	 */
 	LOG( "Secondary Thread %u: %s\n", app_getThreadHandle(), (const char*)data);
-	/*!
+	/**
 	 *	derpyderp! (derp count:2)
 	 *
 	 *	@property derp
 	 */
 	int derp=0;
 
-	/*!
+	/**
 	 *	Check when no more keys in the array
 	 *
 	 *	@property res
@@ -170,11 +171,10 @@ static void myThread(void* data)
 		for(int i=0; i<256; i++)
 			derp += i; // background loop, for derp purpose (derp count:3)
 	} while (res);
-
 	//app_sleep(10000);
 }
 
-/*!
+/**
  *	Test if a message can be sent.
  *
  *	@method myThreadMsgTest
@@ -190,7 +190,7 @@ static void myThreadMsgTest(void* data)
 	for(int i=0;i<2048; i++) {
 		derp += i; // And then, during 2048 i, derps were thrown (derp count: 4)
 	}
-	/*!
+	/**
 	 *	Create a new thread for message
 	 *
 	 *	@property msg
@@ -229,9 +229,9 @@ static void myThreadMsgTest(void* data)
 	LOG("Exiting thread %s", (const char*)data);
 }
 
-/*!
+/**
  * 	Runs some loops, display an hello world
- *
+ * 
  *	@method testapp1
  * 	@param int - counter
  * 	@return int - EXIT_SUCCESS
@@ -353,7 +353,7 @@ int testapp1(int p1)
 	//app_sleep(1000);
 	int counter=0;
 
-	/*!
+	/**
 	 *	Loop for infinite derp
 	 */
 	while(TRUE) {
