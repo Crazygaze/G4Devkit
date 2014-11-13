@@ -344,7 +344,7 @@ void txtui_printFloatNumberAtXY(TxtCanvas* cv, int x, int y, float number)
 	txtui_fastPrintAtXY(cv,x,y,s);
 }
 
-void txtui_printCharAtXY(TxtCanvas* cv, int x, int y, char ch)
+void txtui_printCharAtXY(TxtCanvas* cv, int x, int y, unsigned char ch)
 {
 	assert(cv);
 	if (!txtui_pointIntersect(cv,x,y))
