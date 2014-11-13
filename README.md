@@ -33,7 +33,7 @@ The computer's architecture is named APCPU-32, unless I come up with a better na
 ### Advanced features for the nerds ###
 
 When booting, the computer assumes easy to use defaults, so players can easily code something small in assembly if they wish.
-Advanced features are but hidden by default. Those features allow the creation of proper operating systems. Some of those features:
+Advanced features are hidden by default. Those features allow the creation of proper operating systems. Some of those features:
 
 * User / Supervisor mode
 * Memory protection, allowing running several processes.
@@ -44,7 +44,7 @@ Advanced features are but hidden by default. Those features allow the creation o
  
 ### The instruction set, and Devices specifications ###
 
-* I will be providing detailed information about the architecture, enabling people to code their own tools if they require, or change the OS. In the meanwhile, all I have is this README file.
+* I will be providing detailed information about the architecture, enabling people to code their own tools if they require, or change the OS. In the meantime, all I have is this README file.
 
 ### What's in this repository ###
 
