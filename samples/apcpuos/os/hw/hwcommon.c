@@ -11,7 +11,6 @@
 #include "hwkeyboard.h"
 #include "hwdisk.h"
 
-
 hw_Drv* hw_drivers[HWBUS_DEFAULTDEVICES_MAX];
 
 #define HWID(c1,c2,c3,c4) \

@@ -8,8 +8,9 @@
 #include "hw/hwcpu.h"
 #include <stdlib_shared.h>
 #include <stdio_shared.h>
-
+#include "kernel/kernel.h"
 #include "appsdk/kernel_shared/txtui_shared.h"
+#include "kernel/oslogo.h"
 
 typedef struct hw_scr_Drv {
 	hw_Drv base;
@@ -57,7 +58,7 @@ hw_Drv* hw_scr_ctor(hw_BusId bus)
 
 	// Clear screen	
 	txtui_clear(&rootCanvas);
-		
+	displayOSLogo();
 	krn_bootLog("Screen initialized at 0x%X\n", driver.currentBuffer);
 	
 	return (hw_Drv*)&driver;

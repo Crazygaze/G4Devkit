@@ -171,7 +171,6 @@ static void myThread(void* data)
 		for(int i=0; i<256; i++)
 			derp += i; // background loop, for derp purpose (derp count:3)
 	} while (res);
-
 	//app_sleep(10000);
 }
 

@@ -208,6 +208,14 @@
 			"bootfile": false
 		},
 		{
+			"path": ".\\kernel\\oslogo.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\kernel\\oslogo.h",
+			"bootfile": false
+		},
+		{
 			"path": ".\\multitasking\\process.c",
 			"bootfile": false
 		},

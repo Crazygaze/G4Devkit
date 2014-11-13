@@ -102,6 +102,7 @@ CpuCtx* krn_init()
 	queue32_create(&krn.tcbReady, 32);
 	krn_initTimedEvents();
 
+
 	hw_initAll();
 
 	KERNEL_DEBUG("size(CpuCtx)=%u", sizeof(CpuCtx));
