@@ -61,5 +61,18 @@ __reg("r2")int count )
 INLINEASM("\t\
 memcpy r0,r1,r2");
 
+/*! Move a block of memory
+* \param dest Destination
+* \param src Source
+* \param count How many bytes to move
+* \return
+*	Returns "dest"
+*/
+void* memmove(__reg("r0") void* dest, __reg("r1") const void* src,
+__reg("r2")int count )
+INLINEASM("\t\
+memcpy r0,r1,r2");
+
+
 
 #endif
