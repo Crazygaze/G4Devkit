@@ -105,7 +105,8 @@ What is in the OS at the moment:
 
 ## DevKit ##
 
-Still work in progress, although it is allowing the creating of the OS.
+Still work in progress, although it is allowing the creation of the OS. So in my point of view, it's usable as-is, once you know the quirks.
+I'll have to create some proper documentation eventually.
 
 ### Features ###
 
