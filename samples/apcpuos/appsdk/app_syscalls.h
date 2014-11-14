@@ -6,7 +6,7 @@
 
 /*
  * Emits a swi instruction
- * Don't use these directly. Use the macros bellow
+ * Don't use these directly. Use the macros below
  */
 int app_syscall0(
 	__reg("r10") int)
