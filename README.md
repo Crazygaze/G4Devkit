@@ -19,9 +19,10 @@ The computer's architecture is named APCPU-32, unless I come up with a better na
 	* You can contact me at ruimvfigueira@gmail.com
 
 **Some quick links**
-* [Short video of tje DevKit in action](https://www.youtube.com/watch?v=cIyHgQvfETE)
-* [TwitchTV Coding sessions](www.twitch.tv/myfumanchu)
-* [My humble website](www.crazygaze.com)
+
+*[Short video of tje DevKit in action](https://www.youtube.com/watch?v=cIyHgQvfETE)
+*[TwitchTV Coding sessions](www.twitch.tv/myfumanchu)
+*[My humble website](www.crazygaze.com)
 
 ### Virtual Computer Basic Features ###
 
