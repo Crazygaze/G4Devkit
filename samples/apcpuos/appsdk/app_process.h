@@ -20,7 +20,7 @@ extern AppInfo* app_info;
 extern AppTLS* app_tls;
 
 /*! Yields the remaining cpu time slice to the kernel
- * 
+ *
  */
 #define app_yield() app_syscall0(kSysCall_Yield)
 
@@ -44,8 +44,10 @@ extern AppTLS* app_tls;
 HANDLE app_getThreadHandle(void);
 
 /*! Returns information about the process
-\param info Where to write the information to
-\param updateStats If TRUE, it will recalculate the process stats
+* \param info
+*	Where to write the information to
+* \param updateStats
+*	If TRUE, it will recalculate the process stats
 */
 bool app_getProcessInfo(ProcessInfo* info, bool updateStats);
 
@@ -63,7 +65,7 @@ bool app_getProcessInfo(ProcessInfo* info, bool updateStats);
 * \note
 *	Unlike for the process's main thread, stack overflows for new threads are
 *	not guaranteed to be detected.
-*	If the memory page right before the page(s) allocated for the stack belongs 
+*	If the memory page right before the page(s) allocated for the stack belongs
 *	to another process, then stack overflow will be detected, as the application
 *	will try to write to another process's memory space. On the other hand, if
 *	that page belongs to the same process, then writing over that memory will
@@ -110,7 +112,7 @@ void app_postMessage(HANDLE thread, uint32_t msgId, uint32_t param1,
 *
 * \param timerId
 *	Timer ID. This is application dependent. It's just a way for the application
-*	to know what what timer caused the MSG_TIMER message.
+*	to know what timer caused the MSG_TIMER message.
 * \param ms
 *	Time interval in milliseconds. Maximum supported value is TIMER_MAX_INTERVAL
 *	Also, granularity depends on the OS time slice, and can't be expected to be
