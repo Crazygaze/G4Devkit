@@ -15,6 +15,8 @@ The computer's architecture is named APCPU-32, unless I come up with a better na
 
 * The DevKit binaries available in the downloads section are only for Windows 64-bits at the moment. I'll make 32-bits binaries available soon
 * The DevKit has unresolved problems dealing with paths with spaces. Put your repository in a path without spaces
+* **Any questions, leave me a message**. Although there is over 2 years worth of part-time work on this, this repository was put together in a rush so I could share it before the game.
+	* You can contact me at ruimvfigueira@gmail.com
 
 ### Virtual Computer Basic Features ###
 
