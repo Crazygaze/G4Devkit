@@ -18,6 +18,11 @@ The computer's architecture is named APCPU-32, unless I come up with a better na
 * **Any questions, leave me a message**. Although there is over 2 years worth of part-time work on this, this repository was put together in a rush so I could share it before the game.
 	* You can contact me at ruimvfigueira@gmail.com
 
+**Some quick links**
+* [Short video of tje DevKit in action](https://www.youtube.com/watch?v=cIyHgQvfETE)
+* [TwitchTV Coding sessions](www.twitch.tv/myfumanchu)
+* [My humble website](www.crazygaze.com)
+
 ### Virtual Computer Basic Features ###
 
 * 32-bits CPU with 16 global registers, and FPU (floating point operations)
