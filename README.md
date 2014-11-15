@@ -66,7 +66,7 @@ Advanced features are hidden by default. Those features allow the creation of pr
 
 ### How to get it up and running ###
 
-* WINDOWS
+** WINDOWS **
 
 1. Clone this repository
 2. Download the DevKitBinaries, and unpack the zip to the repository root folder, overwriting the contents of the DevKit folder.
@@ -82,7 +82,7 @@ Advanced features are hidden by default. Those features allow the creation of pr
 	* Server Manager
 		* Here you can create new virtual machines, delete existing ones, and open simulators windows for those virtual machines.
 
-* LINUX
+** LINUX **
 
 REQUIREMENTS:
 Since the Devkit is (not yet) cross-platform, you need [Wine](https://www.winehq.org/) - 64 bits version 
