@@ -21,8 +21,8 @@ The computer's architecture is named APCPU-32, unless I come up with a better na
 ### Some quick links ###
 
 * [Short video of tje DevKit in action](https://www.youtube.com/watch?v=cIyHgQvfETE)
-* [TwitchTV Coding sessions](www.twitch.tv/myfumanchu)
-* [My humble website](www.crazygaze.com)
+* [TwitchTV Coding sessions](http://www.twitch.tv/myfumanchu)
+* [My humble website](http://www.crazygaze.com)
 
 ### Virtual Computer Basic Features ###
 
@@ -66,6 +66,8 @@ Advanced features are hidden by default. Those features allow the creation of pr
 
 ### How to get it up and running ###
 
+* WINDOWS
+
 1. Clone this repository
 2. Download the DevKitBinaries, and unpack the zip to the repository root folder, overwriting the contents of the DevKit folder.
 3. Double click <Root>/DevKit/bin/run_all.bat
@@ -74,6 +76,23 @@ Advanced features are hidden by default. Those features allow the creation of pr
 		* The IDE/Simulator (APCPUSim.exe)
 4. **The Server is at the moment using 4 hardcoded ports (28000...28004)**
 5. The IDE should show 3 windows
+	* APCPU IDE - Main window, where you can manage the project, code, debug, etc
+	* APCPU Simulator - Where you can interact with the virtual computer
+		* Double click the tree on the left to open interaction windows for the several devices (where applicable)
+	* Server Manager
+		* Here you can create new virtual machines, delete existing ones, and open simulators windows for those virtual machines.
+
+* LINUX
+
+REQUIREMENTS:
+Since the Devkit is (not yet) cross-platform, you need [Wine](https://www.winehq.org/) - 64 bits version 
+
+1. Clone this repository
+2. Download the DevKitBinaries, and unpack the zip to the repository root folder, overwriting the contents of the DevKit folder.
+3. To launch the server (HostingServer.exe) : ``wine ~/.wine/drive_c/\[DevkitDir\]/bin/HostingServer.exe`` in the cli
+4. To launch the IDE/Simulator (APCPUSim.exe) : ``wine ~/.wine/drive_c/\[DevkitDir\]/bin/APCPUSim.exe``  in the cli
+5. **The Server is at the moment using 4 hardcoded ports (28000...28004)**
+6. The IDE should show 3 windows
 	* APCPU IDE - Main window, where you can manage the project, code, debug, etc
 	* APCPU Simulator - Where you can interact with the virtual computer
 		* Double click the tree on the left to open interaction windows for the several devices (where applicable)
