@@ -1,6 +1,5 @@
 /*!
-This file contains code to manipulate text mode UI.
-
+*This file contains code to manipulate text mode UI.
 */
 
 #ifndef _app_txtui_h_

@@ -11,10 +11,18 @@ The OS is open source, providing an example of a complex application for the vir
 
 The computer's architecture is named APCPU-32, unless I come up with a better name later.
 
-**IMPORTANT NOTES:**
+### IMPORTANT NOTES ###
 
 * The DevKit binaries available in the downloads section are only for Windows 64-bits at the moment. I'll make 32-bits binaries available soon
 * The DevKit has unresolved problems dealing with paths with spaces. Put your repository in a path without spaces
+* **Any questions, leave me a message**. Although there is over 2 years worth of part-time work on this, this repository was put together in a rush so I could share it before the game.
+	* You can contact me at ruimvfigueira@gmail.com
+
+### Some quick links ###
+
+* [Short video of tje DevKit in action](https://www.youtube.com/watch?v=cIyHgQvfETE)
+* [TwitchTV Coding sessions](http://www.twitch.tv/myfumanchu)
+* [My humble website](http://www.crazygaze.com)
 
 ### Virtual Computer Basic Features ###
 
@@ -58,6 +66,8 @@ Advanced features are hidden by default. Those features allow the creation of pr
 
 ### How to get it up and running ###
 
+* WINDOWS
+
 1. Clone this repository
 2. Download the DevKitBinaries, and unpack the zip to the repository root folder, overwriting the contents of the DevKit folder.
 3. Double click <Root>/DevKit/bin/run_all.bat
@@ -66,6 +76,23 @@ Advanced features are hidden by default. Those features allow the creation of pr
 		* The IDE/Simulator (APCPUSim.exe)
 4. **The Server is at the moment using 4 hardcoded ports (28000...28004)**
 5. The IDE should show 3 windows
+	* APCPU IDE - Main window, where you can manage the project, code, debug, etc
+	* APCPU Simulator - Where you can interact with the virtual computer
+		* Double click the tree on the left to open interaction windows for the several devices (where applicable)
+	* Server Manager
+		* Here you can create new virtual machines, delete existing ones, and open simulators windows for those virtual machines.
+
+* LINUX
+
+REQUIREMENTS:
+Since the Devkit is (not yet) cross-platform, you need [Wine](https://www.winehq.org/) - 64 bits version 
+
+1. Clone this repository
+2. Download the DevKitBinaries, and unpack the zip to the repository root folder, overwriting the contents of the DevKit folder.
+3. To launch the server (HostingServer.exe) : ``wine ~/.wine/drive_c/\[DevkitDir\]/bin/HostingServer.exe`` in the cli
+4. To launch the IDE/Simulator (APCPUSim.exe) : ``wine ~/.wine/drive_c/\[DevkitDir\]/bin/APCPUSim.exe``  in the cli
+5. **The Server is at the moment using 4 hardcoded ports (28000...28004)**
+6. The IDE should show 3 windows
 	* APCPU IDE - Main window, where you can manage the project, code, debug, etc
 	* APCPU Simulator - Where you can interact with the virtual computer
 		* Double click the tree on the left to open interaction windows for the several devices (where applicable)
@@ -105,7 +132,8 @@ What is in the OS at the moment:
 
 ## DevKit ##
 
-Still work in progress, although it is allowing the creating of the OS.
+Still work in progress, although it is allowing the creation of the OS. So in my point of view, it's usable as-is, once you know the quirks.
+I'll have to create some proper documentation eventually.
 
 ### Features ###
 
