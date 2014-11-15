@@ -14,7 +14,7 @@ The computer's architecture is named APCPU-32, unless I come up with a better na
 ### IMPORTANT NOTES ###
 
 * The DevKit binaries available in the downloads section. Download only the most recent DevKitBinaries_bxxxx.zip file.
-* You need to have VS 2013 binaries installed. Install both x64 and x86 runtimes from  [HERE](http://www.microsoft.com/en-gb/download/details.aspx?id=40784)
+* You need to have VS 2013 runtime binaries installed. Install both x64 and x86 runtimes from  [HERE](http://www.microsoft.com/en-gb/download/details.aspx?id=40784)
 * **Any questions, leave me a message**. Although there is over 2 years worth of part-time work on this, this repository was put together in a rush so I could share it before the game.
 	* You can contact me at ruimvfigueira@gmail.com
 
