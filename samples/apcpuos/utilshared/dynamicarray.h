@@ -1,24 +1,19 @@
-/********************************************************************
-	CrazyGaze (http://www.crazygaze.com)
-	Author : Rui Figueira
-	Email  : rui@crazygaze.com
-	
-	purpose:
-	Code to manipulate dynamic arrays
-*********************************************************************/
+/*******************************************************************************
+ * Dynamic array
+ * It uses the heap to dynamically grow
+ ******************************************************************************/
 
-
-#ifndef common_dynamicarray_h__
-#define common_dynamicarray_h__
+#ifndef _utilshared_dynamicarray_h__
+#define _utilshared_dynamicarray_h__
 
 #ifdef __cplusplus //if we are compiling as C++, tell
-extern "C" { //the compiler that this stuff is plain old C
+extern "C" {
 #endif
 
 #include "utilsharedconfig.h"
 
 /*
-	WARNING: These fields need to match the structs declared with ARRAY_TYPEDECLARE
+* WARNING: These fields need to match the structs declared with ARRAY_TYPEDECLARE
 */
 typedef struct Array_generic {
 	int size;
@@ -28,8 +23,8 @@ typedef struct Array_generic {
 } Array_generic;
 
 /*
-	These functions should NOT be used directly. Use the provided macros to create functions for the types
-	you want
+* These functions should NOT be used directly. Use the provided macros to
+* create functions for the types you want
 */
 int array_createGeneric(Array_generic* a, int initialcapacity, int elementsize);
 int array_reserveGeneric(Array_generic* a, int newcapacity);
@@ -42,9 +37,9 @@ int array_removeAtGeneric(Array_generic* a, unsigned index);
 
 
 /*
-	Declares a new type of array for "elementtype" type
-	For example, if you wish to use arrays of type int, put this somewhere:       
-		ARRAY_TYPEDECLARE(int);
+* Declares a new type of array for "elementtype" type
+* For example, if you wish to use arrays of type int, put this somewhere:       
+*		ARRAY_TYPEDECLARE(int);
 */
 #define ARRAY_TYPEDECLARE(elementtype) \
 	typedef struct array_##elementtype { \
@@ -181,13 +176,20 @@ Defines the code for the specified array type
 		return -1; \
 	}
 
-// Iterates over each element of the array, and applies "command"
-// myarray - Array to iterate
-// var - variable used to iterate the array, as a pointer. You can use this in "command", to access the item
-// command - code to execute
-// Example for an array of "MyItem" type:
-// MyItem* item;
-// ARRAY_FOREACH(itemsArray, item, {free(item);} );
+/*!
+* Iterates over each element of the array, and applies "command" to every item
+* \param myarray
+*	Array to iterate
+* \param var
+*	Variable used to iterate the array, as a pointer. You can use this in
+*	"command", to access the item.
+* \param command
+*	Code to execute for every item.
+*
+* Example for an array of "MyItem" type:
+*	MyItem* item;
+* 	ARRAY_FOREACH(itemsArray, item, {free(item);} );
+*/
 #define ARRAY_FOREACH(myarray, var, command) \
 { \
 	int arrayTodo; \
@@ -204,10 +206,8 @@ Defines the code for the specified array type
 ARRAY_TYPEDECLARE_NATIVE(int)
 
 #ifdef __cplusplus //
-} // closing curly bracket
+}
 #endif
 
 
-
-
-#endif // common_dynamicarray_h__
+#endif

@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * Macros to deal with bitsets
  * Based on http://c-faq.com/misc/bitsets.html
  *
@@ -9,11 +9,12 @@
  *	BITSET(bitarray, 23);
  * To test the 35th bit:
  * 	if(BITTEST(bitarray, 35)) ...
- * To compute the union of two bit arrays and place it in a third array (with all three arrays declared as above):
+ * To compute the union of two bit arrays and place it in a third array
+ * (with all three arrays declared as above):
  * 	for(i = 0; i < BITNSLOTS(47); i++)
  * 		array3[i] = array1[i] | array2[i];
  * To compute the intersection, use & instead of |. 
- */ 
+*******************************************************************************/
  
 #ifndef _APCPUOS_BITSET_H_
 #define _APCPUOS_BITSET_H_

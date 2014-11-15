@@ -1,12 +1,3 @@
-/********************************************************************
-	CrazyGaze (http://www.crazygaze.com)
-	Author : Rui Figueira
-	Email  : rui@crazygaze.com
-	
-	purpose:
-	Code to manipulate dynamic arrays
-*********************************************************************/
-
 #include "dynamicarray.h"
 
 ARRAY_TYPEDEFINE_NATIVE(int)

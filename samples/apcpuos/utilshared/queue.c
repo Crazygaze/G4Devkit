@@ -139,5 +139,7 @@ int queue_delete(Queue* queue, bool (*pred)(const void* val, void* cookie),
 
 void* queue_getAtIndex(Queue* queue, int index)
 {
+	if (index>=queue_size(queue))
+		return NULL;
 	return ELE_PTR((queue->head + index) % queue->capacity);
 }

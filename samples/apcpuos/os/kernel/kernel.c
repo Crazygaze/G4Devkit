@@ -104,6 +104,8 @@ CpuCtx* krn_init()
 
 
 	hw_initAll();
+	// Small pause so we can look at the devices
+	krn_spin(2000);
 
 	KERNEL_DEBUG("size(CpuCtx)=%u", sizeof(CpuCtx));
 	size_t intrCtxSize =
