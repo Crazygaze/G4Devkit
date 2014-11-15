@@ -13,8 +13,7 @@ The computer's architecture is named APCPU-32, unless I come up with a better na
 
 ### IMPORTANT NOTES ###
 
-* The DevKit binaries available in the downloads section are only for Windows 64-bits at the moment. I'll make 32-bits binaries available soon
-* The DevKit has unresolved problems dealing with paths with spaces. Put your repository in a path without spaces
+* The DevKit binaries available in the downloads section. Download only the most recent DevKitBinaries_bxxxx.zip file.
 * **Any questions, leave me a message**. Although there is over 2 years worth of part-time work on this, this repository was put together in a rush so I could share it before the game.
 	* You can contact me at ruimvfigueira@gmail.com
 
@@ -85,7 +84,7 @@ Advanced features are hidden by default. Those features allow the creation of pr
 ** LINUX **
 
 REQUIREMENTS:
-Since the Devkit is (not yet) cross-platform, you need [Wine](https://www.winehq.org/) - 64 bits version 
+Since the Devkit is (not yet) cross-platform, you need [Wine](https://www.winehq.org/)
 
 1. Clone this repository
 2. Download the DevKitBinaries, and unpack the zip to the repository root folder, overwriting the contents of the DevKit folder.
