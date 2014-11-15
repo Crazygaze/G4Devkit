@@ -94,18 +94,19 @@ bool queue_pop(Queue* queue, void* val)
 	if (queue_isEmpty(queue))
 		return false;
 
-	memcpy(val, ELE_PTR(queue->head), queue->elementSize);
+	if (val) {
+		memcpy(val, ELE_PTR(queue->head), queue->elementSize);
+	}
 	queue->head = (queue->head + 1) % queue->capacity;
 	return true;
 }
 
-bool queue_peek(Queue* queue, void** val)
+void* queue_peek(Queue* queue)
 {
 	if (queue_isEmpty(queue))
-		return false;
-	//*((uint32_t**)val) = ELE_PTR(queue->head);
-	*val = ELE_PTR(queue->head);
-	return true;
+		return NULL;
+		
+	return ELE_PTR(queue->head);
 }
 
 void queue_clear(Queue* queue)

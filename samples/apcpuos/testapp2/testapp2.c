@@ -149,13 +149,13 @@ void testQueue(void)
 	LOG("\nFinishing\n");
 
 	// While the queue index have a Foo structure
-	while (queue_peek(&q, &f))
+	while (f=queue_peek(&q))
 	{
 		// Log the structure properties
 		LOG("   %d:%d, ", f->num, f->v);
 
 		// And remove the structure from the queue
-		queue_pop(&q, f);
+		queue_pop(&q, NULL);
 	}
 
 	// Destroy the queue
