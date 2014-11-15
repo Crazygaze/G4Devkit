@@ -43,14 +43,23 @@ void* queue_pushEmpty(Queue* queue);
 \param queue
 	Queue to pop from
 \param val
-	Where the popped element will be copied to
+	Where the popped element will be copied to.
+	If this is NULL, the element will simply be removed from the queue, without
+	copying it anywhere.
 \return
 	True if sucessfull, false if the queue is empty
 */
 bool queue_pop(Queue* queue, void* val);
 
-/*! Peeks at the next element in the queue, without removing */
-bool queue_peek(Queue* queue, void** val);
+/*! Peeks at the next element in the queue, without removing
+* \param queue
+* 	Queue to peek
+* \return
+*	Pointer to the next item in the queue, or NULL if the queue is empty.
+*	Note that that the returned pointer will only be valid while not changes are
+*	made to the queue.
+*/
+void* queue_peek(Queue* queue);
 
 /*! Removes all elements from the queue */
 void queue_clear(Queue* queue);

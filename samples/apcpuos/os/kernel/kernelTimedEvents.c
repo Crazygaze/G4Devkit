@@ -44,10 +44,10 @@ void krn_checkTimedEvents(void)
 {
 	// Wake up any sleeping threads that are due to wake up
 	KrnTimedEvent* evt;
-	while( priorityQueue_peek(&krn.timedEvents, &evt) &&
+	while( (evt=priorityQueue_peek(&krn.timedEvents)) &&
 		  (evt->time <= hw_clk_currSecs))
 	{
-		priorityQueue_popAndDrop(&krn.timedEvents);		
+		priorityQueue_pop(&krn.timedEvents, NULL);
 		evt->func(evt->data1, evt->data2, evt->data3);
 	}
 }

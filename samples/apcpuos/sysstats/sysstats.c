@@ -144,8 +144,8 @@ void sysstats_updateStatusBar(SysStatsState* st)
 		return;
 
 	char buf[81];
-	sprintf(buf, "%8s:%3u%%(%2u):%3u%%", focusedPrc->name, focusedPrc->cpu,
-		focusedPrc->cpuswi, st->osInfo.cpu_usage);
+	sprintf(buf, "%8s:%3u%%(%2u):%3u%%", focusedPrc->name, (u32)focusedPrc->cpu,
+		(u32)focusedPrc->cpuswi, (u32)st->osInfo.cpu_usage);		
 	app_setStatusBar(buf, strlen(buf));
 }
 

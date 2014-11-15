@@ -76,27 +76,17 @@ bool priorityQueue_push(PriorityQueue* queue, void* val)
 	return TRUE;
 }
 
-bool priorityQueue_peek(PriorityQueue* queue, void** val)
+void* priorityQueue_peek(PriorityQueue* queue)
 {
-	if (queue->a.size) {
-		*val = (char*)queue->a.data + (queue->a.size-1)*queue->a.elementsize;
-		return TRUE;
-	}
-	else {
-		return FALSE;
-	}
+	if (queue->a.size)
+		return (char*)queue->a.data + (queue->a.size-1)*queue->a.elementsize;
+	else
+		return NULL;
 }
 
 bool priorityQueue_pop(PriorityQueue* queue, void* val)
 {
 	return array_popGeneric(&queue->a, val);
-}
-
-void priorityQueue_popAndDrop(PriorityQueue* queue)
-{
-	if (queue->a.size) {
-		queue->a.size--;
-	}
 }
 
 int priorityQueue_delete(PriorityQueue* queue,

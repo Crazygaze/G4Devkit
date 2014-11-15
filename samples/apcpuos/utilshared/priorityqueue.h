@@ -37,16 +37,25 @@ void priorityQueue_destroy(PriorityQueue* queue);
 bool priorityQueue_push(PriorityQueue* queue, void* val);
 
 /*! Peeks at the queue, without removing the item
+* \param queue
+*	Queue to peek
+* \return
+*	Pointer to the next item in the queue, or NULL if the queue is empty.
+*	Note that the returned pointer is only valid while no further changes are
+*	made to the queue.
 */
-bool priorityQueue_peek(PriorityQueue* queue, void** val);
+void* priorityQueue_peek(PriorityQueue* queue);
 
 /*! Remove an item from the queue
+* \param queue
+*	Queue to remove from
+* \param val
+*	Where the popped element will be copied to.
+*	If this is NULL, the element will simply be removed from the queue, without
+*	copying it anywhere.
 */
 bool priorityQueue_pop(PriorityQueue* queue, void* val);
 
-/*! Drops an item from the queue
-*/
-void priorityQueue_popAndDrop(PriorityQueue* queue);
 
 /*! Removes all elements for which the suplied predicate returns true
 \param queue
