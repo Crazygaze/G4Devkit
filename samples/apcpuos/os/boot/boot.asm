@@ -89,7 +89,7 @@ _intrHandler_Reset:
 	
 	; Switch to the contex to run.
 	str [_krn_currentIntr], 15 ; Mark as not inside any interrupts
-	ctxswitch r0
+	ctxswitch [r0]
 
 	; We will only get here if some other context changes to our context, which
 	; per design, we don't allow
@@ -154,7 +154,7 @@ _dispatchIntr:
 	str [_krn_currentIntr], r4
 	bl _krn_handleInterrupt
 	str [_krn_currentIntr], 15
-	ctxswitch r0
+	ctxswitch [r0]
 	; We will only get here if some other context changes to our context, which
 	; per design, we don't allow
 	b _krn_panicUnexpectedCtxSwitch
