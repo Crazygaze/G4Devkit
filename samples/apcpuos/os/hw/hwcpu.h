@@ -80,7 +80,7 @@ hlt");
  */
  void hw_cpu_ctxswitch(__reg("r0") void* ctx)
  INLINEASM("\t\
- ctxswitch r0");
+ ctxswitch [r0]");
 
  const char* hw_cpu_getIntrReasonMsg(uint16_t reason);
 
