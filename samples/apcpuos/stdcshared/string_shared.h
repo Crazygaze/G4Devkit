@@ -47,7 +47,7 @@ int strcmp( const char * str1, const char * str2 );
 */
 void* memset(__reg("r0") void* dest, __reg("r1") int c, __reg("r2") int count )
 INLINEASM("\t\
-memset r0,r1,r2");
+memset [r0],r1,r2");
 
 /*! Copies a block of memory
 * \param dest Destination
@@ -59,7 +59,7 @@ memset r0,r1,r2");
 void* memcpy(__reg("r0") void* dest, __reg("r1") const void* src,
 __reg("r2")int count )
 INLINEASM("\t\
-memcpy r0,r1,r2");
+memcpy [r0],[r1],r2");
 
 /*! Move a block of memory
 * \param dest Destination
@@ -71,7 +71,7 @@ memcpy r0,r1,r2");
 void* memmove(__reg("r0") void* dest, __reg("r1") const void* src,
 __reg("r2")int count )
 INLINEASM("\t\
-memcpy r0,r1,r2");
+memcpy [r0],[r1],r2");
 
 
 
