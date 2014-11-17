@@ -1,40 +1,40 @@
 //#include "appslist.h"
 //#include "kernel/kerneldebug.h"
 
-/*
-static double hw_clk_currSecs;
-typedef int (*KrnTimedEventFunc)(void* data1, void* data2);
-typedef struct Kernel
-{
-	int timedEvents;
-} Kernel;
-Kernel krn;
 
-typedef struct KrnTimedEvent
-{
-    // Time at which this event needs to execute
-    float time;
-    KrnTimedEventFunc func;
-    void* data1;
-    void* data2;
-} KrnTimedEvent;
+float testArray[16];
+int testArray2[6];
 
-int priorityQueue_peek(void*, void** evt);
-*/
+int params[4];
 
-/*
-static int krn_tickTimedEvents()
+float callFloats(float a, float b, float c, float d)
 {
-    // Wake up any sleeping threads that are due to wake up
-    KrnTimedEvent* evt;
-	priorityQueue_peek(&krn.timedEvents, &evt);
-	if (evt->time <= hw_clk_currSecs)
-		return 1;
- 
- //while( priorityQueue_peek(&krn.timedEvents, &evt) &&
-//             (evt->time <= hw_clk_currSecs)) {
-        //priorityQueue_popAndDrop(&krn.timedEvents);
-        //evt->func(evt->data1, evt->data2);
-    //}
+	return a+b+c+d;
 }
-*/
+
+int someInt;
+float stressFloats(int a, int b, int c, int d)
+{
+	float f0 = testArray[0];
+	float f1 = testArray[1];
+	float f2 = testArray[2];
+	float f3 = testArray[3];
+	float f4 = testArray[4];
+	float f5 = testArray[5];
+	float f6 = testArray[6];
+	
+	params[0] = a;
+	params[1] = b;
+	params[2] = c;
+	params[3] = d;
+	callFloats(1,2,3,4);
+	
+	int i0 = testArray2[0];
+	int i1 = testArray2[1];
+	int i2 = testArray2[2];
+	int i3 = testArray2[3];
+	int i4 = testArray2[4];
+
+	someInt = i0+i1+i2+i3+i4;
+	return f0+f1+f2+f3+f4+f5+f6;
+}
