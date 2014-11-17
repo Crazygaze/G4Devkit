@@ -20,7 +20,7 @@
 
 // Stack space for the kernel process/thread.
 // Needs to be 4 word aligned
-#define KERNEL_STACKSIZE 2048
+#define KERNEL_STACKSIZE (1024*3)
 #define KERNEL_HEAPSIZE (1024*10)
 
 

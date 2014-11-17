@@ -26,12 +26,13 @@ static int get_status(u32 diskNum)
 	DSTATUS res=0;
 	if (flags & HW_DKC_FLAG_PRESENT)
 	{
-		if (!(flags & DISKIO_FLAG_INITIALIZED))
+		if ( !(flags & DISKIO_FLAG_INITIALIZED) )
 			res |= STA_NOINIT;
+		
 		if (flags & HW_DKC_FLAG_WRITEPROTECTED)
 			res |= STA_PROTECT;
 	} else {
-		res = STA_NOINIT;
+		res = STA_NODISK;
 	}
 	return res;
 }
