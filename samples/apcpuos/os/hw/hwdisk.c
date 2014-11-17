@@ -19,6 +19,8 @@
 #define HW_DKC_ERROR_NOMEDIA 1
 #define HW_DKC_ERROR_BUSY 2
 #define HW_DKC_ERROR_WRITEPROTECTED 3
+#define HW_DKC_ERROR_INVALIDSECTOR 4
+#define HW_DKC_ERROR_UNKNOWN 5
 
 typedef struct hw_dkc_Disk {
 	u32 writeCount; // How many write operations
@@ -164,6 +166,26 @@ static bool hw_dkc_query(u32 diskNum)
 	}
 }
 
+void hw_dkc_sync(u32 diskNum)
+{
+	hw_dkc_Disk* dsk = hw_dkc_getDisk(diskNum);
+	while(hw_dkc_isBusy(dsk)) {
+		hw_dkc_query(diskNum);
+	}
+}
+
+void hw_dkc_read_sync(u32 diskNum, u32 sectorNum, char* data, int size)
+{
+	hw_dkc_read(diskNum, sectorNum, data, size);
+	hw_dkc_sync(diskNum);
+}
+
+void hw_dkc_write_sync(u32 diskNum, u32 sectorNum, const char* data, int size)
+{
+	hw_dkc_write(diskNum, sectorNum, data, size);
+	hw_dkc_sync(diskNum);
+}
+
 void hw_dkc_read(u32 diskNum, u32 sectorNum, char* data, int size)
 {
 	hw_dkc_Disk* dsk = hw_dkc_getDisk(diskNum);
@@ -188,7 +210,7 @@ void hw_dkc_write(u32 diskNum, u32 sectorNum, const char* data, int size)
 	
 	hw_HwiData hwi;
 	hwi.regs[0] = HWBUS_DKC;
-	hwi.regs[1] = HW_DKC_FUNC_READSECTOR;
+	hwi.regs[1] = HW_DKC_FUNC_WRITESECTOR;
 	hwi.regs[2] = diskNum;
 	hwi.regs[3] = sectorNum;
 	hwi.regs[4] = (u32)data;
@@ -209,7 +231,7 @@ void hw_dkc_setCustomFlags(u32 diskNum, u32 flags)
 {
 	hw_dkc_Disk* dsk = hw_dkc_getDisk(diskNum);
 	kernel_check(hw_dkc_canWrite(dsk));
-	hw_dkc_setFlag(dsk, flags & HW_DKC_INTERNAL_FLAGS);
+	hw_dkc_setFlag(dsk, flags & (~HW_DKC_INTERNAL_FLAGS));
 }
 
 void hw_dkc_clearFlags(u32 diskNum, u32 flags)

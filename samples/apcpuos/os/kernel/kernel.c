@@ -9,6 +9,7 @@
 #include "hw/hwcpu.h"
 #include "hw/hwclock.h"
 #include "hw/hwkeyboard.h"
+#include "hw/hwdisk.h"
 #include "kernel/mmu.h"
 #include "multitasking/process.h"
 #include "syscalls/syscalls.h"
@@ -86,6 +87,29 @@ static bool krn_kybCallback(uint8_t eventtype, uint8_t key, int flags,
 			prc_postThreadMessage(it->mainthread, msgid, key, flags);
 		}
 	});		
+	
+	/*
+	if (eventtype==HW_KYB_EVENT_TYPED)
+	{
+		switch(key)
+		{
+		case '1':
+			{
+				hw_dkc_write(0, 0, "Hello World", strlen("Hello World"));
+			}
+		break;
+		case '2':
+			{
+				int sector = 0;
+				char buf[20];
+				memset(buf,0,sizeof(buf));
+				hw_dkc_read(0, sector, buf, sizeof(buf));
+				KERNEL_DEBUG("Sector %d: %s", sector, buf);
+			}
+		break;
+		}
+	}
+	*/
 			
 	return FALSE;
 }
