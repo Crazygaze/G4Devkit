@@ -23,11 +23,11 @@ extern _krn_init
 ;		- IRQs are disabled
 ;		- CPU is set to Supervisor mode
 ;
-; When booting, the machine behaves as if an interrupt occured (The "Reset"
+; When booting, the machine behaves as if an interrupt occurred (The "Reset"
 ; interrupt)
 ;
 ; These is a brief explanation about each interrupt type. Please refer to the
-; architecture documention for detailed information
+; architecture documentation for detailed information
 ; 
 ; - Execution context changes to fixed address 0x20 (32)
 ; - PC is set to the respective interrupt handler
@@ -39,6 +39,11 @@ extern _krn_init
 ;		    IRQs are disabled
 ;
 ; The following is a list of the meaning of r1,r2,r3 for each interrupt type
+;
+; Reset:
+; 	r1 = 0
+; 	r2 = 0
+;	r3 = 0
 ;
 ; Abort:
 ; 	r1 = Address access that cause the interrupt
