@@ -13,6 +13,7 @@ The computer's architecture is named APCPU-32, unless I come up with a better na
 
 ### IMPORTANT NOTES ###
 
+* I'm working on the documentation, and I'll make it available in the next few days.
 * **You need to download both this repository (clone it), and the latest binaries available in the Downloads section**
     * The DevKit binaries available in the downloads section. Download only the most recent DevKitBinaries_bxxxx.zip file.
     * Detailed instructions bellow in the **How to get it up and running** section
