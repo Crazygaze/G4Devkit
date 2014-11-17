@@ -12,17 +12,69 @@ extern _krn_init
 
 ;*******************************************************************************
 ;
-; On boot, the context at address 0.
-; This context is also the context used for handling interrupts.
+; When booting, the following happens:
 ;
-; On startup, the PC points to our boot routine, which after initialization,
-; sets things in a way that when an interrupt happens, it passes control to
-; the interrupt handler
-; Also, when booting, some registers are forcibly set:
-;	r0,r1,r2 - 0
+; - Execution context set to fixed location 0x20 (32)
+;   This is also the execution context used for any other interrupts
+; - PC is set to the "Reset" interrupt handler.
+; - Some registers are set:
+;   r0,r1,r2 - 0
 ;	flags
-;		- IRQ are disabled
+;		- IRQs are disabled
 ;		- CPU is set to Supervisor mode
+;
+; When booting, the machine behaves as if an interrupt occured (The "Reset"
+; interrupt)
+;
+; These is a brief explanation about each interrupt type. Please refer to the
+; architecture documention for detailed information
+; 
+; - Execution context changes to fixed address 0x20 (32)
+; - PC is set to the respective interrupt handler
+; - Some registers are set, depending on the interrupt type:
+;       r0 - set to the interrupted context
+;       r1,r2,r3 - Values dependent on the the interrupt type. See below
+;       flags register :
+;		    Cpu Mode set to Supervisor
+;		    IRQs are disabled
+;
+; The following is a list of the meaning of r1,r2,r3 for each interrupt type
+;
+; Abort:
+; 	r1 = Address access that cause the interrupt
+; 	r2 = Type of violation:
+;		0 : Execute
+;		1 : Write
+;		2 : Read
+;	r3 = 0
+;
+; DivideByZero:
+;	r1 = 0
+;	r2 = 0
+;	r3 = 0
+;
+; UndefinedInstruction
+;	r1 = 0
+;	r2 = 0
+;	r3 = 0
+;
+; IllegalInstruction
+;	r1 = 0
+;	r2 = 0
+;	r3 = 0
+;
+; SWI (System call)
+;	r1 = 0
+;	r2 = 0
+;	r3 = 0
+;
+; IRQ (Hardware Interrupt)
+;	r1 = (BusId<<24) | reason
+;			BusId - Identifies the device that caused the IRQ
+;			reason - Specific to the device that caused the IRQ.
+;	r2 = Dependent on the device that caused the interrupt
+;	r3 = Dependent on the device that caused the interrupt
+;
 ;*******************************************************************************
 
 ; First 4 bytes should contain the interrupt handler address, but on boot, we
@@ -38,6 +90,7 @@ _intrHandlerAddr:
 .word _intrHandler_IRQ
 .word _intrHandler_RESERVED ; Reserved for future use
 
+; This is the default execution context
 public _intrCtxStart
 _intrCtxStart:
 	.zero 64 ; r0-r15
@@ -97,23 +150,8 @@ _intrHandler_Reset:
 	b _krn_panicUnexpectedCtxSwitch	
 
 ;*******************************************************************************
-;              INTERRUPTS
-; 
-; When an interrupt occurs, the cpu changes execution to context at address 32,
-; and jumpts to the respective vector routine.
-; In addition, the following happens:
-; r0 - set to the interrupted context
-; r1,r2,r3 - set to some values dependent on the the interrupt type. See bellow
-; flags register :
-;		Mode is switched to SVC
-;		IRQ are disabled
-;
-; ABORT:
-; 	r1 - Address access that cause the interrupt
-; 	r2 - Type of violation:
-;		0 : Execute
-;		1 : Write
-;		2 : Read
+;              INTERRUPT HANDLERS
+;*******************************************************************************
 extern _krn_panicDoubleFault
 extern _krn_handleInterrupt
 
