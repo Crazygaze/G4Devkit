@@ -1,6 +1,6 @@
 # G4 DevKit#
 
-[[TOC]]
+[TOC]
 
 ### What's G4 ###
 
