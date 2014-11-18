@@ -45,15 +45,28 @@ void hw_dkc_dtor(hw_Drv* drv);
 #define hw_dkc_setIRQMode(state) \
 	hw_hwiSimple1(HWBUS_DKC, HW_DKC_FUNC_SETIRQMODE, state)
 
-/*
+/*!
  * Reads data from a sector
  */
 void hw_dkc_read(u32 diskNum, u32 sectorNum, char* data, int size);
 
-/*
+/*!
  * Writes data to a sector
  */
 void hw_dkc_write(u32 diskNum, u32 sectorNum, const char* data, int size);
+
+/*!
+* Reads data from a disk sector, and blocks until the operation finishes.
+* Not recommended to use this.
+*/
+void hw_dkc_read_sync(u32 diskNum, u32 sectorNum, char* data, int size);
+
+/*!
+* Writes data to a disk sector, and blocks until the operation finishes.
+* Not recommended to use this.
+*/
+void hw_dkc_write_sync(u32 diskNum, u32 sectorNum, const char* data, int size);
+
 
 u32 hw_dkc_getFlags(u32 diskNum);
 void hw_dkc_setCustomFlags(u32 diskNum, u32 flags); 

@@ -39,7 +39,7 @@ typedef struct hw_dkc_Drv {
 } hw_dkc_Drv;
 
 static hw_dkc_Drv drv;
-static void hw_dkc_irqHandler(u16 reason, u32 data);
+static void hw_dkc_irqHandler(u16 reason, u32 data1, u32 data2);
 static bool hw_dkc_query(u32 diskNum);
 
 #define hw_dkc_isWriteProtected(dsk) \
@@ -114,17 +114,23 @@ static hw_dkc_Disk* hw_dkc_getDisk(u32 diskNum)
 	return &drv.disks[diskNum];
 }
 
-static void hw_dkc_irqHandler(u16 reason, u32 data)
+static void hw_dkc_irqHandler(u16 reason, u32 data1, u32 data2)
 {
-	u32 diskNum = data;
+	u32 diskNum = data1;
 	hw_dkc_Disk* dsk = hw_dkc_getDisk(diskNum);
 	
-	KERNEL_DEBUG("DKC IRQ %d, %d. Current status=0x%08x", reason, data,
-		dsk->status);
-		
+	KERNEL_DEBUG("DKC IRQ %d, %d, %d. Current status=0x%08x", reason, data1,
+		data2, dsk->status);
+
 	switch(reason) {
 	case HW_DKC_IRQREASON_FINISHED:
-		kernel_check(hw_dkc_isBusy(dsk));
+		
+		// Because we can call the "sync" versions of read/write, the flags will
+		// be reset at that point, and thus this check doesn't really apply
+		//kernel_check(hw_dkc_isBusy(dsk));
+		
+		// If the operation failed, it was some unknown error, since typical
+		kernel_check(data2==HWERR_SUCCESS);
 		hw_dkc_clearFlag(dsk, HW_DKC_FLAG_READING|HW_DKC_FLAG_WRITING);
 		break;
 	case HW_DKC_IRQREASON_MOUNT:
