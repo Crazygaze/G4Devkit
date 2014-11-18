@@ -36,7 +36,7 @@ static const char * const cpuIntrStr[kCpuException_MAX] = {
 };
 
 static hw_cpu_Drv driver;
-static void hw_cpu_irqHandler(uint16_t reason, uint32_t data);
+static void hw_cpu_irqHandler(uint16_t reason, u32 data1, u32 data2);
 
 hw_Drv* hw_cpu_ctor(hw_BusId busid)
 {
@@ -57,10 +57,10 @@ const char* hw_cpu_getIntrReasonMsg(uint16_t reason)
 	return (reason<kCpuException_MAX) ? cpuIntrStr[reason] : "unknown";
 }
 
-static void hw_cpu_irqHandler(uint16_t reason, uint32_t data)
+static void hw_cpu_irqHandler(uint16_t reason, u32 data1, u32 data2)
 {
 	krn_panic(
-		"TASK %d:%s, REASON '%s' DATA 0x%X",
+		"TASK %d:%s, REASON '%s' DATA 0x%X  DATA 0x%X",
 		krn.interruptedTcb->pcb->info.pid, krn.interruptedTcb->pcb->info.name,
-		hw_cpu_getIntrReasonMsg(reason) , data);
+		hw_cpu_getIntrReasonMsg(reason) , data1, data2);
 }

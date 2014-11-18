@@ -95,16 +95,18 @@ static bool krn_kybCallback(uint8_t eventtype, uint8_t key, int flags,
 		{
 		case '1':
 			{
-				hw_dkc_write(0, 0, "Hello World", strlen("Hello World"));
+				hw_dkc_write_sync(0, 0, "-District 9", strlen("-District 9"));
+				hw_dkc_write_sync(0, 1, "Area 51", strlen("Area 51"));
 			}
 		break;
 		case '2':
 			{
-				int sector = 0;
 				char buf[20];
-				memset(buf,0,sizeof(buf));
-				hw_dkc_read(0, sector, buf, sizeof(buf));
-				KERNEL_DEBUG("Sector %d: %s", sector, buf);
+				for(int sector=0; sector<2; sector++) {
+					memset(buf,0,sizeof(buf));
+					hw_dkc_read_sync(0, sector, buf, sizeof(buf));
+					KERNEL_DEBUG("Sector %d : %s", sector, buf);
+				}
 			}
 		break;
 		}
@@ -338,7 +340,7 @@ CpuCtx* krn_handleInterrupt(
 				busid = data1 >> 24;
 				reason = data1 & 0x00FFFFFF;
 				if (busid<HWBUS_DEFAULTDEVICES_MAX && hw_drivers[busid]) {
-					hw_drivers[busid]->irqHandler(reason, data2);
+					hw_drivers[busid]->irqHandler(reason, data2, data3);
 				} else {
 					krn_panic(
 						"BUS %d : Received IRQ for device without driver.",
