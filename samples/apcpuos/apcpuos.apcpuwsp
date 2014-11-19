@@ -9,6 +9,7 @@
 		".\\testapp1\\testapp1.apcpuprj",
 		".\\testapp2\\testapp2.apcpuprj",
 		".\\utilshared\\utilshared.apcpuprj",
-		".\\sysstats\\sysstats.apcpuprj"
+		".\\sysstats\\sysstats.apcpuprj",
+		".\\filemanager\\filemanager.apcpuprj"
 	]
 }

@@ -48,7 +48,8 @@
 		"testapp1",
 		"testapp2",
 		"utilshared",
-		"sysstats"
+		"sysstats",
+		"filemanager"
 	],
 	"files": [
 		{

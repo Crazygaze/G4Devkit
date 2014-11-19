@@ -1,0 +1,55 @@
+{
+	"format": "Project",
+	"version": 1,
+	"name": "filemanager",
+	"type": 2,
+	"globalconfiguration": {
+		"name": "Global",
+		"includePaths": [
+
+		],
+		"defines": [
+
+		],
+		"compilerOptions": "",
+		"linkerextralibs": ""
+	},
+	"configurations": [
+		{
+			"name": "Debug",
+			"includePaths": [
+				"$(SolutionDir)appsdk",
+				"$(SolutionDir)appsdk\/stdc",
+				"$(SolutionDir)stdcshared",
+				"$(SolutionDir)os\/extern\/fatfs\/src",
+				"$(SolutionDir)os",
+				"$(SolutionDir)"
+			],
+			"defines": [
+				"DEBUG"
+			],
+			"compilerOptions": "-shareddata -c99 -O2 -g -unroll-size=0 -size",
+			"linkerextralibs": ""
+		},
+		{
+			"name": "Release",
+			"includePaths": [
+
+			],
+			"defines": [
+				"NDEBUG"
+			],
+			"compilerOptions": "-c99 -O2",
+			"linkerextralibs": ""
+		}
+	],
+	"dependencies": [
+
+	],
+	"files": [
+		{
+			"path": ".\\main.c",
+			"bootfile": false
+		}
+	]
+}
