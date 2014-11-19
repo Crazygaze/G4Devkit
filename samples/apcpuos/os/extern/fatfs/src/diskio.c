@@ -9,6 +9,7 @@
 
 #include "diskio.h"		/* FatFs lower layer API */
 #include "hw/hwdisk.h"
+#include "hw/hwclock.h"
 #include "kernel/kerneldebug.h"
 
 #define DISKIO_FLAG_INITIALIZED (1 << (HW_DKC_FLAG_FIRSTCUSTOMBIT))
@@ -68,39 +69,9 @@ DRESULT disk_read (
 	UINT count		/* Number of sectors to read */
 )
 {
-	DRESULT res;
-	int result;
-/*
-	switch (pdrv) {
-	case ATA :
-		// translate the arguments here
-
-		result = ATA_disk_read(buff, sector, count);
-
-		// translate the reslut code here
-
-		return res;
-
-	case MMC :
-		// translate the arguments here
-
-		result = MMC_disk_read(buff, sector, count);
-
-		// translate the reslut code here
-
-		return res;
-
-	case USB :
-		// translate the arguments here
-
-		result = USB_disk_read(buff, sector, count);
-
-		// translate the reslut code here
-
-		return res;
-	}
-*/
-	return RES_PARERR;
+	hw_dkc_read_sync( pdrv, sector, buff, count*hw_dck_getSectorSize(pdrv) );
+		
+	return RES_OK;
 }
 
 
@@ -117,39 +88,9 @@ DRESULT disk_write (
 	UINT count			/* Number of sectors to write */
 )
 {
-	DRESULT res;
-	int result;
-/*
-	switch (pdrv) {
-	case ATA :
-		// translate the arguments here
-
-		result = ATA_disk_write(buff, sector, count);
-
-		// translate the reslut code here
-
-		return res;
-
-	case MMC :
-		// translate the arguments here
-
-		result = MMC_disk_write(buff, sector, count);
-
-		// translate the reslut code here
-
-		return res;
-
-	case USB :
-		// translate the arguments here
-
-		result = USB_disk_write(buff, sector, count);
-
-		// translate the reslut code here
-
-		return res;
-	}
-*/
-	return RES_PARERR;
+	hw_dkc_write_sync( pdrv, sector, buff, count*hw_dck_getSectorSize(pdrv) );
+	
+	return RES_OK;
 }
 #endif
 
@@ -165,29 +106,30 @@ DRESULT disk_ioctl (
 	void *buff		/* Buffer to send/receive control data */
 )
 {
-	DRESULT res;
-	int result;
-/*
-	switch (pdrv) {
-	case ATA :
-
-		// Process of the command for the ATA drive
-
-		return res;
-
-	case MMC :
-
-		// Process of the command for the MMC/SD card
-
-		return res;
-
-	case USB :
-
-		// Process of the command the USB drive
-
-		return res;
+	switch (cmd){
+		case GET_SECTOR_SIZE:
+			*((int*)buff)=hw_dck_getSectorSize(pdrv);
+			return RES_OK;
+		case GET_SECTOR_COUNT:
+			*((int*)buff)=hw_dck_getSectorCount(pdrv);
+			return RES_OK;
+		case GET_BLOCK_SIZE:
+			*((int*)buff)=hw_dck_getBlockSize(pdrv);
+			return RES_OK;
+		case CTRL_SYNC:
+			return RES_OK;
+		case CTRL_ERASE_SECTOR:
+			/*
+				TODO: Find information about CTRL_ERASE_SECTOR.
+					  There's nothing here: http://elm-chan.org/fsw/ff/en/dioctl.html
+			*/
+			KERNEL_DEBUG("FatFS CTRL_ERASE_SECTOR not supported yet");
+			kernel_check(0);
+			return RES_PARERR;
+		default:
+			return RES_PARERR;
 	}
-*/
+
 	return RES_PARERR;
 }
 #endif
@@ -195,6 +137,8 @@ DRESULT disk_ioctl (
 
 DWORD get_fattime(void)
 {
-	kernel_check(0);
-	return 0;
+	/*
+		TODO: Returns the current date/time
+	*/
+	return hw_clk_getRunningTimeMs32();
 }
