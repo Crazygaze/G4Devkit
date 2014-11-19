@@ -9,6 +9,11 @@
 #include "kernel/handles.h"
 #include "appsdk/kernel_shared/txtui_shared.h"
 
+#include "extern/fatfs/src/diskio.h"
+#include "extern/fatfs/src/ff.h"
+
+#define DEBUG_FATFS 1
+
 static bool check_user_ptr(struct PCB *pcb, MMUMemAccess access, void* addr,
 	size_t size)
 {
@@ -330,6 +335,343 @@ bool syscall_getScreenYRes(void)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+//				Disk Drive
+////////////////////////////////////////////////////////////////////////////////
+
+void printFResult(char * info, FRESULT value)
+{
+	switch (value){
+		case FR_OK:
+			LOG ("%s: FR_OK", info);
+			break;
+		case FR_DISK_ERR:
+			LOG ("%s: FR_DISK_ERR", info);
+			break;
+		case FR_INT_ERR:
+			LOG ("%s: FR_INT_ERR", info);
+			break;
+		case FR_NOT_READY:
+			LOG ("%s: FR_NOT_READY", info);
+			break;
+		case FR_NO_FILE:
+			LOG ("%s: FR_NO_FILE", info);
+			break;
+		case FR_NO_PATH:
+			LOG ("%s: FR_NO_PATH", info);
+			break;
+		case FR_INVALID_NAME:
+			LOG ("%s: FR_INVALID_NAME", info);
+			break;
+		case FR_DENIED:
+			LOG ("%s: FR_DENIED", info);
+			break;
+		case FR_EXIST:
+			LOG ("%s: FR_EXIST", info);
+			break;
+		case FR_INVALID_OBJECT:
+			LOG ("%s: FR_INVALID_OBJECT", info);
+			break;
+		case FR_WRITE_PROTECTED:
+			LOG ("%s: FR_WRITE_PROTECTED", info);
+			break;
+		case FR_INVALID_DRIVE:
+			LOG ("%s: FR_INVALID_DRIVE", info);
+			break;
+		case FR_NOT_ENABLED:
+			LOG ("%s: FR_NOT_ENABLED", info);
+			break;
+		case FR_NO_FILESYSTEM:
+			LOG ("%s: FR_NO_FILESYSTEM", info);
+			break;
+		case FR_MKFS_ABORTED:
+			LOG ("%s: FR_MKFS_ABORTED", info);
+			break;
+		case FR_TIMEOUT:
+			LOG ("%s: FR_TIMEOUT", info);
+			break;
+		case FR_LOCKED:
+			LOG ("%s: FR_LOCKED", info);
+			break;
+		case FR_NOT_ENOUGH_CORE:
+			LOG ("%s: FR_NOT_ENOUGH_CORE", info);
+			break;
+		case FR_TOO_MANY_OPEN_FILES:
+			LOG ("%s: FR_TOO_MANY_OPEN_FILES", info);
+			break;
+		case FR_INVALID_PARAMETER:
+			LOG ("%s: FR_INVALID_PARAMETER", info);
+			break;
+		default:
+			LOG ("%s: unexpected return value", info);
+			break;
+	}
+}
+
+FRESULT diskDriveMount(char * drive_id)
+{
+	/*
+		TODO: need to free memory
+	*/
+	FATFS fs 
+	
+	FRESULT res_mount = f_mount(&fs, drive_id, 0);
+	
+#if DEBUG_FATFS
+	printFResult("f_mount", res_mount);	
+#endif
+
+	return res_mount;
+}
+
+void disk_initialize_wait(int drv){
+	while (disk_initialize(drv)){
+		prc_putThreadToSleep(krn.interruptedTcb, 250);	
+	};
+}
+
+bool syscall_diskDriveMountDrive(void)
+{
+	PCB* pcb = krn.interruptedTcb->pcb;
+	int* regs = (int*)krn.interruptedTcb->cpuctx;
+	char * drive_name = (char *)regs[0];
+
+	if (!check_user_ptr(pcb, kMMUAccess_Read, drive_name, sizeof(*drive_name)))
+		return FALSE;
+
+	prc_giveAccessToKernel(pcb, true);
+	regs[0] = (int) diskDriveMount(drive_name);
+	prc_giveAccessToKernel(pcb, false);
+	
+	return TRUE;
+}
+
+bool syscall_diskDriveMakeFAT(void)
+{
+	PCB* pcb = krn.interruptedTcb->pcb;
+	int* regs = (int*)krn.interruptedTcb->cpuctx;
+	char * drive_name = (char *)regs[0];
+	
+	if (!check_user_ptr(pcb, kMMUAccess_Read, drive_name, sizeof(*drive_name)))
+		return FALSE;
+	
+	prc_giveAccessToKernel(pcb, true);
+	/* Register work area */
+	FRESULT res_mount = diskDriveMount(drive_name);
+	if (res_mount != FR_OK){
+		regs[0] = (int) res_mount;
+		return FALSE;
+	}
+	    
+	/* Make FAT file system*/
+	FRESULT res_mkfs = f_mkfs(drive_name, 0, 0);	
+	prc_giveAccessToKernel(pcb, false);
+
+#if DEBUG_FATFS
+	printFResult("f_mkfs", res_mkfs);	
+#endif
+
+	regs[0] = (int)res_mkfs;
+
+	return TRUE;
+}
+
+bool syscall_diskDriveOpenFile(void)
+{	
+	PCB* pcb = krn.interruptedTcb->pcb;
+	int* regs = (int*)krn.interruptedTcb->cpuctx;
+	
+	FIL * fil = (FIL *) regs[0];
+	char * file_name = (char *)regs[1];
+	int flags = (int) regs[2];
+	
+	// Check if the process can write to the address it has given us
+	if (!check_user_ptr(pcb, kMMUAccess_Write, fil, sizeof(*fil)))
+		return FALSE;
+		
+	if (!check_user_ptr(pcb, kMMUAccess_Read, file_name, sizeof(*file_name)))
+		return FALSE;
+
+	prc_giveAccessToKernel(pcb, true);
+	disk_initialize_wait(fil->fs->drv);
+	FRESULT res = f_open(fil, file_name, flags);
+	prc_giveAccessToKernel(pcb, false);
+	
+#if DEBUG_FATFS
+	printFResult("f_open", res);	
+#endif	
+	
+	regs[0] = (int)res;
+	
+	return TRUE;
+}
+
+bool syscall_diskDriveCloseFile(void)
+{
+	PCB* pcb = krn.interruptedTcb->pcb;
+	int* regs = (int*)krn.interruptedTcb->cpuctx;
+	FIL * fil = (FIL *) regs[0];
+
+	// Check if the process can write to the address it has given us
+	if (!check_user_ptr(pcb, kMMUAccess_Write, fil, sizeof(*fil)))
+		return FALSE;
+		
+	prc_giveAccessToKernel(pcb, true);
+	disk_initialize_wait(fil->fs->drv);
+	FRESULT res = f_close(fil);
+	prc_giveAccessToKernel(pcb, false);
+	
+#if DEBUG_FATFS
+	printFResult("f_close", res);	
+#endif		
+
+	regs[0] = (int)res;
+
+	return TRUE;
+}
+
+bool syscall_diskDriveReadFromFile(void)
+{
+	PCB* pcb = krn.interruptedTcb->pcb;
+	int* regs = (int*)krn.interruptedTcb->cpuctx;
+	FIL * fil = (FIL *) regs[0];
+	char * buff = (char *) regs[1];
+	int buff_size = regs[2];
+	int * byteWritten = (int *)regs[3];
+	
+	// Check if the process can write to the address it has given us
+	if (!check_user_ptr(pcb, kMMUAccess_Write, fil, sizeof(*fil)))
+		return FALSE;
+		
+	if (!check_user_ptr(pcb, kMMUAccess_Write, byteWritten, sizeof(*byteWritten)))
+		return FALSE;
+		
+	if (!check_user_ptr(pcb, kMMUAccess_Write, buff, sizeof(*buff)))
+		return FALSE;
+	
+	prc_giveAccessToKernel(pcb, true);
+	disk_initialize_wait(fil->fs->drv);
+	FRESULT res = f_read(fil, buff, buff_size, byteWritten);
+	prc_giveAccessToKernel(pcb, false);	
+	
+#if DEBUG_FATFS
+	printFResult("f_read", res);	
+#endif		
+
+	regs[0] = (int)res;
+
+	return TRUE;
+}
+
+bool syscall_diskDriveWriteToFile(void)
+{
+	PCB* pcb = krn.interruptedTcb->pcb;
+	int* regs = (int*)krn.interruptedTcb->cpuctx;
+	FIL * fil = (FIL *) regs[0];
+	char * buff = (char *) regs[1];
+	int buff_size = regs[2];
+	int * byteWritten = (int *)regs[3];
+	
+
+	// Check if the process can write to the address it has given us
+	if (!check_user_ptr(pcb, kMMUAccess_Write, fil, sizeof(*fil)))
+		return FALSE;
+		
+	if (!check_user_ptr(pcb, kMMUAccess_Write, byteWritten, sizeof(*byteWritten)))
+		return FALSE;
+		
+	if (!check_user_ptr(pcb, kMMUAccess_Read, buff, sizeof(*buff)))
+		return FALSE;
+		
+	prc_giveAccessToKernel(pcb, true);
+	disk_initialize_wait(fil->fs->drv);
+	FRESULT res = f_write(fil, buff, buff_size, byteWritten);
+	prc_giveAccessToKernel(pcb, false);	
+	
+#if DEBUG_FATFS
+	printFResult("f_write", res);	
+#endif		
+
+	regs[0] = (int)res;
+
+	return TRUE;
+}
+
+bool syscall_diskDriveFileSeek(void)
+{
+
+}
+
+bool syscall_diskDriveSync(void)
+{
+
+}
+
+bool syscall_diskDriveOpenDir(void)
+{
+
+}
+
+bool syscall_diskDriveCloseDir(void)
+{
+
+}
+
+bool syscall_diskDriveReadDir(void)
+{
+
+}
+
+bool syscall_diskDriveMakeDir(void)
+{
+	int* regs = (int*)krn.interruptedTcb->cpuctx;
+	char * dir_name = (char *)regs[0];
+	
+	FRESULT res = f_mkdir(dir_name);
+	
+#if DEBUG_FATFS
+	printFResult("f_mkdir", res);	
+#endif
+
+	regs[0] = (int)res;
+	return TRUE;
+}
+
+bool syscall_diskDriveDeleteFileOrDir(void)
+{
+
+}
+
+bool syscall_diskDriveRenameOrMove(void)
+{
+
+}
+
+bool syscall_diskDriveGetFileInfo(void)
+{
+
+}
+
+bool syscall_diskDriveChangeDir(void)
+{
+
+}
+
+bool syscall_diskDriveChangeDrive(void)
+{
+
+}
+ 
+bool syscall_diskDriveGetCurrentDir(void)
+{
+
+}
+
+bool syscall_diskDriveGetFreeClustersNum(void)
+{
+
+}
+
+////////////////////////////////////////////////////////////////////////////////
 //				Rendering
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -471,6 +813,26 @@ krn_syscallFunc krn_syscalls[kSysCall_Max] =
 	syscall_getScreenXRes,
 	syscall_getScreenYRes,
 	
+	syscall_diskDriveMountDrive,	// FatFS wrapper
+	syscall_diskDriveMakeFAT,	
+	syscall_diskDriveOpenFile,	
+	syscall_diskDriveCloseFile,
+	syscall_diskDriveReadFromFile,
+	syscall_diskDriveWriteToFile,
+	syscall_diskDriveFileSeek,
+	syscall_diskDriveSync,
+	syscall_diskDriveOpenDir,
+	syscall_diskDriveCloseDir,
+	syscall_diskDriveReadDir,
+	syscall_diskDriveMakeDir,
+	syscall_diskDriveDeleteFileOrDir,
+	syscall_diskDriveRenameOrMove,
+	syscall_diskDriveGetFileInfo,
+	syscall_diskDriveChangeDir,
+	syscall_diskDriveChangeDrive, 
+	syscall_diskDriveGetCurrentDir,
+	syscall_diskDriveGetFreeClustersNum,
+
 	//
 	// Rendering
 	//
