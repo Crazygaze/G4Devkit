@@ -3980,7 +3980,11 @@ FRESULT f_mkfs (
 )
 {
 	static const WORD vst[] = { 1024,   512,  256,  128,   64,    32,   16,    8,    4,    2,   0};
-	static const WORD cst[] = {32768, 16384, 8192, 4096, 2048, 16384, 8192, 4096, 2048, 1024, 512};
+	/* TODO: 
+			Replace 32767 by 32768 back.
+			Below temporary fix ".uhalf boundary value" bug.
+	*/	
+	static const WORD cst[] = {32767, 16384, 8192, 4096, 2048, 16384, 8192, 4096, 2048, 1024, 512};
 	int vol;
 	BYTE fmt, md, sys, *tbl, pdrv, part;
 	DWORD n_clst, vs, n, wsect;

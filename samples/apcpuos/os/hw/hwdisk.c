@@ -172,10 +172,40 @@ static bool hw_dkc_query(u32 diskNum)
 	}
 }
 
+/*
+*	Info aboud drive for diskio.c
+*/
+
+u32 hw_dck_getSectorSize(u32 diskNum)
+{
+	hw_dkc_Disk* dsk = hw_dkc_getDisk(diskNum);
+	return dsk->sectorSize;
+}
+
+u32 hw_dck_getSectorCount(u32 diskNum)
+{
+	hw_dkc_Disk* dsk = hw_dkc_getDisk(diskNum);
+	return dsk->numSectors;
+}
+
+u32 hw_dck_getBlockSize(u32 diskNum)
+{
+	/*
+	*	TODO: need to know Block Size. i use sector size, but it's wrong.
+	*/
+	hw_dkc_Disk* dsk = hw_dkc_getDisk(diskNum);
+	return dsk->sectorSize;
+}
+
+/*			
+* 	Read/Write
+*/
+
 void hw_dkc_sync(u32 diskNum)
 {
 	hw_dkc_Disk* dsk = hw_dkc_getDisk(diskNum);
-	while(hw_dkc_isBusy(dsk)) {
+	
+	while (hw_dkc_isBusy(dsk)){
 		hw_dkc_query(diskNum);
 	}
 }
