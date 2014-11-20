@@ -196,4 +196,4 @@ are typing
 
 # Disclaimers
 
-* **0x10c** is a registered tradedemark of Mojang AB
+* **0x10c** is a registered trademark of Mojang AB
