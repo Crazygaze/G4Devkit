@@ -194,6 +194,6 @@ are typing
 	* The Server Manager allows disabling the automatic refresh, and provides a button for explicit refresh
 * The C compiler is a port from [VBCC](http://www.compilers.de/vbcc.html) . It's quite usable, but the port still has bugs which causes it generate invalid code in some situations. I'm fixing whatever I find as I develop the OS.
 
-#
+# Disclaimers
 
-* 0x10c is a registerd tradedemark of Mojang AB
+* **0x10c** is a registered tradedemark of Mojang AB
