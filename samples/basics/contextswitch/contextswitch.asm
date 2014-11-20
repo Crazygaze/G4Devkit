@@ -18,6 +18,7 @@
 ;		- Clear the last character
 ;		- Increment the screen column
 ;		- Print character at the new screen position
+;		- Pause for a bit
 ;		- Change execution to the other context
 ;		- Once the other context passes execution back, loop
 ;
@@ -47,6 +48,12 @@ _ctx1:
 _ctx2:
 .zero 196
 
+;
+; Things we need from the common static library
+extern _initCommon
+extern _printCharacter
+extern _pause
+
 ;*******************************************************************************
 ; Booting execution, as specified by the RESET interrupt handler
 ;*******************************************************************************
@@ -54,11 +61,7 @@ _ctx2:
 public _startup
 _startup:
 
-	; Get the address of the screen device buffer
-	mov r0, 2 ; Screen device is always in device bus 2
-	mov r1, 0 ; Device function 0
-	hwi
-	str [_screenBuffer], r1 ; Save the screen buffer address
+	bl _initCommon
 
 	;
 	; Setup the contexts
@@ -109,7 +112,7 @@ _contextLoop:
 	mov r0, r4 ; x
 	mov r1, r5 ; y
 	mov r2, 32; a space, to clear
-	bl _printChar
+	bl _printCharacter
 	
 	; Increment screen column
 	; r4 = (r4+1) % 80
@@ -120,44 +123,23 @@ _contextLoop:
 	mov r0, r4 ; x
 	mov r1, r5 ; y
 	mov r2, r6 ; character
-	bl _printChar
+	bl _printCharacter
 
+	; Pause for 500 ms
+	mov r0, 500
+	bl _pause
+	
 	; Change execution to the other context
 	ctxswitch [r7]
 	
 	; loop to beginning when this context gets resumed
 	b _contextLoop 
 
-;
-; Small function to write a character to the screen
-; In:
-;	r0 - x
-;	r1 - y
-; 	r2 - character to show
-_printChar:
-	; calculate screen position
-	; pos = screenBuffer + (y*160 + x*2)
-	smul r0, r0, 2
-	smul r1, r1, 160
-	ldr ip, [_screenBuffer]
-	add ip, ip, r0
-	add ip, ip, r1 ; final address
-	
-	; print the character
-	or r2, r2, 0x0F00 ; Add colour information to the character
-	struh [ip], r2 ; print character as half word (1 byte for colour, 1 for the character)
-	
-	; Return from the function
-	mov pc, lr
-
 
 ;*******************************************************************************
 ;								Data
 ;*******************************************************************************
 .data
-	; Variable to save the screen buffer address
-	_screenBuffer:
-	.word 0
 	_currentCtx:
 	.word 0
 	
