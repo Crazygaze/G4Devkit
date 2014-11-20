@@ -3,6 +3,8 @@
 	"version": 1,
 	"name": "basics",
 	"projects": [
-		".\\helloworld\\helloworld.apcpuprj"
+		".\\helloworld\\helloworld.apcpuprj",
+		".\\contextswitch\\contextswitch.apcpuprj",
+		".\\common\\common.apcpuprj"
 	]
 }
