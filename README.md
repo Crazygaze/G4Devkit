@@ -1,5 +1,7 @@
 # G4 DevKit#
 
+[TOC]
+
 ### What's G4 ###
 
 G4 is the code name for the game I'm working on, inspired by Notch's [0x10c](http://en.wikipedia.org/wiki/0x10c).
