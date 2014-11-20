@@ -1,0 +1,50 @@
+{
+	"format": "Project",
+	"version": 1,
+	"name": "contextswitch",
+	"type": 1,
+	"globalconfiguration": {
+		"name": "Global",
+		"includePaths": [
+
+		],
+		"defines": [
+
+		],
+		"compilerOptions": "",
+		"linkerextralibs": ""
+	},
+	"configurations": [
+		{
+			"name": "Debug",
+			"includePaths": [
+
+			],
+			"defines": [
+				"DEBUG"
+			],
+			"compilerOptions": "-c99 -g -O",
+			"linkerextralibs": ""
+		},
+		{
+			"name": "Release",
+			"includePaths": [
+
+			],
+			"defines": [
+				"NDEBUG"
+			],
+			"compilerOptions": "-c99 -O2",
+			"linkerextralibs": ""
+		}
+	],
+	"dependencies": [
+
+	],
+	"files": [
+		{
+			"path": ".\\contextswitch.asm",
+			"bootfile": true
+		}
+	]
+}
