@@ -1,8 +1,8 @@
 {
 	"format": "Project",
 	"version": 1,
-	"name": "contextswitch",
-	"type": 1,
+	"name": "common",
+	"type": 2,
 	"globalconfiguration": {
 		"name": "Global",
 		"includePaths": [
@@ -39,12 +39,16 @@
 		}
 	],
 	"dependencies": [
-		"common"
+
 	],
 	"files": [
 		{
-			"path": ".\\contextswitch.asm",
-			"bootfile": true
+			"path": ".\\common.asm",
+			"bootfile": false
+		},
+		{
+			"path": ".\\readme.txt",
+			"bootfile": false
 		}
 	]
 }
