@@ -1,0 +1,52 @@
+{
+	"format": "Project",
+	"version": 1,
+	"name": "helloworld",
+	"type": 1,
+	"globalconfiguration": {
+		"name": "Global",
+		"includePaths": [
+
+		],
+		"defines": [
+
+		],
+		"compilerOptions": "",
+		"linkerextralibs": ""
+	},
+	"configurations": [
+		{
+			"name": "Debug",
+			"includePaths": [
+				"$(SolutionDir)..\/..\/apcpuos\/stdc",
+				"$(SolutionDir)..\/..\/apcpuos\/os"
+			],
+			"defines": [
+				"DEBUG"
+			],
+			"compilerOptions": "-c99 -g -O0",
+			"linkerextralibs": ""
+		},
+		{
+			"name": "Release",
+			"includePaths": [
+				"$(SolutionDir)..\/..\/apcpuos\/stdc",
+				"$(SolutionDir)..\/..\/apcpuos\/os"
+			],
+			"defines": [
+				"NDEBUG"
+			],
+			"compilerOptions": "-c99 -O3",
+			"linkerextralibs": ""
+		}
+	],
+	"dependencies": [
+
+	],
+	"files": [
+		{
+			"path": ".\\helloworld.asm",
+			"bootfile": true
+		}
+	]
+}
