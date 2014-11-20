@@ -1,8 +1,6 @@
-# G4 DevKit#
-
 [TOC]
 
-### What's G4 ###
+# What's G4
 
 G4 is the code name for the game I'm working on, inspired by Notch's [0x10c](http://en.wikipedia.org/wiki/0x10c).
 
@@ -13,7 +11,7 @@ The OS is open source, providing an example of a complex application for the vir
 
 The computer's architecture is named APCPU-32, unless I come up with a better name later.
 
-### IMPORTANT NOTES ###
+# IMPORTANT NOTES
 
 * I'm working on the documentation, and I'll make it available in the next few days.
 * **You need to download both this repository (clone it), and the latest binaries available in the Downloads section**
@@ -24,13 +22,13 @@ The computer's architecture is named APCPU-32, unless I come up with a better na
 * **Any questions, leave me a message**. Although there is over 2 years worth of part-time work on this, this repository was put together in a rush so I could share it before the game.
 	* You can contact me at ruimvfigueira@gmail.com
 
-### Some quick links ###
+# Some quick links
 
 * [Short video of tje DevKit in action](https://www.youtube.com/watch?v=cIyHgQvfETE)
 * [TwitchTV Coding sessions](http://www.twitch.tv/myfumanchu)
 * [My humble website](http://www.crazygaze.com)
 
-### Virtual Computer Basic Features ###
+# Virtual Computer Features
 
 * 32-bits CPU with 16 global registers, and FPU (floating point operations)
 	* Available CPU speed and amount of RAM per virtual computer not decided yet. Will depend on server hosting costs.
@@ -44,7 +42,7 @@ The computer's architecture is named APCPU-32, unless I come up with a better na
 	* DiskController - Allows attaching up to 4 disks
 * Other devices will come in the future as development progresses, and technical specifications will be available for whoever wishes to code anything using them
 
-### Advanced features for the nerds ###
+## Advanced features for the nerds
 
 When booting, the computer assumes easy to use defaults, so players can easily code something small in assembly if they wish.
 Advanced features are hidden by default. Those features allow the creation of proper operating systems. Some of those features:
@@ -56,23 +54,23 @@ Advanced features are hidden by default. Those features allow the creation of pr
 * Several interrupts available (IRQ, Divide by zero, Access violation, Illegal instruction, System Call, etc)
 * Devices that use memory mapping allow changing the mapping, instead of using fixed locations
  
-### The instruction set, and Devices specifications ###
+## The instruction set, and Devices specifications
 
-* I will be providing detailed information about the architecture, enabling people to code their own tools if they require, or change the OS. In the meantime, all I have is this README file.
+Architecture documentation can be found in the wiki, although it's still work in progress.
 
-### What's in this repository ###
+# What's in this repository
 
 * The Operating System source code. **THIS IS COMPLEX**
 * Miscellaneous samples showing small scale coding
 	* A minimal "hello world" example provided, entirely in assembly.
 
-### What's NOT in this repository ###
+# What's NOT in this repository
 
 * DevKit binaries. Those are available as a separate download, as I want to keep binaries out of the repository as much as possible.
 
-### How to get it up and running ###
+# How to get it up and running
 
-** WINDOWS **
+## WINDOWS
 
 1. Clone this repository
 2. Download the DevKitBinaries, and unpack the zip to the repository root folder, overwriting the contents of the DevKit folder.
@@ -88,7 +86,7 @@ Advanced features are hidden by default. Those features allow the creation of pr
 	* Server Manager
 		* Here you can create new virtual machines, delete existing ones, and open simulators windows for those virtual machines.
 
-** LINUX **
+## LINUX
 
 REQUIREMENTS:
 Since the Devkit is (not yet) cross-platform, you need [Wine](https://www.winehq.org/)
@@ -105,13 +103,14 @@ Since the Devkit is (not yet) cross-platform, you need [Wine](https://www.winehq
 	* Server Manager
 		* Here you can create new virtual machines, delete existing ones, and open simulators windows for those virtual machines.
 
-## Operating System status ##
+# Operating System status
 
 The OS is currently being developed as a proof of concept for the virtual computer architecture, and will evolve and change as the virtual computer specifications change to better suit the gameplay.
 It already has some features present in modern Operating Systems, such as preemptive multitasking and memory protection.
 What is in the OS at the moment:
 
-### What's in and working / kind of working ###
+## What's in and working / kind of working
+
 * Preemptive kernel
 * Multiple processes allowed, with several threads per process.
 * Message queues allowing the kernel to send messages to the processes/threads
@@ -129,19 +128,19 @@ What is in the OS at the moment:
 	* This is required at the moment, otherwise the OS itself would need code to load other processes from disk
 	* As the OS evolves, it might allow loading processes from a disk once there is enough support for that (as-in, code in the OS to load and resolve symbols, etc)
 
-### Work in progress or not tested ###
+## Work in progress or not tested
 
 * Drivers for all the default devices exist, although some things are not tested
-	* The network card allows communicating with other virtual machines, although I didn't test that yet in the VM, and there is no code in the OS for that. The network card at the moment is only used as a debug port to send text logs to the simulator.
-	* The Disk controller driver is there, but is not doing anything at the moment. There is code included for a file system [FatFS](http://elm-chan.org/fsw/ff/00index_e.html), but I haven't integrated it yet into the OS.
-	* The Screen device pretty much works like a text mode VGA. It allows blinking characters, but that's not support by the simulator yet.
+* The network card allows communicating with other virtual machines, although I didn't test that yet in the VM, and there is no code in the OS for that. The network card at the moment is only used as a debug port to send text logs to the simulator.
+* The Disk controller driver is there, but is not doing anything at the moment. There is code included for a file system [FatFS](http://elm-chan.org/fsw/ff/00index_e.html), but I haven't integrated it yet into the OS. Also, since I didn't finish the FatFS integration, the Disk Controller device is the less tested device, and as such there are probably some bugs in there.
+* The Screen device pretty much works like a text mode VGA. It allows blinking characters, but that's not support by the simulator yet.
 
-## DevKit ##
+# DevKit
 
 Still work in progress, although it is allowing the creation of the OS. So in my point of view, it's usable as-is, once you know the quirks.
 I'll have to create some proper documentation eventually.
 
-### Features ###
+## Features
 
 * Project management
 * Code completion
@@ -156,12 +155,12 @@ I'll have to create some proper documentation eventually.
 		* Basic profilling. It allows enabling profiling, collect a snapshot, and log results.
 		*  Allows checking function sizes, to decrease code size
 
-### Peculiar things you NEED to pay attention to ###
+## Peculiar things you NEED to pay attention to
 
 * A workspace can have several projects. If it has more than one executable, you can specify the one to launch (There is a dropdown box named "Startup")
 * You need to explicitly set what file is to be used as a boot file, as the linker needs to know that file needs to be linked first. This is necessary as the boot file should contain something required by the architecture. You can set the boot file by right clicking an ASM file and picking "Boot File" from the context menu. See the provided Hello World" sample for an explanation of what the boot file needs.
 
-### Available shortcuts ###
+## Available shortcuts
 
 They mostly emulate Visual Studio and/or Visual Assist shortcuts
 
@@ -187,7 +186,7 @@ They mostly emulate Visual Studio and/or Visual Assist shortcuts
 are typing
 * **CTRL + SHIFT + R** - Do a full reparse of the workspace, to refresh the code completion/navigation database and syntax colorizing.
 
-### Known problems ###
+## Known problems
 
 * Code completion sometimes causes the IDE to crash. **SAVE OFTEN**. This mostly happens when typing "." inside comments, as it will try code completion and trigger what it seems to be a multithreaded related bug in libclang.
 * Setting/Removing breakpoints while the process is already in the "break" state will sometimes cause it to never go past that instruction. Stop the debugging and remove all breakpoints.
