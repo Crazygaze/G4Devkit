@@ -21,7 +21,7 @@
 				"$(SolutionDir)appsdk",
 				"$(SolutionDir)appsdk\/stdc",
 				"$(SolutionDir)stdcshared",
-				"$(SolutionDir)os\/extern\/fatfs\/src",
+				"$(SolutionDir)filesystem",
 				"$(SolutionDir)os",
 				"$(SolutionDir)"
 			],

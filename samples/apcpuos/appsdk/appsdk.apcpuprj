@@ -21,7 +21,7 @@
 				"$(SolutionDir)stdcshared",
 				"$(ProjectDir)stdc",
 				"$(ProjectDir)",
-				"$(SolutionDir)"
+				""
 			],
 			"defines": [
 				"DEBUG"
@@ -85,6 +85,10 @@
 		},
 		{
 			"path": ".\\stdc\\assert.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\kernel_shared\\disk_info.h",
 			"bootfile": false
 		},
 		{

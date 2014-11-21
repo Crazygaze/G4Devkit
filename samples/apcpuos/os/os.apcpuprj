@@ -49,13 +49,10 @@
 		"testapp2",
 		"utilshared",
 		"sysstats",
-		"filemanager"
+		"filemanager",
+		"filesystem"
 	],
 	"files": [
-		{
-			"path": ".\\extern\\fatfs\\src\\00readme.txt",
-			"bootfile": false
-		},
 		{
 			"path": ".\\README.txt",
 			"bootfile": false
@@ -78,26 +75,6 @@
 		},
 		{
 			"path": ".\\boot\\boot.h",
-			"bootfile": false
-		},
-		{
-			"path": ".\\extern\\fatfs\\src\\diskio.c",
-			"bootfile": false
-		},
-		{
-			"path": ".\\extern\\fatfs\\src\\diskio.h",
-			"bootfile": false
-		},
-		{
-			"path": ".\\extern\\fatfs\\src\\ff.c",
-			"bootfile": false
-		},
-		{
-			"path": ".\\extern\\fatfs\\src\\ff.h",
-			"bootfile": false
-		},
-		{
-			"path": ".\\extern\\fatfs\\src\\ffconf.h",
 			"bootfile": false
 		},
 		{
@@ -166,10 +143,6 @@
 		},
 		{
 			"path": ".\\hw\\hwscreen.h",
-			"bootfile": false
-		},
-		{
-			"path": ".\\extern\\fatfs\\src\\integer.h",
 			"bootfile": false
 		},
 		{

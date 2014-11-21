@@ -9,10 +9,7 @@
 #include "app_txtui.h" // Display shared by both OS and application
 #include "app_diskdrive.h"
 
-#include "stdcshared/string_shared.h"
-
-#include "hw/hwdisk.h"
-#include "ff.h"
+#include "file_system_provider.h"
 
 #define printline(text) txtui_printAtXY(&rootCanvas, 0, text_offset_y++, text)
 #define printfline(text, ...) txtui_printfAtXY(&rootCanvas, 0, text_offset_y++, text, __VA_ARGS__)
@@ -21,7 +18,11 @@ static int text_offset_y = 0;
 
 int file_manager (int proc_num)
 {
-	txtui_clear(&rootCanvas);
+	int res = make_file_system(0);
+	
+	
+
+	/*txtui_clear(&rootCanvas);
 
 	printline("File Manager Initialization...");
 			
@@ -107,7 +108,7 @@ int file_manager (int proc_num)
 	
 	free(file);
 	app_sleep(500);
-	
+	*/
 
 	// Infinite loop to lock the application
 	ThreadMsg msg;

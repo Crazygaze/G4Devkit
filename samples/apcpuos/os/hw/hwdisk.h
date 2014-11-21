@@ -48,9 +48,14 @@ void hw_dkc_dtor(hw_Drv* drv);
 /*
 * Get information aboud disk drive
 */
-u32 hw_dck_getSectorSize(u32 diskNum);
-u32 hw_dck_getSectorCount(u32 diskNum);
-u32 hw_dck_getBlockSize(u32 diskNum);
+
+typedef struct DISK_INFO {
+	u32 sector_size;
+	u32 sector_count;
+	u32 block_size;
+} DISK_INFO;
+
+DISK_INFO hw_dck_getDiskInfo(u32 diskNum);
 
 /*!
  * Reads data from a sector

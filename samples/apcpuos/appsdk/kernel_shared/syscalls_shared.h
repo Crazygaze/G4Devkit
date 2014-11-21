@@ -59,22 +59,14 @@ typedef enum SysCallID {
 	kSysCall_GetScreenXRes,
 	kSysCall_GetScreenYRes,
 	
-	kSysCall_DiskDriveMountDrive,	// FatFS wrapper
-	kSysCall_DiskDriveMakeFAT,	
-	kSysCall_DiskDriveOpenFile,	
-	kSysCall_DiskDriveCloseFile,
-	kSysCall_DiskDriveReadFromFile,
-	kSysCall_DiskDriveWriteToFile,
-	kSysCall_DiskDriveFileSeek,
-	kSysCall_DiskDriveSync,
-	kSysCall_DiskDriveOpenDir,
-	kSysCall_DiskDriveCloseDir,
-	kSysCall_DiskDriveReadDir,
-	kSysCall_DiskDriveMakeDir,
-	kSysCall_DiskDriveDeleteFileOrDir,
-	kSysCall_DiskDriveRenameOrMove,
-	kSysCall_DiskDriveGetFileInfo,
-	kSysCall_DiskDriveGetFreeClustersNum,
+	//
+	// Disk Drive
+	//
+	kSysCall_diskDriveRead,
+	kSysCall_diskDriveWrite,
+	kSysCall_diskDriveSetFlags,
+	kSysCall_diskDriveGetFlags,
+	kSysCall_diskDriveGetInfo,
 	
 	//
 	// Rendering

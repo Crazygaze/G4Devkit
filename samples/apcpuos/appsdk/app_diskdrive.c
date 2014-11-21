@@ -1,82 +1,26 @@
 #include "app_diskdrive.h"
-
-int app_dd_make_fat(const TCHAR * drive)
+	
+void app_dd_read(u32 diskNum, u32 sectorNum, char * data, int size)
 {
-	return app_syscall1(kSysCall_DiskDriveMakeFAT, (int)drive);
+	app_syscall4(kSysCall_diskDriveRead, (u32)diskNum, (u32)sectorNum, (u32)data, (u32)size);
 }
 
-int app_dd_open_file(FIL * fs, const TCHAR * file_name, int mode)
+void app_dd_write(u32 diskNum, u32 sectorNum, const char * data, int size)
 {
-	return app_syscall3(kSysCall_DiskDriveOpenFile, (int)fs, (int)file_name, mode);
+	app_syscall4(kSysCall_diskDriveWrite, (u32)diskNum, (u32)sectorNum, (u32)data, (u32)size);
 }
 
-int app_dd_mount_drive(const TCHAR * drive_id)
+void app_dd_set_flags(u32 diskNum, u32 flags)
 {
-	return app_syscall1(kSysCall_DiskDriveMountDrive, (int)drive_id);
+	app_syscall2(kSysCall_diskDriveSetFlags, (u32)diskNum, (u32)flags);
 }
 
-int app_dd_close_file(FIL * fs)
+int app_dd_get_flags(u32 diskNum)
 {
-	return app_syscall1(kSysCall_DiskDriveCloseFile, (int)fs);
+	return app_syscall1(kSysCall_diskDriveGetFlags, (u32)diskNum);
 }
 
-int app_dd_write_to_file(FIL * fs, const void * buffer, int size, int * byte_written) 
+int app_dd_get_disk_info(u32 diskNum, DISK_INFO * di)
 {
-	return app_syscall4(kSysCall_DiskDriveWriteToFile, (int)fs, (int)buffer, (int)size, (int)byte_written);
+	return app_syscall2(kSysCall_diskDriveGetInfo, (u32)diskNum, (u32)di);
 }
-
-int app_dd_read_from_file(FIL * fs,  void * buffer, int size, int * byte_written) 
-{
-	return app_syscall4(kSysCall_DiskDriveReadFromFile, (int)fs, (int)buffer, (int)size, (int)byte_written);
-}
-
-int app_dd_file_seek(FIL * fs, DWORD offset)
-{
-	return app_syscall2(kSysCall_DiskDriveFileSeek, (int)fs, (int)offset);
-}
-
-int app_dd_sync(FIL * fs)
-{
-	return app_syscall1(kSysCall_DiskDriveSync, (int)fs);
-}
- 
-int app_dd_open_dir(DIR * dir, const TCHAR * dir_name)
-{
-	return app_syscall2(kSysCall_DiskDriveOpenDir, (int)dir, (int)dir_name);
-}
-
-int app_dd_close_dir(DIR * dir)
-{
-	return app_syscall1(kSysCall_DiskDriveCloseDir, (int)dir);
-}
- 
-int app_dd_read_dir(DIR * dir, FILINFO * file_info)
-{
-	return app_syscall2(kSysCall_DiskDriveReadDir, (int)dir, (int)file_info);
-}
- 
-int app_dd_make_dir(const TCHAR * dir_name)
-{
-	return app_syscall1(kSysCall_DiskDriveMakeDir, (int)dir_name);
-}
- 
-int app_dd_delete(const TCHAR * path)
-{
-	return app_syscall1(kSysCall_DiskDriveDeleteFileOrDir, (int)path);
-}
- 
-int app_dd_rename_or_move(const TCHAR * old_name, const TCHAR * new_name)
-{
-	return app_syscall2(kSysCall_DiskDriveRenameOrMove, (int)old_name, (int)new_name);
-}
- 
-int app_dd_get_file_info(const TCHAR * file_name, FILINFO * file_info)
-{
-	return app_syscall2(kSysCall_DiskDriveGetFileInfo, (int)file_name, (int)file_info);
-}
- 
-int app_dd_get_free_clusters_num(const char * drive_number, DWORD * num_of_free_clusters)
-{
-	return app_syscall2(kSysCall_DiskDriveGetFreeClustersNum, (int)drive_number, (int)num_of_free_clusters);
-}
- 
