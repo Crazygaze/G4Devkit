@@ -1,7 +1,7 @@
 #include "file_system_provider.h"
 
 #include <stdlib.h>
-#include "stdcshared_defs.h"
+
 #include "extern/fatfs/src/ff.h"
 #include "extern/fatfs/src/diskio.h"
 
@@ -153,6 +153,14 @@ int make_file_system(int driveNum)
 	return 0;
 }
 
+bool change_drive(int driveNum){
+	if (mount_drive(driveNum) != FR_OK){
+		return FALSE;
+	}
+	
+	return TRUE;
+}
+
 bool is_disk_exist(int driveNum)
 {
 	DSTATUS res = disk_status( driveNum );
@@ -164,6 +172,17 @@ bool is_disk_exist(int driveNum)
 	if (res == STA_NODISK){
 		return FALSE;
 	} 
+	
+	return TRUE;
+}
+
+bool is_file_system_exist()
+{
+	FIL fil;
+	FRESULT res = f_open(&fil, "notexistfile.unexpected", 0);
+	
+	if (res == FR_NO_FILESYSTEM)
+		return FALSE;
 	
 	return TRUE;
 }

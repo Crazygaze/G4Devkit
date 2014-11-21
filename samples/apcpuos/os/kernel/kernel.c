@@ -88,7 +88,7 @@ static bool krn_kybCallback(uint8_t eventtype, uint8_t key, int flags,
 		}
 	});		
 	
-	
+	/*
 	if (eventtype==HW_KYB_EVENT_TYPED)
 	{
 		switch(key)
@@ -111,7 +111,7 @@ static bool krn_kybCallback(uint8_t eventtype, uint8_t key, int flags,
 		break;
 		}
 	}
-	
+	*/	
 			
 	return FALSE;
 }
