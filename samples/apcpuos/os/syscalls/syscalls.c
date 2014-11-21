@@ -407,12 +407,9 @@ void printFResult(char * info, FRESULT value)
 	}
 }
 
-FRESULT diskDriveMount(char * drive_id)
+FRESULT diskDriveMount(const TCHAR * drive_id)
 {
-	/*
-		TODO: need to free memory
-	*/
-	FATFS fs 
+	FATFS fs; 
 	
 	FRESULT res_mount = f_mount(&fs, drive_id, 0);
 	
@@ -424,6 +421,10 @@ FRESULT diskDriveMount(char * drive_id)
 }
 
 void disk_initialize_wait(int drv){
+	/*
+		TODO: fix. it block kernel !!
+	*/
+
 	while (disk_initialize(drv)){
 		prc_putThreadToSleep(krn.interruptedTcb, 250);	
 	};
@@ -433,7 +434,7 @@ bool syscall_diskDriveMountDrive(void)
 {
 	PCB* pcb = krn.interruptedTcb->pcb;
 	int* regs = (int*)krn.interruptedTcb->cpuctx;
-	char * drive_name = (char *)regs[0];
+	const TCHAR * drive_name = (TCHAR *)regs[0];
 
 	if (!check_user_ptr(pcb, kMMUAccess_Read, drive_name, sizeof(*drive_name)))
 		return FALSE;
@@ -449,7 +450,7 @@ bool syscall_diskDriveMakeFAT(void)
 {
 	PCB* pcb = krn.interruptedTcb->pcb;
 	int* regs = (int*)krn.interruptedTcb->cpuctx;
-	char * drive_name = (char *)regs[0];
+	const TCHAR * drive_name = (TCHAR *)regs[0];
 	
 	if (!check_user_ptr(pcb, kMMUAccess_Read, drive_name, sizeof(*drive_name)))
 		return FALSE;
@@ -459,6 +460,9 @@ bool syscall_diskDriveMakeFAT(void)
 	FRESULT res_mount = diskDriveMount(drive_name);
 	if (res_mount != FR_OK){
 		regs[0] = (int) res_mount;
+		
+		prc_giveAccessToKernel(pcb, false);
+		
 		return FALSE;
 	}
 	    
@@ -481,8 +485,8 @@ bool syscall_diskDriveOpenFile(void)
 	int* regs = (int*)krn.interruptedTcb->cpuctx;
 	
 	FIL * fil = (FIL *) regs[0];
-	char * file_name = (char *)regs[1];
-	int flags = (int) regs[2];
+	const TCHAR * file_name = (TCHAR *)regs[1];
+	BYTE flags = (BYTE) regs[2];
 	
 	// Check if the process can write to the address it has given us
 	if (!check_user_ptr(pcb, kMMUAccess_Write, fil, sizeof(*fil)))
@@ -534,9 +538,9 @@ bool syscall_diskDriveReadFromFile(void)
 	PCB* pcb = krn.interruptedTcb->pcb;
 	int* regs = (int*)krn.interruptedTcb->cpuctx;
 	FIL * fil = (FIL *) regs[0];
-	char * buff = (char *) regs[1];
-	int buff_size = regs[2];
-	int * byteWritten = (int *)regs[3];
+	void * buff = (void *) regs[1];
+	UINT buff_size = (UINT)regs[2];
+	UINT * byteWritten = (UINT *)regs[3];
 	
 	// Check if the process can write to the address it has given us
 	if (!check_user_ptr(pcb, kMMUAccess_Write, fil, sizeof(*fil)))
@@ -567,9 +571,9 @@ bool syscall_diskDriveWriteToFile(void)
 	PCB* pcb = krn.interruptedTcb->pcb;
 	int* regs = (int*)krn.interruptedTcb->cpuctx;
 	FIL * fil = (FIL *) regs[0];
-	char * buff = (char *) regs[1];
-	int buff_size = regs[2];
-	int * byteWritten = (int *)regs[3];
+	const void * buff = (void *) regs[1];
+	UINT buff_size = (UINT)regs[2];
+	UINT * byteWritten = (UINT *)regs[3];
 	
 
 	// Check if the process can write to the address it has given us
@@ -598,35 +602,150 @@ bool syscall_diskDriveWriteToFile(void)
 
 bool syscall_diskDriveFileSeek(void)
 {
+	PCB* pcb = krn.interruptedTcb->pcb;
+	int* regs = (int*)krn.interruptedTcb->cpuctx;
+	
+	FIL * fil = (FIL *) regs[0];
+	DWORD offset = (DWORD)regs[1];
+	
+	// Check if the process can write to the address it has given us
+	if (!check_user_ptr(pcb, kMMUAccess_Read, fil, sizeof(*fil)))
+		return FALSE;
+	
+	prc_giveAccessToKernel(pcb, true);
+	disk_initialize_wait(fil->fs->drv);
+	FRESULT res = f_lseek(fil, offset);
+	prc_giveAccessToKernel(pcb, false);
+	
+#if DEBUG_FATFS
+	printFResult("f_lseek", res);	
+#endif	
 
+	regs[0] = (int)res;
+
+	return TRUE;
 }
 
 bool syscall_diskDriveSync(void)
 {
+	PCB* pcb = krn.interruptedTcb->pcb;
+	int* regs = (int*)krn.interruptedTcb->cpuctx;
+	
+	FIL * fil = (FIL *) regs[0];
+	
+	// Check if the process can write to the address it has given us
+	if (!check_user_ptr(pcb, kMMUAccess_Read, fil, sizeof(*fil)))
+		return FALSE;
+	
+	prc_giveAccessToKernel(pcb, true);
+	disk_initialize_wait(fil->fs->drv);
+	FRESULT res = f_sync(fil);
+	prc_giveAccessToKernel(pcb, false);
+	
+#if DEBUG_FATFS
+	printFResult("f_sync", res);	
+#endif	
 
+	regs[0] = (int)res;
+
+	return TRUE;
 }
 
 bool syscall_diskDriveOpenDir(void)
 {
+	PCB* pcb = krn.interruptedTcb->pcb;
+	int* regs = (int*)krn.interruptedTcb->cpuctx;
+	
+	DIR * dir = (DIR *) regs[0];
+	const TCHAR * dir_name = (TCHAR *) regs[1];
+	
+	// Check if the process can write to the address it has given us
+	if (!check_user_ptr(pcb, kMMUAccess_Write, dir, sizeof(*dir)))
+		return FALSE;
+		
+	if (!check_user_ptr(pcb, kMMUAccess_Read, dir_name, sizeof(*dir_name)))
+		return FALSE;
+	
+	prc_giveAccessToKernel(pcb, true);
+	disk_initialize_wait(dir->fs->drv);
+	FRESULT res = f_opendir(dir, dir_name);
+	prc_giveAccessToKernel(pcb, false);
+	
+#if DEBUG_FATFS
+	printFResult("f_opendir", res);	
+#endif	
 
+	regs[0] = (int)res;
+
+	return TRUE;
 }
 
 bool syscall_diskDriveCloseDir(void)
 {
+	PCB* pcb = krn.interruptedTcb->pcb;
+	int* regs = (int*)krn.interruptedTcb->cpuctx;
+	
+	DIR * dir = (DIR *) regs[0];
+	
+	// Check if the process can write to the address it has given us
+	if (!check_user_ptr(pcb, kMMUAccess_Read, dir, sizeof(*dir)))
+		return FALSE;
+	
+	prc_giveAccessToKernel(pcb, true);
+	disk_initialize_wait(dir->fs->drv);
+	FRESULT res = f_closedir(dir);
+	prc_giveAccessToKernel(pcb, false);
+	
+#if DEBUG_FATFS
+	printFResult("f_closedir", res);	
+#endif	
 
+	regs[0] = (int)res;
+
+	return TRUE;
 }
 
 bool syscall_diskDriveReadDir(void)
 {
+	PCB* pcb = krn.interruptedTcb->pcb;
+	int* regs = (int*)krn.interruptedTcb->cpuctx;
+	
+	DIR * dir = (DIR *) regs[0];
+	FILINFO * file_info = (FILINFO *) regs[1];
+	
+	// Check if the process can write to the address it has given us
+	if (!check_user_ptr(pcb, kMMUAccess_Write, dir, sizeof(*dir)))
+		return FALSE;
+		
+	if (!check_user_ptr(pcb, kMMUAccess_Write, file_info, sizeof(*file_info)))
+		return FALSE;
+	
+	prc_giveAccessToKernel(pcb, true);
+	disk_initialize_wait(dir->fs->drv);
+	FRESULT res = f_readdir(dir, file_info);
+	prc_giveAccessToKernel(pcb, false);
+	
+#if DEBUG_FATFS
+	printFResult("f_readdir", res);	
+#endif	
 
+	regs[0] = (int)res;
+
+	return TRUE;
 }
 
 bool syscall_diskDriveMakeDir(void)
 {
+	PCB* pcb = krn.interruptedTcb->pcb;
 	int* regs = (int*)krn.interruptedTcb->cpuctx;
-	char * dir_name = (char *)regs[0];
+	const TCHAR * dir_name = (TCHAR *)regs[0];
 	
+	if (!check_user_ptr(pcb, kMMUAccess_Read, dir_name, sizeof(*dir_name)))
+		return FALSE;
+	
+	prc_giveAccessToKernel(pcb, true);
 	FRESULT res = f_mkdir(dir_name);
+	prc_giveAccessToKernel(pcb, false);
 	
 #if DEBUG_FATFS
 	printFResult("f_mkdir", res);	
@@ -638,37 +757,101 @@ bool syscall_diskDriveMakeDir(void)
 
 bool syscall_diskDriveDeleteFileOrDir(void)
 {
+	PCB* pcb = krn.interruptedTcb->pcb;
+	int* regs = (int*)krn.interruptedTcb->cpuctx;
+	const TCHAR * dir_name = (TCHAR *)regs[0];
+	
+	if (!check_user_ptr(pcb, kMMUAccess_Read, dir_name, sizeof(*dir_name)))
+		return FALSE;
+	
+	prc_giveAccessToKernel(pcb, true);
+	FRESULT res = f_unlink(dir_name);
+	prc_giveAccessToKernel(pcb, false);
+	
+#if DEBUG_FATFS
+	printFResult("f_unlink", res);	
+#endif
 
+	regs[0] = (int)res;
+	return TRUE;
 }
 
 bool syscall_diskDriveRenameOrMove(void)
 {
+	PCB* pcb = krn.interruptedTcb->pcb;
+	int* regs = (int*)krn.interruptedTcb->cpuctx;
+	const TCHAR * old_name = (TCHAR *)regs[0];
+	const TCHAR * new_name = (TCHAR *)regs[1];
+	
+	if (!check_user_ptr(pcb, kMMUAccess_Read, old_name, sizeof(*old_name)))
+		return FALSE;
+	
+	if (!check_user_ptr(pcb, kMMUAccess_Read, new_name, sizeof(*new_name)))
+		return FALSE;
+	
+	prc_giveAccessToKernel(pcb, true);
+	FRESULT res = f_rename(old_name, new_name);
+	prc_giveAccessToKernel(pcb, false);
+	
+#if DEBUG_FATFS
+	printFResult("f_rename", res);	
+#endif
 
+	regs[0] = (int)res;
+	return TRUE;
 }
 
 bool syscall_diskDriveGetFileInfo(void)
 {
+	PCB* pcb = krn.interruptedTcb->pcb;
+	int* regs = (int*)krn.interruptedTcb->cpuctx;
+	const TCHAR * file_name  = (TCHAR *)regs[0];
+	FILINFO * file_info = (FILINFO *)regs[1];
+	
+	if (!check_user_ptr(pcb, kMMUAccess_Read, file_name, sizeof(*file_name)))
+		return FALSE;
+	
+	if (!check_user_ptr(pcb, kMMUAccess_Write, file_info, sizeof(*file_info)))
+		return FALSE;
+	
+	prc_giveAccessToKernel(pcb, true);
+	FRESULT res = f_stat(file_name, file_info);
+	prc_giveAccessToKernel(pcb, false);
+	
+#if DEBUG_FATFS
+	printFResult("f_stat", res);	
+#endif
 
-}
-
-bool syscall_diskDriveChangeDir(void)
-{
-
-}
-
-bool syscall_diskDriveChangeDrive(void)
-{
-
-}
- 
-bool syscall_diskDriveGetCurrentDir(void)
-{
-
+	regs[0] = (int)res;
+	return TRUE;
 }
 
 bool syscall_diskDriveGetFreeClustersNum(void)
 {
+	PCB* pcb = krn.interruptedTcb->pcb;
+	int* regs = (int*)krn.interruptedTcb->cpuctx;
+	const TCHAR * drive_number = (TCHAR *) regs[0];
+	DWORD * num_of_free_clusters = (DWORD *) regs[1];
+	
+	if (!check_user_ptr(pcb, kMMUAccess_Read, drive_number, sizeof(*drive_number)))
+		return FALSE;
+		
+	if (!check_user_ptr(pcb, kMMUAccess_Write, num_of_free_clusters, sizeof(*num_of_free_clusters)))
+		return FALSE;	
+	
+	prc_giveAccessToKernel(pcb, true);
+	FATFS * fatfs = malloc(sizeof(FATFS));
+	FATFS ** pp_ffs = & fatfs;
+	FRESULT res = f_getfree(drive_number, num_of_free_clusters, pp_ffs);
+	free(fatfs);
+	prc_giveAccessToKernel(pcb, false);
+	
+#if DEBUG_FATFS
+	printFResult("f_getcwd", res);	
+#endif
 
+	regs[0] = (int)res;
+	return TRUE;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -828,9 +1011,6 @@ krn_syscallFunc krn_syscalls[kSysCall_Max] =
 	syscall_diskDriveDeleteFileOrDir,
 	syscall_diskDriveRenameOrMove,
 	syscall_diskDriveGetFileInfo,
-	syscall_diskDriveChangeDir,
-	syscall_diskDriveChangeDrive, 
-	syscall_diskDriveGetCurrentDir,
 	syscall_diskDriveGetFreeClustersNum,
 
 	//
