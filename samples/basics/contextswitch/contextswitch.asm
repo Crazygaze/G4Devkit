@@ -115,6 +115,7 @@ _startup:
 	; NOTE: We never get here, unless some of the other contexts switch to us
 	; again, which are not doing in this sample
 
+
 ;
 ; _ctx1/_ctx2 looping
 ;
@@ -162,5 +163,5 @@ _contextLoop:
 	.zero 1024
 	
 	_sampleName:
-	.string "Context Switching Sample"
+	.string "Context Switching Sample: Shows two contexts sharing execution"
 	
