@@ -99,7 +99,8 @@ void draw_window(const char * title, int x, int y, int width, int height)
 	txtui_fillArea(&rootCanvas, x+1, y+1, width-2, height-2, ' ');
 }
 
-void print_dir_entries(const char * path){
+void print_dir_entries(const char * path)
+{
 	int size;
 	FILE * files = get_subdirs(path, &size);
 	
@@ -110,6 +111,17 @@ void print_dir_entries(const char * path){
 		LOG ("FILE %d:", i, files[i].name);
 		txtui_printfAtXY(&rootCanvas, 2, 3+i, "%c %s", (files[i].type==T_FILE)?'f':'d', files[i].name);
 	}
+}
+
+void printHelp()
+{
+	txtui_printAtXY(&rootCanvas, rootCanvas.width/2 + 18, 5, "HELP:");
+	txtui_printAtXY(&rootCanvas, rootCanvas.width/2 + 3, 6, "MKDIR name - create new directory");
+	txtui_printAtXY(&rootCanvas, rootCanvas.width/2 + 3, 7, "                  (8 symbols max)");
+	txtui_printAtXY(&rootCanvas, rootCanvas.width/2 + 3, 8, "UNLINK name - remove dir or file ");
+	txtui_printAtXY(&rootCanvas, rootCanvas.width/2 + 3, 9, "CD name - change dir             ");
+	txtui_printAtXY(&rootCanvas, rootCanvas.width/2 + 3, 10, "UP - return to the previous dire");
+	txtui_printAtXY(&rootCanvas, rootCanvas.width/2 + 3, 11, "                 ctory (like ..)");
 }
 
 int file_manager (int proc_num)
@@ -124,7 +136,9 @@ int file_manager (int proc_num)
 		draw_window(drive_name, 0, 1, rootCanvas.width/2, rootCanvas.height-3);
 		
 		draw_window("Command Window", 0, rootCanvas.height-2, rootCanvas.width, rootCanvas.height);
-				
+		
+		printHelp();
+		
 		print_dir_entries("/");
 	
 	
