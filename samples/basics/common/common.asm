@@ -3,6 +3,8 @@
 ;								Code
 ;*******************************************************************************
 
+.text
+
 ; 
 ; Initializes some things needed by the other functions
 ;
@@ -16,6 +18,22 @@ _initCommon:
 	mov pc, lr
 
 ;
+; Returns the pointer to a given screen position
+; In:
+;	r0 - x
+;	r1 - y
+; Out:
+;	r0 - Pointer to the screen position
+_calculateScreenPosition:
+	; pos = screenBuffer + (y*160 + x*2)
+	smul r0, r0, 2
+	smul r1, r1, 160
+	ldr ip, [_screenBuffer]
+	add ip, ip, r0
+	add r0, ip, r1 ; final address
+	mov pc, lr
+	
+;
 ; Small function to write a character to the screen
 ; In:
 ;	r0 - x
@@ -23,21 +41,36 @@ _initCommon:
 ; 	r2 - character to show
 public _printCharacter
 _printCharacter:
-	; calculate screen position
-	; pos = screenBuffer + (y*160 + x*2)
-	smul r0, r0, 2
-	smul r1, r1, 160
-	ldr ip, [_screenBuffer]
-	add ip, ip, r0
-	add ip, ip, r1 ; final address
-	
+	push {lr}
+	bl _calculateScreenPosition
 	; print the character
 	or r2, r2, 0x0F00 ; Add colour information to the character
-	struh [ip], r2 ; print character as half word (1 byte for colour, 1 for the character)
-	
-	; Return from the function
-	mov pc, lr
+	; print character as half word (1 byte for colour, 1 for the character)
+	struh [r0], r2
+	pop {pc}
 
+;
+; Prints a string at the specified screen position
+; No checks are made to make sure if the screen falls outside the screen
+; In
+;	r0 - x
+;	r1 - y
+;	r2 - pointer to a null terminated string
+public _printString
+_printString:
+	push {r4,r5,lr}
+	bl _calculateScreenPosition
+	ldrub r4, [r2] ; Get character
+	_printString_Loop:
+		or r5, r4, 0x0F00; Add colour information
+		struh [r0], r5 ; Write to screen
+		add r0, r0, 2 ; Move screen position
+		; Increment string pointer, and check for null character
+		add r2, r2, 1
+		ldrub r4, [r2] ; Get character
+		cmp r4,0
+		bne _printString_Loop
+	pop {r4,r5,pc}
 
 ;
 ; Returns the system running time in seconds (How long it's been running since
@@ -61,7 +94,7 @@ _getRunningTimeSeconds:
 ;
 public _pause
 _pause:
-	mov ip, lr
+	push {lr}
 	
 	;
 	; Convert the parameter to seconds
@@ -80,11 +113,11 @@ _pause:
 	fadd f1, f1, f0 ; finalTime = f1 + getRunningTimeSeconds()
 	
 	_pause_loop:
-	bl _getRunningTimeSeconds
-	fcmp f0, f1
-	blt _pause_loop ; If current time is lower than our required time, loop
+		bl _getRunningTimeSeconds
+		fcmp f0, f1
+		blt _pause_loop ; If current time is lower than our required time, loop
 		
-	mov pc, ip
+	pop {pc}
 
 ;*******************************************************************************
 ;								Data

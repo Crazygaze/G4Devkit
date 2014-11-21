@@ -10,7 +10,7 @@
 ;	named here as label _startup
 ; - What _startup does
 ;		- Get and save screen buffer address so we can use it later
-;		- Setup the contexts _ctx1 and _ctx2
+;		- Setup the contexts _ctx1 and _ctx2, including a small stack for each
 ;		- Change executiong to _ctx1
 ;		- Execution keeps switching between _ctx1 and _ctx2
 ;
@@ -22,8 +22,7 @@
 ;		- Change execution to the other context
 ;		- Once the other context passes execution back, loop
 ;
-; To avoid requiring a stack, everything _ctx1 and _ctx2 need to know is kept
-; in registers, which the main context setups. _ctx1/_ctx2 state is setup as
+; Some state is passed to the _ctx1 and _ctx2 in the following registers:
 ;	r4 - Screen column where to display the character
 ;	r5 - Screen row where to display the character
 ;	r6 - Character to show
@@ -52,6 +51,7 @@ _ctx2:
 ; Things we need from the common static library
 extern _initCommon
 extern _printCharacter
+extern _printString
 extern _pause
 
 ;*******************************************************************************
@@ -62,7 +62,13 @@ public _startup
 _startup:
 
 	bl _initCommon
-
+	
+	; Print sample name
+	mov r0, 0
+	mov r1, 0
+	lea r2, [_sampleName]
+	bl _printString
+	
 	;
 	; Setup the contexts
 	;
@@ -71,8 +77,8 @@ _startup:
 	str [_ctx2 + 4*4], 0
 	
 	; Set screen rows the contexts will write to (kept in the r5 register)
-	str [_ctx1 + 5*4], 0
-	str [_ctx2 + 5*4], 1
+	str [_ctx1 + 5*4], 1
+	str [_ctx2 + 5*4], 2
 
 	; Set character to show (kept in register r6)
 	str [_ctx1 + 6*4], 49
@@ -89,6 +95,12 @@ _startup:
 	str [_ctx1 + 15*4], r0 ; Set context's PC register
 	str [_ctx2 + 15*4], r0 ; Set context's PC register
 	
+	; Setup a small stack for each context, so we can call functions
+	lea r0, [_ctx1Stack+1024]
+	str [_ctx1 + 13*4], r0
+	lea r0, [_ctx2Stack+1024]
+	str [_ctx2 + 13*4], r0
+
 	; Set the contexts flags registers
 	; This is necessary, so the contexts have proper permissions to execute
 	; ctxswitch, since it's a previleged instruction.
@@ -114,7 +126,7 @@ _contextLoop:
 	mov r2, 32; a space, to clear
 	bl _printCharacter
 	
-	; Increment screen column
+	; Increment screen column, wrapping around at the end
 	; r4 = (r4+1) % 80
 	add r4, r4, 1
 	sdiv r4:ip, r4, 80
@@ -142,4 +154,13 @@ _contextLoop:
 .data
 	_currentCtx:
 	.word 0
+	
+	; These are used as small stacks for the test contexts
+	_ctx1Stack:
+	.zero 1024
+	_ctx2Stack:
+	.zero 1024
+	
+	_sampleName:
+	.string "Context Switching Sample"
 	
