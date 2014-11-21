@@ -197,6 +197,16 @@ u32 hw_dck_getBlockSize(u32 diskNum)
 	return dsk->sectorSize;
 }
 
+DISK_INFO hw_dck_getDiskInfo(u32 diskNum)
+{
+	DISK_INFO di;
+	di.sector_size = hw_dck_getSectorSize(diskNum);
+	di.sector_count = hw_dck_getSectorCount(diskNum);
+	di.block_size = hw_dck_getBlockSize(diskNum);
+	
+	return di;
+}
+
 /*			
 * 	Read/Write
 */

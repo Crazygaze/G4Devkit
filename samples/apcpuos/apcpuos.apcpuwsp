@@ -10,6 +10,7 @@
 		".\\testapp2\\testapp2.apcpuprj",
 		".\\utilshared\\utilshared.apcpuprj",
 		".\\sysstats\\sysstats.apcpuprj",
-		".\\filemanager\\filemanager.apcpuprj"
+		".\\filemanager\\filemanager.apcpuprj",
+		".\\filesystem\\filesystem.apcpuprj"
 	]
 }
