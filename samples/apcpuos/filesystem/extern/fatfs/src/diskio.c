@@ -28,9 +28,9 @@
 #define DISKIO_FLAG_INITIALIZED (1 << (HW_DKC_FLAG_FIRSTCUSTOMBIT))
 
 DISK_INFO get_disk_info(int diskNum){
-	DISK_INFO * di = malloc(sizeof(DISK_INFO));
-	app_dd_get_disk_info(diskNum, di);
-	return *di;
+	DISK_INFO  di;// = malloc(sizeof(DISK_INFO));
+	app_dd_get_disk_info(diskNum, &di);
+	return di;
 }
 
 static int get_status(int diskNum)
