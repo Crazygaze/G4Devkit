@@ -74,9 +74,6 @@ typedef enum SysCallID {
 	kSysCall_DiskDriveDeleteFileOrDir,
 	kSysCall_DiskDriveRenameOrMove,
 	kSysCall_DiskDriveGetFileInfo,
-	kSysCall_DiskDriveChangeDir,
-	kSysCall_DiskDriveChangeDrive, 
-	kSysCall_DiskDriveGetCurrentDir,
 	kSysCall_DiskDriveGetFreeClustersNum,
 	
 	//
