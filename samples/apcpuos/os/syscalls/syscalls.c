@@ -411,7 +411,7 @@ bool syscall_diskDriveGetInfo(void)
 		return FALSE;
 	
 	DISK_INFO temp = hw_dck_getDiskInfo(diskNum);
-	
+	disk_info->sector_size = 0;
 	*((DISK_INFO*)regs[1]) = temp;
 		
 	regs[0] = 0;
