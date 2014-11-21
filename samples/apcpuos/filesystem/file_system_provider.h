@@ -5,4 +5,6 @@
 
 int make_file_system(int driveNum);
 
+bool is_disk_exist(int driveNum);
+
 #endif

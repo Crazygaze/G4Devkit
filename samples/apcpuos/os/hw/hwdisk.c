@@ -269,7 +269,7 @@ void hw_dkc_write(u32 diskNum, u32 sectorNum, const char* data, int size)
 u32 hw_dkc_getFlags(u32 diskNum)
 {
 	hw_dkc_Disk* dsk = hw_dkc_getDisk(diskNum);
-	kernel_check(hw_dkc_canWrite(dsk));
+	//kernel_check(hw_dkc_canWrite(dsk));
 	return dsk->status;
 }
 
