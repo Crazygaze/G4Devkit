@@ -348,7 +348,7 @@ bool syscall_diskDriveRead(void)
 		return FALSE;
 	
 	prc_giveAccessToKernel(pcb, true);
-	hw_dkc_read(diskNum, sectorNum, data, size);
+	hw_dkc_read_sync(diskNum, sectorNum, data, size);
 	prc_giveAccessToKernel(pcb, false);
 	
 	return TRUE;
@@ -368,7 +368,7 @@ bool syscall_diskDriveWrite(void)
 		return FALSE;
 	
 	prc_giveAccessToKernel(pcb, true);
-	hw_dkc_write(diskNum, sectorNum, data, size);
+	hw_dkc_write_sync(diskNum, sectorNum, data, size);
 	prc_giveAccessToKernel(pcb, false);
 	
 	return TRUE;
@@ -410,9 +410,9 @@ bool syscall_diskDriveGetInfo(void)
 	if (!check_user_ptr(pcb, kMMUAccess_Write, disk_info, sizeof(*disk_info)))
 		return FALSE;
 	
-	DISK_INFO temp = hw_dck_getDiskInfo(diskNum);
-	disk_info->sector_size = 0;
-	*((DISK_INFO*)regs[1]) = temp;
+	prc_giveAccessToKernel(pcb, true);
+	*disk_info = hw_dck_getDiskInfo(diskNum);
+	prc_giveAccessToKernel(pcb, false);
 		
 	regs[0] = 0;
 	return TRUE;

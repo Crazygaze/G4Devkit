@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "stdcshared_defs.h"
 #include "extern/fatfs/src/ff.h"
+#include "extern/fatfs/src/diskio.h"
 
 #define DEBUG_FATFS 1
 
@@ -75,11 +76,50 @@ void printFResult(char * info, FRESULT value)
 	}
 }
 
+void printDStatus(char * info, DSTATUS value){
+	switch (value){
+		case STA_NOINIT:
+			LOG ("%s: STA_NOINIT", info);
+			break;
+		case STA_NODISK:
+			LOG ("%s: STA_NODISK", info);
+			break;
+		case STA_PROTECT:
+			LOG ("%s: STA_PROTECT", info);
+			break;
+		default:	
+			LOG ("%s: unexpected return value", info);	
+			break;
+	}
+}
 
+
+void printDResult(char * info, DRESULT value){
+	switch (value){
+		case RES_OK:
+			LOG ("%s: RES_OK", info);
+			break;
+		case RES_ERROR:
+			LOG ("%s: RES_ERROR", info);
+			break;
+		case RES_WRPRT:
+			LOG ("%s: RES_WRPRT", info);
+			break;
+		case RES_NOTRDY:
+			LOG ("%s: RES_NOTRDY", info);
+			break;
+		case RES_PARERR:
+			LOG ("%s: RES_PARERR", info);
+			break;
+		default:	
+			LOG ("%s: unexpected return value", info);	
+			break;
+	}
+}
 
 int mount_drive(int driveNum)
 {
-	FATFS fs;// = malloc(sizeof(FATFS));
+	FATFS fs;
 	
 	char drive_name[2];
 	drive_name[0] = (char)driveNum;
@@ -87,7 +127,6 @@ int mount_drive(int driveNum)
 	
 	FRESULT res = f_mount(&fs, "0", 0);
 	
-	//free (fs);
 #ifdef DEBUG_FATFS
 	printFResult ("f_mount", res);
 #endif
@@ -112,4 +151,19 @@ int make_file_system(int driveNum)
 #endif
 
 	return 0;
+}
+
+bool is_disk_exist(int driveNum)
+{
+	DSTATUS res = disk_status( driveNum );
+	
+#ifdef DEBUG_FATFS
+	printDStatus("disk_status", res);
+#endif
+
+	if (res == STA_NODISK){
+		return FALSE;
+	} 
+	
+	return TRUE;
 }
