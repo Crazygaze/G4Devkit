@@ -19,8 +19,9 @@
 			"name": "Debug",
 			"includePaths": [
 				"$(SolutionDir)appsdk",
+				"$(SolutionDir)appsdk\/stdc",
 				"$(SolutionDir)stdcshared",
-				"$(SolutionDir)appsdk\/stdc"
+				"$(ProjectDir)"
 			],
 			"defines": [
 				"DEBUG"
@@ -74,6 +75,14 @@
 		},
 		{
 			"path": ".\\extern\\fatfs\\src\\integer.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\logging\\logging.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\logging\\logging.h",
 			"bootfile": false
 		}
 	]

@@ -10,7 +10,6 @@
 #include "diskio.h"		/* FatFs lower layer API */
 #include "app_diskdrive.h"
 
-#include "stdlib.h"
 
 /*-----------------------------------------------------------------------*/
 /* Get Drive Status                                                      */

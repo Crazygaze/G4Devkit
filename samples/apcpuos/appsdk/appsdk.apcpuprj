@@ -19,9 +19,10 @@
 			"name": "Debug",
 			"includePaths": [
 				"$(SolutionDir)stdcshared",
+				"$(SolutionDir)filesystem",
 				"$(ProjectDir)stdc",
 				"$(ProjectDir)",
-				""
+				"$(SolutionDir)"
 			],
 			"defines": [
 				"DEBUG"
