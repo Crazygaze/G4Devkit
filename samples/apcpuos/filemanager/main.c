@@ -102,7 +102,7 @@ void draw_window(const char * title, int x, int y, int width, int height)
 void print_dir_entries(const char * path)
 {
 	int size;
-	FILE * files = get_subdirs(path, &size);
+	FILEDEPRECATED * files = get_subdirs(path, &size);
 	
 	txtui_fillArea(&rootCanvas, 1, 2, rootCanvas.width/2-2, rootCanvas.height-3-2, ' ');
 	
@@ -246,7 +246,7 @@ int file_manager (int proc_num)
 					txtui_printAtXY(&rootCanvas, 1, rootCanvas.height-1, command);
 					break;
 				case MSG_QUIT:
-					/* TODO: */
+					
 					break;
 				
 				case MSG_TIMER:
@@ -266,5 +266,6 @@ int file_manager (int proc_num)
 			}
 		}
 	}
+	
 	return EXIT_SUCCESS;
 }

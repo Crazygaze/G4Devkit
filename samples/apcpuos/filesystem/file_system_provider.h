@@ -1,32 +1,34 @@
 #ifndef _FILE_SYSTEM_PROVIDER_
 #define _FILE_SYSTEM_PROVIDER_
 
-#include "kernel_shared/disk_info.h"
-#include "stdcshared_defs.h"
-#include <stdlib.h>
+#include "logging/logging.h"
+#include "stddef_shared.h"
 
-#include "extern/fatfs/src/ff.h"
-#include "extern/fatfs/src/diskio.h"
-
-bool make_file_system(int driveNum);
-
-bool is_disk_exist(int driveNum);
-bool is_dir_exist(const char * path);
 bool change_drive(int driveNum);
-bool is_file_system_exist();
+
+bool open_file(FIL * file, const char * path, int mode, bool append);
+bool close_file(FIL * file);
+
+bool read_file(FIL * file, char * buf, int btr, int * br);
+bool write_file(FIL * file, const char * buf, int btw, int * bw);
 
 typedef enum FILE_TYPE{
-	T_FILE = 0, 
-	T_DIR
+    T_FILE = 0, 
+    T_DIR
 } FILE_TYPE;
 
-typedef struct FILE{
-	char name[20];
-	FILE_TYPE type;
-} FILE;
+typedef struct FILEDEPRECATED{
+    char name[20];
+    FILE_TYPE type;
+} FILEDEPRECATED;
 
-FILE * get_subdirs(const char * path, int * size);
+
+bool is_disk_exist(int driveNum);
+bool is_file_system_exist();
+bool is_dir_exist(const char * path);
+bool make_file_system(int driveNum);
 bool make_dir(const char * dir_name);
 bool unlink(const char * link);
+FILEDEPRECATED * get_subdirs(const char * path, int * size);
 
 #endif
