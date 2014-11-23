@@ -154,6 +154,7 @@ static void hw_dkc_irqHandler(u16 reason, u32 data1, u32 data2)
 static bool hw_dkc_query(u32 diskNum)
 {
 	hw_dkc_Disk* dsk = hw_dkc_getDisk(diskNum);
+	u32 custFlag = dsk->status & ~HW_DKC_INTERNAL_FLAGS;
 	memset(dsk, 0, sizeof(*dsk));		
 
 	hw_HwiData hwi;
@@ -164,7 +165,7 @@ static bool hw_dkc_query(u32 diskNum)
 	if (err==HW_DKC_ERROR_NOMEDIA) {
 		return FALSE;
 	} else {
-		dsk->status = hwi.regs[1];
+		dsk->status = hwi.regs[1] | custFlag;
 		hw_dkc_setFlag(dsk, HW_DKC_FLAG_PRESENT);
 		dsk->numSectors = hwi.regs[2];
 		dsk->sectorSize = hwi.regs[3];
@@ -269,6 +270,9 @@ void hw_dkc_write(u32 diskNum, u32 sectorNum, const char* data, int size)
 u32 hw_dkc_getFlags(u32 diskNum)
 {
 	hw_dkc_Disk* dsk = hw_dkc_getDisk(diskNum);
+	/*
+	 *  TODO: commented, because need to check unplugged devices.
+	 */
 	//kernel_check(hw_dkc_canWrite(dsk));
 	return dsk->status;
 }
