@@ -25,8 +25,6 @@ static int text_offset_y = 0;
 static int mounted_drive = -1;
 static bool cursor_blink = false;
 static int cursor_pos = 1;
-static char path[MAX_PATH_LENGHT];
-
 
 void printHelp()
 {
@@ -111,10 +109,27 @@ bool initialization()
 	return TRUE;
 } 
 
-void print_dir_entries(const char * path)
-{
-	LOG ("PATH: %s", path);
+static int items_on_screen = 0;
+static int selected_index = 0;
+static char selected_item[14];
+static FS_ITEM items[32];
 
+void draw_item(FS_ITEM item, bool selected, int ypos)
+{
+	if (selected){
+		txtui_setColour(&rootCanvas, kTXTCLR_WHITE, kTXTCLR_BLACK);
+		memset(selected_item, 0, 14*sizeof(char));
+		memcpy(selected_item, item.path, strlen(item.path));
+	} else {
+		txtui_setColour(&rootCanvas, kTXTCLR_BLACK, kTXTCLR_WHITE);
+	}	
+
+	txtui_printfAtXY(&rootCanvas, 2, 4+ypos, "%c   %s", (item.type==T_FILE)?'f':'d', item.path);
+	txtui_printfAtXY(&rootCanvas, 15, 4+ypos, "%d", item.size);
+}
+
+void print_dir_entries(const char * path, bool redraw)
+{
 	txtui_fillArea(&rootCanvas, 1, 2, rootCanvas.width/2-2, rootCanvas.height-3-2, ' ');
 	
 	txtui_setColour(&rootCanvas, kTXTCLR_BRIGHT_GREEN, kTXTCLR_WHITE);
@@ -130,19 +145,25 @@ void print_dir_entries(const char * path)
 	
 	txtui_setColour(&rootCanvas, kTXTCLR_BLACK, kTXTCLR_WHITE);
 	
-	DIRECTORY * dir = opendir(path);
-	
-	if (dir){
-		int i = 0;
-		FS_ITEM item;
-		while (readdir(dir, &item)){
-			txtui_printfAtXY(&rootCanvas, 2, 4+i, "%c   %s", (item.type==T_FILE)?'f':'d', item.path);
-			txtui_printfAtXY(&rootCanvas, 15, 4+i, "%d", item.size);
-			
-			i++;
-		}
+	if (redraw){
+		DIRECTORY * dir = opendir(path);
 		
-		closedir(dir);
+		if (dir){
+			int i = 0;
+			FS_ITEM item;
+			while (readdir(dir, &item)){
+				draw_item(item, i == selected_index, i);
+				
+				items[i++] = item;
+			}
+			items_on_screen = i;
+			
+			closedir(dir);
+		}
+	} else {
+		for (int i = 0; i < items_on_screen; i++){
+			draw_item(items[i], i == selected_index, i);
+		}
 	}
 }
 
@@ -162,7 +183,8 @@ int parse_command(const char * command, char * fist, char * second)
 			
 			memcpy(fist, command, (space_pos)*sizeof(char));
 			memcpy(second, &command[space_pos + 1], strlen(command) - space_pos - 1);
-						
+					
+			LOG(":LIFEJOISDJF %s %s", command, second);
 			return 1;
 		}	
 	}
@@ -172,9 +194,42 @@ int parse_command(const char * command, char * fist, char * second)
 	return 0;
 }
 
+void upToParrentDir(char * path)
+{
+	selected_index = 0;
+
+	if (strlen(path) > 1){
+		for (int i = strlen(path); i >= 0; i--){
+			if (path[i] == '/'){
+				memset(&path[i], 0, strlen(path)-i);
+				break;
+			}
+		}
+		print_dir_entries(path, TRUE);
+	}
+}
+
+void changeDir(char * path, char * next_dir)
+{
+	LOG("NEXT DIR: %s", next_dir);
+	char tmp_buf[128];
+	sprintf(tmp_buf, "%s/%s", path, next_dir);
+	
+	if (is_dir_exist(tmp_buf))
+		sprintf(&path[strlen(path)], "/%s", next_dir);
+		
+	selected_index = 0;	
+	
+	print_dir_entries(path, TRUE);
+}
+
 int file_manager (int proc_num)
 {
+	static char path[MAX_PATH_LENGHT];
 	char command[MAX_COMMAND_LENGHT];
+	
+	memset(path, 0, MAX_PATH_LENGHT*sizeof(char));
+	memset(command, 0, MAX_PATH_LENGHT*sizeof(char));
 
 	if ( initialization() == FALSE){
 		printline("Drive mounting FAILED.");	
@@ -189,7 +244,7 @@ int file_manager (int proc_num)
 		
 		printHelp();
 		
-		print_dir_entries("/");
+		print_dir_entries("/", TRUE);
 	
 	
 		app_setTimer(1, 500, true);
@@ -219,7 +274,7 @@ int file_manager (int proc_num)
 									sprintf(tmp_buf, "%s/%s", path, str_argument);
 									
 									make_dir(tmp_buf);
-									print_dir_entries(path);
+									print_dir_entries(path, TRUE);
 								}
 								
 								if (strcmp(str_command, "UNLINK") == 0){
@@ -227,36 +282,18 @@ int file_manager (int proc_num)
 									sprintf(tmp_buf, "%s/%s", path, str_argument);
 									
 									unlink(tmp_buf);
-									print_dir_entries(path);
+									print_dir_entries(path, TRUE);
 								}
 								
 								if (strcmp(str_command, "CD") == 0){
-									char tmp_buf[128];
-									sprintf(tmp_buf, "%s/%s", path, str_argument);
-									
-									if (is_dir_exist(tmp_buf))
-										sprintf(&path[strlen(path)], "/%s", str_argument);
-									
-									
-									print_dir_entries(path);
+									changeDir(path, str_argument);
 								}
 							} 
 							
 							// found valid command format "cmd"
 							if (args_num == 0){
 								if (strcmp(str_command, "UP") == 0){
-									if (strlen(path) > 1){
-										for (int i = strlen(path); i > 0; i--){
-											if (path[i] != '/'){
-												path[i] = 0;
-												continue;
-											}
-																						
-											path[i] = 0;
-											break;
-										}
-										print_dir_entries(path);
-									}
+									upToParrentDir(path);
 								}
 							}
 							
@@ -264,16 +301,36 @@ int file_manager (int proc_num)
 							cursor_pos = 1;
 							
 						}else{	// enter to subdir
-							
+							changeDir(path, selected_item);
 						}
 					}
 					
-					if (msg.param1 == KEY_BACKSPACE && cursor_pos > 1) {
-						command[strlen(command)-1] = 0;
-						cursor_pos--;
+					if (msg.param1 == KEY_BACKSPACE){
+						if (cursor_pos > 1) {		
+							command[strlen(command)-1] = 0;
+							cursor_pos--;
+						} else {	// Up to parent dir
+							upToParrentDir(path);
+						}
 					}
 					
-					if (msg.param1 >= KEY_ASCII_FIRST && msg.param1 <= KEY_ASCII_LAST){
+					if (msg.param1 == KEY_UP){
+						if (selected_index > 0)
+							selected_index--;
+						print_dir_entries(path, FALSE);
+					}
+					
+					if (msg.param1 == KEY_DOWN){
+						if (selected_index < items_on_screen - 1)
+							selected_index++;
+						print_dir_entries(path, FALSE);
+					}					
+				
+					
+					if ((msg.param1 >= '0' && msg.param1 <= '9') 
+						|| (msg.param1 >= 'a' && msg.param1 <= 'z')
+						|| (msg.param1 >= 'A' && msg.param1 <= 'Z')
+						|| (msg.param1 == ' ')){		
 						command[cursor_pos-1] = msg.param1;
 						cursor_pos++;
 					}				
@@ -298,8 +355,6 @@ int file_manager (int proc_num)
 				case MSG_KEY_RELEASED:
 					//sysstats_procesKeyRelease(&state, &msg);
 					break;
-				
-				//app_sleep(250);
 			}
 		}
 	}
