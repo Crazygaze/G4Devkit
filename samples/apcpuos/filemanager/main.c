@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <dirent.h>
 
 #include "app_process.h" // Process API shared by both OS and application
 #include "app_txtui.h" // Display shared by both OS and application
@@ -101,16 +102,21 @@ void draw_window(const char * title, int x, int y, int width, int height)
 
 void print_dir_entries(const char * path)
 {
-	int size;
-	FILEDEPRECATED * files = get_subdirs(path, &size);
-	
 	txtui_fillArea(&rootCanvas, 1, 2, rootCanvas.width/2-2, rootCanvas.height-3-2, ' ');
-	
 	txtui_printAtXY(&rootCanvas, 1, 2, path);
-	for (int i = 0; i < size; i++){
-		LOG ("FILE %d:", i, files[i].name);
-		txtui_printfAtXY(&rootCanvas, 2, 3+i, "%c %s", (files[i].type==T_FILE)?'f':'d', files[i].name);
+	
+	DIRECTORY * dir = opendir(path);
+	
+	int i = 0;
+	FS_ITEM item;
+	while (readdir(dir, &item)){
+		txtui_printfAtXY(&rootCanvas, 2, 3+i, "%c %s", (item.type==T_FILE)?'f':'d', item.path);
+		
+		memset(&item, 0, sizeof(FS_ITEM));
+		i++;
 	}
+	
+	closedir(dir);
 }
 
 void printHelp()

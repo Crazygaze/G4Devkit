@@ -89,6 +89,14 @@
 			"bootfile": false
 		},
 		{
+			"path": ".\\stdc\\dirent.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stdc\\dirent.h",
+			"bootfile": false
+		},
+		{
 			"path": ".\\kernel_shared\\disk_info.h",
 			"bootfile": false
 		},

@@ -11,6 +11,10 @@
 
 static int fs_mounted_drive = -1;
 
+/*
+ *	Working with files 
+ */
+
 bool open_file(FIL * file, const char * path, int mode, bool append)
 {
 	if (append == TRUE){
@@ -23,7 +27,6 @@ bool open_file(FIL * file, const char * path, int mode, bool append)
 		}
 	}
 
-	disk_initialize(fs_mounted_drive);
 	FRESULT res = f_open(file, path, mode);
 	
 #ifdef DEBUG_FATFS
@@ -46,7 +49,6 @@ bool open_file(FIL * file, const char * path, int mode, bool append)
 
 bool close_file(FIL * file)
 {
-	disk_initialize(fs_mounted_drive);
 	FRESULT res = f_close(file);
 	
 #ifdef DEBUG_FATFS
@@ -58,7 +60,6 @@ bool close_file(FIL * file)
 
 bool read_file(FIL * file, char * buf, int btr, int * br)
 {
-	disk_initialize(fs_mounted_drive);
 	FRESULT res = f_read(file, (void *)buf, btr, br);
 	
 #ifdef DEBUG_FATFS
@@ -70,7 +71,6 @@ bool read_file(FIL * file, char * buf, int btr, int * br)
 
 bool write_file(FIL * file, const char * buf, int btw, int * bw)
 {
-	disk_initialize(fs_mounted_drive);
 	FRESULT res = f_write(file, (const void *)buf, btw, bw);
 	
 #ifdef DEBUG_FATFS
@@ -80,6 +80,9 @@ bool write_file(FIL * file, const char * buf, int btw, int * bw)
 	return (res == FR_OK);
 }
 
+/*
+ *	Working with drives 
+ */
 
 int mount_drive(int driveNum)
 {
@@ -95,8 +98,10 @@ int mount_drive(int driveNum)
 	printFResult ("f_mount", res);
 #endif
 
-	if (res == FR_OK)
+	if (res == FR_OK){
 		fs_mounted_drive = driveNum;
+		disk_initialize(fs_mounted_drive);
+	}
 
 	return res;
 }
@@ -117,10 +122,7 @@ bool make_file_system(int driveNum)
 	printFResult ("f_mkfs", res);
 #endif
 
-	if (res != FR_OK)
-		return FALSE;
-
-	return TRUE;
+	return (res == FR_OK);
 }
 
 bool change_drive(int driveNum){
@@ -147,9 +149,7 @@ bool is_disk_exist(int driveNum)
 }
 
 bool is_file_system_exist()
-{
-	disk_initialize(fs_mounted_drive);
-	
+{	
 	DIR dir;
 	FRESULT res = f_opendir(&dir, "none.fil");
 
@@ -163,6 +163,11 @@ bool is_file_system_exist()
 	return TRUE;
 }
 
+/*
+ *	Working with directories 
+ */
+
+
 bool make_dir(const char * dir_name)
 {
 	FRESULT res = f_mkdir(dir_name);
@@ -171,12 +176,7 @@ bool make_dir(const char * dir_name)
 	printFResult("f_mkdir", res);
 #endif
 
-
-	if (res != FR_OK){
-		return FALSE;
-	}
-	
-	return TRUE;
+	return (res == FR_OK);
 }
 
 bool unlink(const char * link)
@@ -187,12 +187,7 @@ bool unlink(const char * link)
 	printFResult("f_unlink", res);
 #endif
 
-
-	if (res != FR_OK){
-		return FALSE;
-	}
-	
-	return TRUE;
+	return (res == FR_OK);
 }
 
 bool is_dir_exist(const char * path)
@@ -209,72 +204,59 @@ bool is_dir_exist(const char * path)
 		return FALSE;
 	}
 	
-	f_closedir(&dir);
-	
+	res = f_closedir(&dir);
+
+#ifdef DEBUG_FATFS
+	printFResult("f_opendir", res);
+#endif
+
 	return TRUE;
 }
 
-FILEDEPRECATED * get_subdirs(const char * path, int * size)
+bool open_directory(const char * path, DIR * dir)
 {
-    FRESULT res;
-    FILINFO fno;
-    DIR dir;
-    int i;
-    char *fn;   /* This function assumes non-Unicode configuration */
-
-    disk_initialize(fs_mounted_drive);
-    // calculate count of files inside dir at first
-    int count = 0;
-    res = f_opendir(&dir, path);                       /* Open the directory */
-    if (res == FR_OK) {
-        for (;;) {
-            disk_initialize(fs_mounted_drive);
-            res = f_readdir(&dir, &fno);                   /* Read a directory item */
+	FRESULT res = f_opendir(dir, path); 
+	
 #ifdef DEBUG_FATFS
-    printFResult("f_readdir", res);
-#endif            
-            
-            if (res != FR_OK || fno.fname[0] == 0) break;  /* Break on error or end of dir */
-            
-            count++;
-        }
-        f_closedir(&dir);
-    }
-    LOG("COUNT: %d", count);
-    
-    if (count == 0){
-        *size = 0;
-        return NULL;
-    }
-    // allocate memory to result 
-    FILEDEPRECATED * files = malloc(count * sizeof(FILEDEPRECATED));
-    
-    // store items to result
-    disk_initialize(fs_mounted_drive);
-    res = f_opendir(&dir, path);                       /* Open the directory */
-    
-    if (res == FR_OK) {
-            
-        int count = 0;
-        for (;;) {
-            disk_initialize(fs_mounted_drive);
-            res = f_readdir(&dir, &fno);                   /* Read a directory item */
-            if (res != FR_OK || fno.fname[0] == 0) break;  /* Break on error or end of dir */
-        
-            fn = fno.fname;
+	printFResult("f_opendir", res);
+#endif
 
-            if (fno.fattrib & AM_DIR) {                    /* It is a directory */
-                memcpy(files[count].name, fn, strlen(fn));
-                files[count].type = T_DIR;
-            } else {                                       /* It is a file. */
-                memcpy(files[count].name, fn, strlen(fn));
-                files[count].type = T_FILE;
-            }
-            
-            count++;
-        }
-    }
-    *size = count;
-    return files;
+	return (res == FR_OK);
 }
 
+bool close_directory(DIR * dir)
+{
+	FRESULT res = f_closedir(dir); 
+	
+#ifdef DEBUG_FATFS
+	printFResult("f_closedir", res);
+#endif
+
+	return (res == FR_OK);
+}
+
+bool read_directory(DIR * dir, FS_ITEM * item)
+{
+	FILINFO finfo;
+	FRESULT res = f_readdir(dir, &finfo);
+	
+#ifdef DEBUG_FATFS
+	printFResult("f_readdir", res);
+#endif
+	
+	if (finfo.fname[0] == 0)
+		return FALSE;
+
+	if (res == FR_OK){
+		item->date = finfo.fdate;
+		item->attrib = finfo.fattrib;
+		item->size = finfo.fsize;
+		item->time = finfo.ftime;
+		item->type = (finfo.fattrib & AM_DIR) ? T_DIR : T_FILE;
+		LOG("path naNEfasd: %s", finfo.fname);	
+		memset(item->path, 0, 14);
+		memcpy(item->path, finfo.fname, strlen(finfo.fname));
+	}		
+
+	return (res == FR_OK);
+}
