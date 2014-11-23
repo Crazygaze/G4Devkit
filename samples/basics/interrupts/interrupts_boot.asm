@@ -131,6 +131,7 @@ _causeSystemCall:
 	mov r0, 0xF00D
 	mov r1, 0xBEEF
 	swi
+	; NOTE: The SWI interrupt handler will set our r0 to the result
 	mov pc, lr
 
 public _causeIRQ

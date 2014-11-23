@@ -36,6 +36,12 @@ int interruptsCount;
 // the application is just resumed after the interrupt is handled.
 int restartsCount;
 
+//
+// Whenever there is a system call, we set this variable with what the system
+// call returned. It shows how a system call can pass a result back to the
+// application
+int lastSystemCallResult;
+
 void launchApplication(void);
 void redrawScreen(int doClear);
 void showMenu(void);
@@ -100,7 +106,11 @@ void printInterruptDetails(
 	printNumberData(x,++y, "Interrupt Data1: ", data1, 16);
 	printNumberData(x,++y, "Interrupt Data2: ", data2, 16);
 	printNumberData(x,++y, "Interrupt Data3: ", data3, 16);
-
+	if (lastSystemCallResult) {
+		printNumberData(x,++y, "Last SWI call result: ",
+			lastSystemCallResult,10);
+	}
+	
 }
 
 
@@ -162,6 +172,12 @@ Ctx* handleSystemCall(Ctx* interruptedCtx)
 	printInterruptDetails(interruptedCtx, "SystemCall",
 		interruptedCtx->gregs[0], interruptedCtx->gregs[1],0);
 
+	
+	// A SWI interrupt handler should set the interrupted context's registers
+	// to any values it wishes to return back to the application.
+	// In this case, we are just setting r0 to an incrementing value
+	interruptedCtx->gregs[0] = ++lastSystemCallResult;
+
 	// Note that for a system call, we want to pass control back to the
 	// application, so I'm not reseting the application	
 	return interruptedCtx;
@@ -190,7 +206,7 @@ void causeUndefinedInstruction(void);
 // Defined in the assembly file.
 void causeIllegalInstruction(void);
 // Defined in the assembly file.
-void causeSystemCall(void);
+int causeSystemCall(void);
 // Defined in the assembly file.
 void causeIRQ(void);
 
@@ -198,7 +214,7 @@ void causeIRQ(void);
 void showMenu(void)
 {
 	int x = 10;
-	int y = 10;
+	int y = 11;
 	printString(x, y++, "1. Test Abort (Execute)");
 	printString(x, y++, "2. Test Abort (Write)");
 	printString(x, y++, "3. Test Abort (Read)");
@@ -260,7 +276,7 @@ void appMain(void)
 				causeIllegalInstruction();
 				break;
 			case '7':
-				causeSystemCall();
+				lastSystemCallResult = causeSystemCall();
 				break;
 			case '8':
 				causeIRQ();
