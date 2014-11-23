@@ -119,8 +119,8 @@ static void hw_dkc_irqHandler(u16 reason, u32 data1, u32 data2)
 	u32 diskNum = data1;
 	hw_dkc_Disk* dsk = hw_dkc_getDisk(diskNum);
 	
-	KERNEL_DEBUG("DKC IRQ %d, %d, %d. Current status=0x%08x", reason, data1,
-		data2, dsk->status);
+	/*KERNEL_DEBUG("DKC IRQ %d, %d, %d. Current status=0x%08x", reason, data1,
+		data2, dsk->status);*/
 
 	switch(reason) {
 	case HW_DKC_IRQREASON_FINISHED:
@@ -148,7 +148,7 @@ static void hw_dkc_irqHandler(u16 reason, u32 data1, u32 data2)
 		break;
 	}
 	
-	KERNEL_DEBUG("    New status=0x%08x", dsk->status);
+	/*KERNEL_DEBUG("    New status=0x%08x", dsk->status);*/
 }
 
 static bool hw_dkc_query(u32 diskNum)

@@ -14,10 +14,45 @@
 
 #include "file_system_provider.h"
 
+static int text_offset_y = 0;
+
 #define printline(text) txtui_printAtXY(&rootCanvas, 0, text_offset_y++, text)
 #define printfline(text, ...) txtui_printfAtXY(&rootCanvas, 0, text_offset_y++, text, __VA_ARGS__)
 
-static int text_offset_y = 0;
+#define MAX_COMMAND_LENGHT 60
+#define MAX_PATH_LENGHT 128
+
+static int mounted_drive = -1;
+static bool cursor_blink = false;
+static int cursor_pos = 1;
+static char path[MAX_PATH_LENGHT];
+
+
+void printHelp()
+{
+	txtui_printAtXY(&rootCanvas, rootCanvas.width/2 + 18, 5, "HELP:");
+	txtui_printAtXY(&rootCanvas, rootCanvas.width/2 + 3, 6, "MKDIR name - create new directory");
+	txtui_printAtXY(&rootCanvas, rootCanvas.width/2 + 3, 7, "                  (8 symbols max)");
+	txtui_printAtXY(&rootCanvas, rootCanvas.width/2 + 3, 8, "UNLINK name - remove dir or file ");
+	txtui_printAtXY(&rootCanvas, rootCanvas.width/2 + 3, 9, "CD name - change dir             ");
+	txtui_printAtXY(&rootCanvas, rootCanvas.width/2 + 3, 10, "UP - return to the previous dire");
+	txtui_printAtXY(&rootCanvas, rootCanvas.width/2 + 3, 11, "                 ctory (like ..)");
+}
+
+void print_header()
+{
+	txtui_setColour(&rootCanvas, kTXTCLR_BRIGHT_BLUE, kTXTCLR_WHITE);
+	txtui_printAtXY(&rootCanvas, 0, 0, "                              APCPU File Manager                                ");
+}
+
+void draw_window(const char * title, int x, int y, int width, int height)
+{
+	txtui_setColour(&rootCanvas, kTXTCLR_BRIGHT_YELLOW, kTXTCLR_WHITE);
+	txtui_fillArea(&rootCanvas, x, y, width, height, ' ');
+	txtui_printfAtXY(&rootCanvas, width/2 - 7, y, title);
+	txtui_setColour(&rootCanvas, kTXTCLR_BLACK, kTXTCLR_WHITE);
+	txtui_fillArea(&rootCanvas, x+1, y+1, width-2, height-2, ' ');
+}
 
 int checkDrivesAndGetFirst(){
 	int first_founded = -1;
@@ -33,15 +68,6 @@ int checkDrivesAndGetFirst(){
 	
 	return first_founded;
 }
-
-#define MAX_COMMAND_LENGHT 60
-#define MAX_PATH_LENGHT 128
-
-static int mounted_drive = -1;
-static bool cursor_blink = false;
-static int cursor_pos = 1;
-static char command[MAX_COMMAND_LENGHT];
-static char path[MAX_PATH_LENGHT];
 
 bool initialization()
 {
@@ -85,53 +111,71 @@ bool initialization()
 	return TRUE;
 } 
 
-void print_header()
-{
-	txtui_setColour(&rootCanvas, kTXTCLR_BRIGHT_BLUE, kTXTCLR_WHITE);
-	txtui_printAtXY(&rootCanvas, 0, 0, "                              APCPU File Manager                                ");
-}
-
-void draw_window(const char * title, int x, int y, int width, int height)
-{
-	txtui_setColour(&rootCanvas, kTXTCLR_BRIGHT_YELLOW, kTXTCLR_WHITE);
-	txtui_fillArea(&rootCanvas, x, y, width, height, ' ');
-	txtui_printfAtXY(&rootCanvas, width/2 - 7, y, title);
-	txtui_setColour(&rootCanvas, kTXTCLR_BLACK, kTXTCLR_WHITE);
-	txtui_fillArea(&rootCanvas, x+1, y+1, width-2, height-2, ' ');
-}
-
 void print_dir_entries(const char * path)
 {
+	LOG ("PATH: %s", path);
+
 	txtui_fillArea(&rootCanvas, 1, 2, rootCanvas.width/2-2, rootCanvas.height-3-2, ' ');
-	txtui_printAtXY(&rootCanvas, 1, 2, path);
+	
+	txtui_setColour(&rootCanvas, kTXTCLR_BRIGHT_GREEN, kTXTCLR_WHITE);
+	txtui_fillArea(&rootCanvas, 1, 2, rootCanvas.width/2-2, 1, ' ');
+	
+	txtui_setColour(&rootCanvas, kTXTCLR_BRIGHT_GREEN, kTXTCLR_BLACK);
+	txtui_printfAtXY(&rootCanvas, 1, 2, "Current: %s", path);
+	
+	txtui_setColour(&rootCanvas, kTXTCLR_BRIGHT_YELLOW, kTXTCLR_WHITE);
+	txtui_fillArea(&rootCanvas, 1, 3, rootCanvas.width/2-2, 1, ' ');
+	
+	txtui_printfAtXY(&rootCanvas, 1, 3, "TYPE NAME     SIZE", path);
+	
+	txtui_setColour(&rootCanvas, kTXTCLR_BLACK, kTXTCLR_WHITE);
 	
 	DIRECTORY * dir = opendir(path);
 	
-	int i = 0;
-	FS_ITEM item;
-	while (readdir(dir, &item)){
-		txtui_printfAtXY(&rootCanvas, 2, 3+i, "%c %s", (item.type==T_FILE)?'f':'d', item.path);
+	if (dir){
+		int i = 0;
+		FS_ITEM item;
+		while (readdir(dir, &item)){
+			txtui_printfAtXY(&rootCanvas, 2, 4+i, "%c   %s", (item.type==T_FILE)?'f':'d', item.path);
+			txtui_printfAtXY(&rootCanvas, 15, 4+i, "%d", item.size);
+			
+			i++;
+		}
 		
-		memset(&item, 0, sizeof(FS_ITEM));
-		i++;
+		closedir(dir);
 	}
-	
-	closedir(dir);
 }
 
-void printHelp()
-{
-	txtui_printAtXY(&rootCanvas, rootCanvas.width/2 + 18, 5, "HELP:");
-	txtui_printAtXY(&rootCanvas, rootCanvas.width/2 + 3, 6, "MKDIR name - create new directory");
-	txtui_printAtXY(&rootCanvas, rootCanvas.width/2 + 3, 7, "                  (8 symbols max)");
-	txtui_printAtXY(&rootCanvas, rootCanvas.width/2 + 3, 8, "UNLINK name - remove dir or file ");
-	txtui_printAtXY(&rootCanvas, rootCanvas.width/2 + 3, 9, "CD name - change dir             ");
-	txtui_printAtXY(&rootCanvas, rootCanvas.width/2 + 3, 10, "UP - return to the previous dire");
-	txtui_printAtXY(&rootCanvas, rootCanvas.width/2 + 3, 11, "                 ctory (like ..)");
+/*
+ * Parse command with format "com" or "cmd arg"
+ *
+ * returns 
+ */
+int parse_command(const char * command, char * fist, char * second)
+{	
+	int space_pos = -1;
+	for (int i = 0; i < strlen(command); i++){
+		
+		// "cmd arg"
+		if (command[i] == ' '){
+			space_pos = i;
+			
+			memcpy(fist, command, (space_pos)*sizeof(char));
+			memcpy(second, &command[space_pos + 1], strlen(command) - space_pos - 1);
+						
+			return 1;
+		}	
+	}
+	
+	// "cmd"
+	memcpy(fist, command, strlen(command));
+	return 0;
 }
 
 int file_manager (int proc_num)
 {
+	char command[MAX_COMMAND_LENGHT];
+
 	if ( initialization() == FALSE){
 		printline("Drive mounting FAILED.");	
 	} else {
@@ -161,29 +205,15 @@ int file_manager (int proc_num)
 						// command always have format "cmd agr" or "cmd"
 						// command window not empty
 						if (cursor_pos > 1){
-							int space_pos = -1;
 							char str_command[MAX_COMMAND_LENGHT];
-							memset(str_command, 0, sizeof(char)*MAX_COMMAND_LENGHT);
 							char str_argument[MAX_COMMAND_LENGHT];
+							
+							memset(str_command,  0, sizeof(char)*MAX_COMMAND_LENGHT);
 							memset(str_argument, 0, sizeof(char)*MAX_COMMAND_LENGHT);
-							for (int i = 0; i < strlen(command); i++){
-								
-								if (command[i] == ' '){
-									space_pos = i;
-									continue;
-								}
-								
-								if (space_pos == -1){
-									str_command[i] = command[i];
-									str_command[i+1] = 0;
-								} else {
-									str_argument[i-space_pos-1] = command[i];
-									str_argument[i-space_pos] = 0;
-								}
-							}
+							int args_num = parse_command(command, str_command, str_argument);
 										
 							// found valid command format "cmd arg"
-							if (space_pos != -1){
+							if (args_num == 1){
 								if (strcmp(str_command, "MKDIR") == 0){
 									char tmp_buf[128];
 									sprintf(tmp_buf, "%s/%s", path, str_argument);
@@ -213,19 +243,20 @@ int file_manager (int proc_num)
 							} 
 							
 							// found valid command format "cmd"
-							if (space_pos == -1 && strlen(str_command) > 0){
+							if (args_num == 0){
 								if (strcmp(str_command, "UP") == 0){
-							
-									for (int i = strlen(path); i > 0; i--){
-										if (path[i] != '/'){
+									if (strlen(path) > 1){
+										for (int i = strlen(path); i > 0; i--){
+											if (path[i] != '/'){
+												path[i] = 0;
+												continue;
+											}
+																						
 											path[i] = 0;
-										} else {
-											path[i] = 0;
-											LOG("path: %s", path);
 											break;
 										}
+										print_dir_entries(path);
 									}
-									print_dir_entries(path);
 								}
 							}
 							

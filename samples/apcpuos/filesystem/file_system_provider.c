@@ -253,7 +253,7 @@ bool read_directory(DIR * dir, FS_ITEM * item)
 		item->size = finfo.fsize;
 		item->time = finfo.ftime;
 		item->type = (finfo.fattrib & AM_DIR) ? T_DIR : T_FILE;
-		LOG("path naNEfasd: %s", finfo.fname);	
+		
 		memset(item->path, 0, 14);
 		memcpy(item->path, finfo.fname, strlen(finfo.fname));
 	}		

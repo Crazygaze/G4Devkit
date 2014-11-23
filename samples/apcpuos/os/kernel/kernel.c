@@ -87,32 +87,7 @@ static bool krn_kybCallback(uint8_t eventtype, uint8_t key, int flags,
 			prc_postThreadMessage(it->mainthread, msgid, key, flags);
 		}
 	});		
-	
-	/*
-	if (eventtype==HW_KYB_EVENT_TYPED)
-	{
-		switch(key)
-		{
-		case '1':
-			{
-				hw_dkc_write_sync(0, 2050, "-District 9", strlen("-District 9"));
-				hw_dkc_write_sync(0, 1, "Area 51", strlen("Area 51"));
-			}
-		break;
-		case '2':
-			{
-				char buf[20];
-				//for(int sector=0; sector<2; sector++) {
-				//	memset(buf,0,sizeof(buf));
-					hw_dkc_read_sync(0, 2050, buf, sizeof(buf));
-					KERNEL_DEBUG("Sector %d : %s", 2050, buf);
-				//}
-			}
-		break;
-		}
-	}
-	*/	
-			
+				
 	return FALSE;
 }
 
