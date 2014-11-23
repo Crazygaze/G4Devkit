@@ -1,0 +1,54 @@
+{
+	"format": "Project",
+	"version": 1,
+	"name": "deviceenum",
+	"type": 1,
+	"globalconfiguration": {
+		"name": "Global",
+		"includePaths": [
+
+		],
+		"defines": [
+
+		],
+		"compilerOptions": "",
+		"linkerextralibs": ""
+	},
+	"configurations": [
+		{
+			"name": "Debug",
+			"includePaths": [
+				"$(SolutionDir)"
+			],
+			"defines": [
+				"DEBUG"
+			],
+			"compilerOptions": "-c99 -g -O2",
+			"linkerextralibs": ""
+		},
+		{
+			"name": "Release",
+			"includePaths": [
+				"$(SolutionDir)"
+			],
+			"defines": [
+				"NDEBUG"
+			],
+			"compilerOptions": "-c99 -O2",
+			"linkerextralibs": ""
+		}
+	],
+	"dependencies": [
+		"common"
+	],
+	"files": [
+		{
+			"path": ".\\deviceenum.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\deviceenum_boot.asm",
+			"bootfile": true
+		}
+	]
+}
