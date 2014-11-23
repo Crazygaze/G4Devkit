@@ -44,6 +44,33 @@ _getRunningTimeSeconds:
 	; Running time in seconds is already in f0, so return
 	mov pc, lr
 
+;
+; Full hwi call
+public _hwiCall
+_hwiCall:
+	push {r4-r10,lr} ; save registers we will need to restore
+	mov ip, r0; save the pointer to the data
+	
+	; setup call to hwi.
+	ldr r0, [ip + 4*0]
+	ldr r1, [ip + 4*1]
+	ldr r2, [ip + 4*2]
+	ldr r3, [ip + 4*3]
+	ldr r4, [ip + 4*4]
+	ldr r5, [ip + 4*5]
+	ldr r6, [ip + 4*6]
+	hwi
+	; Save outputs back to the struct
+	str [ip + 4*0], r0
+	str [ip + 4*1], r1
+	str [ip + 4*2], r2
+	str [ip + 4*3], r3
+	str [ip + 4*4], r4
+	str [ip + 4*5], r5
+	str [ip + 4*6], r6
+	
+	pop {r4-r10,pc}
+
 ;*******************************************************************************
 ;    Keyboard functions
 ;*******************************************************************************
