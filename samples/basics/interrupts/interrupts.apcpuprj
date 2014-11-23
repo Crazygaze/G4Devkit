@@ -1,8 +1,8 @@
 {
 	"format": "Project",
 	"version": 1,
-	"name": "common",
-	"type": 2,
+	"name": "interrupts",
+	"type": 1,
 	"globalconfiguration": {
 		"name": "Global",
 		"includePaths": [
@@ -18,7 +18,7 @@
 		{
 			"name": "Debug",
 			"includePaths": [
-
+				"$(SolutionDir)"
 			],
 			"defines": [
 				"DEBUG"
@@ -29,7 +29,7 @@
 		{
 			"name": "Release",
 			"includePaths": [
-
+				"$(SolutionDir)"
 			],
 			"defines": [
 				"NDEBUG"
@@ -39,24 +39,16 @@
 		}
 	],
 	"dependencies": [
-
+		"common"
 	],
 	"files": [
 		{
-			"path": ".\\common.c",
+			"path": ".\\interrupts.c",
 			"bootfile": false
 		},
 		{
-			"path": ".\\common.h",
-			"bootfile": false
-		},
-		{
-			"path": ".\\common_aux.asm",
-			"bootfile": false
-		},
-		{
-			"path": ".\\readme.txt",
-			"bootfile": false
+			"path": ".\\interrupts_boot.asm",
+			"bootfile": true
 		}
 	]
 }
