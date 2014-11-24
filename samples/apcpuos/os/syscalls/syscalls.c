@@ -8,6 +8,7 @@
 #include "hw/hwclock.h"
 #include "hw/hwdisk.h"
 #include "kernel/handles.h"
+#include "appslist.h"
 #include "appsdk/kernel_shared/txtui_shared.h"
 
 static bool check_user_ptr(struct PCB *pcb, MMUMemAccess access, void* addr,
@@ -20,6 +21,42 @@ static bool check_user_ptr(struct PCB *pcb, MMUMemAccess access, void* addr,
 		"%s passed a non-user space pointer to a system call. Ptr %Xh, Size %u",
 		pcb->info.name, addr, size);
 	return FALSE;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//				Process Management
+////////////////////////////////////////////////////////////////////////////////
+
+bool syscall_createProcess(void)
+{
+	PCB* pcb = krn.interruptedTcb->pcb;
+	int* regs = (int*)krn.interruptedTcb->cpuctx;
+	
+	AppInfo* info = (AppInfo*) regs[0];
+
+	// Make sure the process can write to the address it has given us
+	if (!check_user_ptr(pcb, kMMUAccess_Write, info, sizeof(*info)))
+		return FALSE;
+
+	prc_giveAccessToKernel(pcb, true);
+	PCB * pcb_created = prc_create(info->name, info->startFunc, info->privileged, info->stacksize, info->memsize);
+	if (pcb_created == NULL){
+		regs[0] = 0;
+		
+		prc_giveAccessToKernel(pcb, false);
+		return FALSE;
+	}
+	
+	prc_giveAccessToKernel(pcb_created, true);
+	pcb_created->info.flags = info->flags;
+	pcb_created->info.cookie = info->cookie;
+	
+	prc_giveAccessToKernel(pcb_created, false);
+	prc_giveAccessToKernel(pcb, false);
+	
+	regs[0] = pcb_created->info.pid;
+	
+	return TRUE;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -530,6 +567,12 @@ bool syscall_outputDebugString(void)
 
 krn_syscallFunc krn_syscalls[kSysCall_Max] =
 {
+	// 
+	// Process Management
+	//
+	
+	syscall_createProcess,
+	
 	//
 	// Process control
 	//
