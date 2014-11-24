@@ -11,7 +11,7 @@ void ch_drive(int driveNum)
 FILE * fopen ( const char * filename, const char * mode )
 {
 	// check input
-	if (strlen(mode) > 3 || strlen(filename) > 8)
+	if (strlen(mode) > 3 /*|| strlen(filename) > 8*/)
 		return NULL;
 
 	// parse mode
