@@ -1,7 +1,7 @@
 {
 	"format": "Project",
 	"version": 1,
-	"name": "filemanager",
+	"name": "texteditor",
 	"type": 2,
 	"globalconfiguration": {
 		"name": "Global",
@@ -21,15 +21,14 @@
 				"$(SolutionDir)appsdk",
 				"$(SolutionDir)appsdk\/stdc",
 				"$(SolutionDir)stdcshared",
-				"$(SolutionDir)filesystem",
 				"$(SolutionDir)graphsystem",
-				"$(SolutionDir)texteditor",
-				"$(SolutionDir)os"
+				"$(SolutionDir)filesystem",
+				"$(SolutionDir)"
 			],
 			"defines": [
 				"DEBUG"
 			],
-			"compilerOptions": "-shareddata -c99 -O2 -g -unroll-size=0 -size",
+			"compilerOptions": "-c99 -g -O",
 			"linkerextralibs": ""
 		},
 		{
@@ -49,7 +48,11 @@
 	],
 	"files": [
 		{
-			"path": ".\\main.c",
+			"path": ".\\texteditor.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\texteditor.h",
 			"bootfile": false
 		}
 	]
