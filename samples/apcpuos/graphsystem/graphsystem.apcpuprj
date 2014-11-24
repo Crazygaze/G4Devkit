@@ -1,7 +1,7 @@
 {
 	"format": "Project",
 	"version": 1,
-	"name": "filemanager",
+	"name": "graphsystem",
 	"type": 2,
 	"globalconfiguration": {
 		"name": "Global",
@@ -18,18 +18,15 @@
 		{
 			"name": "Debug",
 			"includePaths": [
+				"$(SolutionDir)graphsystem",
 				"$(SolutionDir)appsdk",
 				"$(SolutionDir)appsdk\/stdc",
-				"$(SolutionDir)stdcshared",
-				"$(SolutionDir)filesystem",
-				"$(SolutionDir)graphsystem",
-				"$(SolutionDir)texteditor",
-				"$(SolutionDir)os"
+				"$(SolutionDir)stdcshared"
 			],
 			"defines": [
 				"DEBUG"
 			],
-			"compilerOptions": "-shareddata -c99 -O2 -g -unroll-size=0 -size",
+			"compilerOptions": "-c99 -g -O",
 			"linkerextralibs": ""
 		},
 		{
@@ -49,7 +46,11 @@
 	],
 	"files": [
 		{
-			"path": ".\\main.c",
+			"path": ".\\windows.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\windows.h",
 			"bootfile": false
 		}
 	]

@@ -1,6 +1,6 @@
-/**
-	Disk Drive functions test
-**/
+/*
+	Simple File Manager
+*/
 
 
 #include <stdlib.h>
@@ -8,9 +8,13 @@
 #include <string.h>
 #include <dirent.h>
 
+#include "texteditor.h"
+
 #include "app_process.h" // Process API shared by both OS and application
 #include "app_txtui.h" // Display shared by both OS and application
 #include "app_diskdrive.h"
+
+#include "windows.h"
 
 #include "file_system_provider.h"
 
@@ -35,21 +39,6 @@ void printHelp()
 	txtui_printAtXY(&rootCanvas, rootCanvas.width/2 + 3, 9, "CD name - change dir             ");
 	txtui_printAtXY(&rootCanvas, rootCanvas.width/2 + 3, 10, "UP - return to the previous dire");
 	txtui_printAtXY(&rootCanvas, rootCanvas.width/2 + 3, 11, "                 ctory (like ..)");
-}
-
-void print_header()
-{
-	txtui_setColour(&rootCanvas, kTXTCLR_BRIGHT_BLUE, kTXTCLR_WHITE);
-	txtui_printAtXY(&rootCanvas, 0, 0, "                              APCPU File Manager                                ");
-}
-
-void draw_window(const char * title, int x, int y, int width, int height)
-{
-	txtui_setColour(&rootCanvas, kTXTCLR_BRIGHT_YELLOW, kTXTCLR_WHITE);
-	txtui_fillArea(&rootCanvas, x, y, width, height, ' ');
-	txtui_printfAtXY(&rootCanvas, width/2 - 7, y, title);
-	txtui_setColour(&rootCanvas, kTXTCLR_BLACK, kTXTCLR_WHITE);
-	txtui_fillArea(&rootCanvas, x+1, y+1, width-2, height-2, ' ');
 }
 
 int checkDrivesAndGetFirst(){
@@ -97,6 +86,28 @@ bool initialization()
 	} else {
 		printline("File System Found!");
 	}
+		
+		
+	FILE * file = fopen("EXAM.PLE", "w");
+	if (file){
+		fwrite("=================\n", 1, strlen("=================="), file);
+		fwrite("Simple text file \n", 1, strlen("=================="), file);
+		fwrite(" Just MORE text  \n", 1, strlen("=================="), file);
+		fwrite("_=_=_=_=_=_=_=_=_\n", 1, strlen("=================="), file);
+		fwrite("                 \n", 1, strlen("=================="), file);
+		fwrite("      MEOOOOW    \n", 1, strlen("=================="), file);
+		fwrite("                 \n", 1, strlen("=================="), file);
+		fwrite("         /\\_/\\   \n", 1, strlen("=================="), file);
+		fwrite("        ( o_o )  \n", 1, strlen("=================="), file);
+		fwrite("         )   (   \n", 1, strlen("=================="), file);
+		fwrite("        /    |   \n", 1, strlen("=================="), file);
+		fwrite("       / || ||   \n", 1, strlen("=================="), file);
+		fwrite("   ====__||_||   \n", 1, strlen("=================="), file);
+		fwrite("=================\n", 1, strlen("=================="), file);
+		
+		fclose(file);
+	}
+	
 		
 	printline("Start the File Manager...");
 
@@ -223,6 +234,40 @@ void changeDir(char * path, char * next_dir)
 	print_dir_entries(path, TRUE);
 }
 
+void callEditor(const char * path)
+{
+	LOG ("ASKJDLAKS %s", path);
+	AppInfoShared app_info;
+	app_info.name = malloc(strlen("TextEditor")*sizeof(char));
+	strcpy(app_info.name, "TextEditor");
+	app_info.startFunc = text_editor;
+	app_info.privileged = FALSE;
+	app_info.stacksize = 1024+4000*2;
+	app_info.memsize = 1024+4000*8;
+	app_info.flags = APPFLAG_WANTSCANVAS | APPFLAG_WANTSKEYS | APPFLAG_WANTSSTATUSBAR;
+	/*
+		TODO: make shared_memory plz!
+	*/
+	app_info.cookie = 0; // app_info.cookie = (int) path;
+	
+	
+	// temporary save path to shared file
+	FILE * file = fopen("TESM.TXT", "w");
+	if (file){
+		fputs(path, file);
+		fclose(file);
+		int PID = app_createProcess(&app_info);
+		
+		if (PID){
+			while (!app_setFocusTo( PID )){
+				app_sleep(100);
+			}
+		}
+	}
+	
+	
+}
+
 int file_manager (int proc_num)
 {
 	static char path[MAX_PATH_LENGHT];
@@ -234,13 +279,15 @@ int file_manager (int proc_num)
 	if ( initialization() == FALSE){
 		printline("Drive mounting FAILED.");	
 	} else {
-		print_header();
+		print_header(&rootCanvas, "APCPU File Manager", kTXTCLR_BRIGHT_BLUE, kTXTCLR_WHITE);
 		
 		char drive_name[12];
 		sprintf(drive_name, "Drive: \'%d\'", mounted_drive);
-		draw_window(drive_name, 0, 1, rootCanvas.width/2, rootCanvas.height-3);
+		draw_window(&rootCanvas, drive_name, 0, 1, rootCanvas.width/2, rootCanvas.height-2, 
+						kTXTCLR_BRIGHT_YELLOW, kTXTCLR_BLACK, kTXTCLR_BRIGHT_WHITE);			
 		
-		draw_window("Command Window", 0, rootCanvas.height-2, rootCanvas.width, rootCanvas.height);
+		draw_window(&rootCanvas, "Command Window", 0, rootCanvas.height-2, rootCanvas.width, rootCanvas.height,
+						kTXTCLR_BRIGHT_YELLOW, kTXTCLR_BLACK, kTXTCLR_BRIGHT_WHITE);	
 		
 		printHelp();
 		
@@ -301,7 +348,16 @@ int file_manager (int proc_num)
 							cursor_pos = 1;
 							
 						}else{	// enter to subdir
-							changeDir(path, selected_item);
+							if (items[selected_index].type == T_DIR){
+								changeDir(path, selected_item);
+							} else {
+														
+								// try to call another app
+								char * file_name_arg = malloc (128 * sizeof(char));
+								sprintf(file_name_arg, "%s/%s", path, selected_item);							
+								
+								callEditor(file_name_arg);
+							}
 						}
 					}
 					

@@ -50,7 +50,9 @@
 		"utilshared",
 		"sysstats",
 		"filemanager",
-		"filesystem"
+		"filesystem",
+		"texteditor",
+		"graphsystem"
 	],
 	"files": [
 		{

@@ -11,6 +11,8 @@
 		".\\utilshared\\utilshared.apcpuprj",
 		".\\sysstats\\sysstats.apcpuprj",
 		".\\filemanager\\filemanager.apcpuprj",
-		".\\filesystem\\filesystem.apcpuprj"
+		".\\filesystem\\filesystem.apcpuprj",
+		".\\texteditor\\texteditor.apcpuprj",
+		".\\graphsystem\\graphsystem.apcpuprj"
 	]
 }
