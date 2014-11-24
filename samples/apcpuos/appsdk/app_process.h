@@ -19,6 +19,28 @@ typedef struct AppInfo
 extern AppInfo* app_info;
 extern AppTLS* app_tls;
 
+typedef struct AppInfoShared
+{
+	const char* name;
+	
+	PrcEntryFunc startFunc;
+
+	// If TRUE, task is created to run as supervisor mode
+	bool privileged;
+
+	// How much stack space to give to this app.
+	uint32_t stacksize;
+	
+	// How much memory to reserve for dynamic memory allocations
+	uint32_t memsize;
+	
+	// Flags to tweak some behaviour
+	uint32_t flags;
+	
+	// User defined cookie. Can be anything 
+	uint32_t cookie;
+} AppInfoShared;
+
 /*! Yields the remaining cpu time slice to the kernel
  *
  */
@@ -38,6 +60,11 @@ extern AppTLS* app_tls;
  */
 #define app_getUsedStackSize() app_syscall0(kSysCall_GetUsedStackSize)
 
+
+/*! Allows to create a process from another process.	
+* \return process ID
+ */
+int app_createProcess(AppInfoShared * app_info);
 
 /*! Returns the handle of the current thread
 */

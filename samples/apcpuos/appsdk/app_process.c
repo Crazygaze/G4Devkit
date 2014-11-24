@@ -17,6 +17,11 @@ The way TLS is supported is:
 */
 AppTLS* app_tls;
 
+int app_createProcess(AppInfoShared * app_info)
+{
+	return (app_syscall1(kSysCall_CreateProcess, (int)app_info));	
+}
+
 int app_outputDebugString(const char* fmt, ...)
 {
 	char buffer[APPSDK_DEBUGSTRING_SIZE];

@@ -29,6 +29,12 @@ typedef void (*ThreadEntryFuncWrapper)(ThreadEntryFunc, void* userdata);
 Available System calls
 */
 typedef enum SysCallID {
+
+	//
+	// Process management
+	//
+	kSysCall_CreateProcess,
+
 	//
 	// Process control
 	//
