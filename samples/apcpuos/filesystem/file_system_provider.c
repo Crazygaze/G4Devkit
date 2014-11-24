@@ -92,7 +92,7 @@ int mount_drive(int driveNum)
 	drive_name[0] = (char)driveNum;
 	drive_name[1] = 0;
 	
-	FRESULT res = f_mount(&fs, "0", 0);
+	FRESULT res = f_mount(&fs, drive_name, 0);
 		
 #ifdef DEBUG_FATFS
 	printFResult ("f_mount", res);
