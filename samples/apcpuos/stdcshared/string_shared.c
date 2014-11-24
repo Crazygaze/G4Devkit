@@ -13,6 +13,15 @@ int strlen(const char* str)
 	return end - str;
 }
 
+// added by brick_btv (copied from my mind)
+char* strcpy(char* dest, const char *src)
+{
+	assert(dest && src);
+	memcpy(dest, src, strlen(src)*sizeof(char));
+	
+	return dest;
+}
+
 // copied from http://linux.die.net/man/3/strncpy
 char* strncpy(char *dest, const char *src, size_t num)
 {

@@ -7,6 +7,18 @@
 */
 int strlen(const char* str);
 
+/*! Copy strings 
+* \param dest
+*	 Where to copy
+* \param src
+*	 Copy location
+* \return
+* 	 Result in first param
+* \note
+*	 Added by brick_btv. Not copied from anywhere.
+*/
+char* strcpy(char* dest, const char *src);
+
 /*! Copies a string to a specified destination
 * \param dest
 *	Where to copy to
