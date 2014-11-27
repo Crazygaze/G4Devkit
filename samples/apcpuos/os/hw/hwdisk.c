@@ -9,9 +9,9 @@
 //
 // IRQ Reasons
 //
-#define HW_DKC_IRQREASON_FINISHED 1 // Operation finished
-#define HW_DKC_IRQREASON_MOUNT 2    // Disk was mounted
-#define HW_DKC_IRQREASON_UNMOUNT 3  // Disk was unmounted
+#define HW_DKC_IRQREASON_FINISHED 0 // Operation finished
+#define HW_DKC_IRQREASON_MOUNT 1    // Disk was mounted
+#define HW_DKC_IRQREASON_UNMOUNT 2  // Disk was unmounted
 
 //
 // IRQ Errors
