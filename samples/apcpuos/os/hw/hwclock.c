@@ -74,7 +74,7 @@ reason - 1 bit per timer, that tells if that timer finished
 static void hw_clk_irqHandler(uint16_t reason, u32 data1, u32 data2)
 {
 	for (int t=0; t<HW_CLK_NUMTIMERS; t++) {
-		if (ISBIT_SET(reason, t)) {
+		if (ISBIT_SET(data1, t)) {
 			Timer* timer = &driver.timers[t];
 			for(int f=0; f!=timer->funcs.size;) {
 				// If the callback returns TRUE, we keep it, otherwise, we

@@ -125,82 +125,114 @@ void printInterruptDetails(
 *		Interrupt handlers
 *******************************************************************************/
 
-Ctx* handleReset(void)
-{
-	initCommon();
-	setupAppCtx();
-	return &appCtx;
-}
 
-Ctx* handleAbort(unsigned address, unsigned type)
-{
-	static const char* names[3] = {
-		"Abort (Execute)",
-		"Abort (Write)",
-		"Abort (Read)"};
-		
-	interruptsCount++;
-	printInterruptDetails(interruptedCtx, names[type], address, type, 0, 0);
-	setupAppCtx();
-	return &appCtx;
-}
-
-Ctx* handleDivideByZero(void)
-{
-	interruptsCount++;
-	printInterruptDetails(interruptedCtx, "DivideByZero",0,0,0,0);
-	setupAppCtx();
-	return &appCtx;
-}
-
-Ctx* handleUndefinedInstruction(void)
-{
-	interruptsCount++;
-	printInterruptDetails(interruptedCtx, "UndefinedInstruction",0,0,0,0);
-	setupAppCtx();
-	return &appCtx;
-}
-
-Ctx* handleIllegalIntruction(void)
-{
-	interruptsCount++;
-	printInterruptDetails(interruptedCtx, "IllegalInstruction",0,0,0,0);
-	setupAppCtx();	
-	return &appCtx;
-}
-
-Ctx* handleSystemCall(void)
-{
-	interruptsCount++;
-	// NOTE
-	// The system call parameters are in the interrupted context's registers,
-	// so I'm printing r0 and r1 to show this came frome the assembly function
-	// '_causeSystemCall'
-	printInterruptDetails(interruptedCtx, "SystemCall",
-		interruptedCtx->gregs[0], interruptedCtx->gregs[1],0,0);
-
-	
-	// A SWI interrupt handler should set the interrupted context's registers
-	// to any values it wishes to return back to the application.
-	// In this case, we are just setting r0 to an incrementing value
-	interruptedCtx->gregs[0] = ++lastSystemCallResult;
-
-	// Note that for a system call, we want to pass control back to the
-	// application, so I'm not reseting the application	
-	return interruptedCtx;
-}
-
-Ctx* handleIRQ(u32 data0, u32 data1, u32 data2, u32 data3)
+void cpuHandleIRQ(u32 data0, u32 data1, u32 data2, u32 data3)
 {
 	interruptsCount++;
 	printInterruptDetails(interruptedCtx, "IRQ",data0,data1,data2,data3);
 	// Note that for an IRQ handler, an operating system would just handle it
 	// then resume the application.
 	// That's why I'm not calling "restart" here
-
-	return interruptedCtx;
 }
 
+#define CPU_INTERRUPT_RESET 0
+#define CPU_INTERRUPT_ABORT 1
+#define CPU_INTERRUPT_DIVIDEBYZERO 2
+#define CPU_INTERRUPT_UNDEFINEINSTRUCTION 3
+#define CPU_INTERRUPT_ILLEGALINSTRUCTION 4
+#define CPU_INTERRUPT_SWI 5
+#define CPU_INTERRUPT_IRQ 6
+
+void handleCpuInterrupt(u32 reason,u32 data0, u32 data1, u32 data2, u32 data3)
+{
+	static const char* reasons[7] =
+	{
+		"RESET",
+		"ABORT",
+		"DIVIDEBYZERO",
+		"UNDEFINEDINSTRUCTION",
+		"ILLEGALINSTRUCTION",
+		"SWI",
+		"IRQ",
+	};
+	
+	static const char* abortTypes[3] = {
+		"Abort (Execute)",
+		"Abort (Write)",
+		"Abort (Read)"};		
+	
+	interruptsCount++;	
+	switch(reason)
+	{
+		case CPU_INTERRUPT_RESET:
+			initCommon();
+			setupAppCtx();
+			interruptedCtx = &appCtx;
+		break;
+		
+		case CPU_INTERRUPT_ABORT:
+		{
+			printInterruptDetails(interruptedCtx, abortTypes[data1], data0, data1,
+				0, 0);
+			setupAppCtx();
+		}
+		break;
+		
+		case CPU_INTERRUPT_DIVIDEBYZERO:
+		case CPU_INTERRUPT_UNDEFINEINSTRUCTION:
+		case CPU_INTERRUPT_ILLEGALINSTRUCTION:
+			printInterruptDetails(interruptedCtx, reasons[reason],0,0,0,0);
+			setupAppCtx();
+		break;
+				
+		case CPU_INTERRUPT_SWI:
+			// NOTE
+			// The system call parameters are in the interrupted context's
+			// registers,		// so I'm printing r0 and r1 to show this came frome the assembly function
+			// '_causeSystemCall'
+			printInterruptDetails(interruptedCtx, reasons[reason],
+				interruptedCtx->gregs[0], interruptedCtx->gregs[1],0,0);
+
+			// A SWI interrupt handler should set the interrupted context's registers
+			// to any values it wishes to return back to the application.
+			// In this case, we are just setting r0 to an incrementing value
+			interruptedCtx->gregs[0] = ++lastSystemCallResult;		
+			break;
+
+		default:
+			// unsupported interrupt type ?
+	}
+		
+}
+
+void handleClockInterrupt(u32 reason, u32 data0, u32 data1, u32 data2, u32 data3)
+{
+	interruptsCount++;
+	printInterruptDetails(interruptedCtx, "IRQ",data0,data1,data2,data3);
+}
+
+void clockHandleTimer(u32 data0, u32 data1, u32 data2, u32 data3)
+{
+}
+
+#define HWDEVICE_CPU 0
+#define HWDEVICE_CLK 1
+
+Ctx* handleInterrupt(u32 data0, u32 data1, u32 data2, u32 data3)
+{
+	u8 bus = interruptReason >> 24;
+	u32 reason = interruptReason & 0x80FFFFFF;
+	
+	if (bus==HWDEVICE_CPU) // CPU
+		handleCpuInterrupt(reason, data0, data1, data2, data3);
+	else if (bus==HWDEVICE_CLK) //
+		handleClockInterrupt(reason, data0, data1, data2, data3);
+	else {
+		// Interrupt for a device we don't support in this sample
+	}
+	
+	return interruptedCtx;
+}
 
 /*
 Causes an Abort due to an invalid execute permissions

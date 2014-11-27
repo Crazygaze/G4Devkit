@@ -28,14 +28,14 @@
 .text
 
 ; Interrupt vector table (32 bytes)
-.word _interrupt_Reset
-.word _interrupt_Abort
-.word _interrupt_DivideByZero
-.word _interrupt_UndefinedInstruction
-.word _interrupt_IllegalInstruction
-.word _interrupt_SystemCall
-.word _interrupt_IRQ
-.word _interrupt_RESERVED ; not used
+.word _interruptHandler ; Reset
+.word _interruptHandler ; Abort
+.word _interruptHandler ; DivideByZero
+.word _interruptHandler ; Undefined Instruction
+.word _interruptHandler ; Illegal Instruction 
+.word _interruptHandler ; SWI
+.word _interruptHandler ; IRQ
+.word _interrupt_RESERVED ; RESERVED - not used
 
 ;
 ; The default Execution context is fixed at address 32
@@ -49,13 +49,9 @@ _interruptCtx:
 .word _interruptCtxName
 
 ; Functions in the C file, which have the real interrupt handlers
-extern _handleReset
-extern _handleAbort
-extern _handleDivideByZero
-extern _handleUndefinedInstruction
-extern _handleIllegalIntruction
-extern _handleSystemCall
-extern _handleIRQ
+extern _handleInterrupt
+
+; Variables in the C file
 extern _interruptedCtx
 extern _interruptReason
 .text
@@ -65,54 +61,21 @@ extern _interruptReason
 ; These just pass control to a C function which does the real work
 ; It's easier to work with C than Assembly
 ;*******************************************************************************
-public _interrupt_Reset
-_interrupt_Reset:
+
+;
+; All interrupts handlers call this, to avoid code duplication
+_interruptHandler:
 	str [_interruptedCtx], lr ; save interrupted context
 	str [_interruptReason], ip ; save interrupt reason
-	bl _handleReset
-	ctxswitch [r0] ; resume context the handler wants us to resume	
+	bl _handleInterrupt
+	ctxswitch [r0]
 	; We should never get here...
-	
-_interrupt_Abort:
-	str [_interruptedCtx], lr ; save interrupted context
-	str [_interruptReason], ip ; save interrupt reason
-	bl _handleAbort
-	ctxswitch [r0] ; resume context the handler wants us to resume	
-	
-_interrupt_DivideByZero:
-	str [_interruptedCtx], lr ; save interrupted context
-	str [_interruptReason], ip ; save interrupt reason
-	bl _handleDivideByZero
-	ctxswitch [r0] ; resume context the handler wants us to resume	
-	
-_interrupt_UndefinedInstruction:
-	str [_interruptedCtx], lr ; save interrupted context
-	str [_interruptReason], ip ; save interrupt reason
-	bl _handleUndefinedInstruction
-	ctxswitch [r0] ; resume context the handler wants us to resume	
-	
-_interrupt_IllegalInstruction:
-	str [_interruptedCtx], lr ; save interrupted context
-	str [_interruptReason], ip ; save interrupt reason
-	bl _handleIllegalIntruction
-	ctxswitch [r0] ; resume context the handler wants us to resume	
-	
-_interrupt_SystemCall:
-	str [_interruptedCtx], lr ; save interrupted context
-	str [_interruptReason], ip ; save interrupt reason
-	bl _handleSystemCall
-	ctxswitch [r0] ; resume context the handler wants us to resume	
-	
-_interrupt_IRQ:
-	str [_interruptedCtx], lr ; save interrupted context
-	str [_interruptReason], ip ; save interrupt reason
-	bl _handleIRQ
-	ctxswitch [r0] ; resume context the handler wants us to resume	
 	
 _interrupt_RESERVED:
 	; This is reserved for future use.
 	b _interrupt_RESERVED
-	
+
+
 ;*******************************************************************************
 ; Utility functions called from the C file, to cause some interrupts for testing
 ;*******************************************************************************	
