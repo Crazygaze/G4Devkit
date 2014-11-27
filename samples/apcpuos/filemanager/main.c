@@ -275,11 +275,16 @@ int file_manager (int proc_num)
 		
 		char drive_name[12];
 		sprintf(drive_name, "Drive: \'%d\'", mounted_drive);
-		draw_window(&rootCanvas, drive_name, 0, 1, rootCanvas.width/2, rootCanvas.height-2, 
-						kTXTCLR_BRIGHT_YELLOW, kTXTCLR_BLACK, kTXTCLR_BRIGHT_WHITE);			
 		
-		draw_window(&rootCanvas, "Command Window", 0, rootCanvas.height-2, rootCanvas.width, rootCanvas.height,
-						kTXTCLR_BRIGHT_YELLOW, kTXTCLR_BLACK, kTXTCLR_BRIGHT_WHITE);	
+		Window * win_drive = create_window(drive_name, 0, 1, rootCanvas.width/2, rootCanvas.height-2, 
+						kTXTCLR_BRIGHT_YELLOW, kTXTCLR_BLACK, kTXTCLR_BRIGHT_WHITE);
+		
+		Window * win_command = create_window(drive_name, 0, 1, rootCanvas.width/2, rootCanvas.height-2, 
+						kTXTCLR_BRIGHT_YELLOW, kTXTCLR_BLACK, kTXTCLR_BRIGHT_WHITE);
+		
+		draw_window(&rootCanvas, win_drive);			
+		
+		draw_window(&rootCanvas, win_command);	
 		
 		printHelp();
 		
@@ -388,7 +393,8 @@ int file_manager (int proc_num)
 					txtui_printAtXY(&rootCanvas, 1, rootCanvas.height-1, command);
 					break;
 				case MSG_QUIT:
-					
+					release_window(win_drive);
+					release_window(win_command);
 					break;
 				
 				case MSG_TIMER:
