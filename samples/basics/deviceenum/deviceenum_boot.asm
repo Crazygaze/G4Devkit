@@ -27,8 +27,6 @@ public _interrupt_Reset
 _interrupt_Reset:
 	bl _appMain
 	
-	
-
 
 ;*******************************************************************************
 ;								Data

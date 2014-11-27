@@ -16,12 +16,13 @@
 public _initCommon
 _initCommon:
 	; Get the address of the screen device buffer
-	mov r0, 2 ; Screen device is always in device bus 2
-	mov r1, 0 ; Device function 0
+	; Screen device always on bus 2
+	; Function 0 retrieves information
+	mov ip, (0x2<<24) | 0 ;
 	hwi
-	str [_screenBuffer], r1 ; Save the screen buffer address
-	str [_screenXRes], r2
-	str [_screenYRes], r3
+	str [_screenBuffer], r0 ; Save the screen buffer address
+	str [_screenXRes], r1
+	str [_screenYRes], r2
 	mov pc, lr
 
 public _loopForever
@@ -38,38 +39,43 @@ _loopForever:
 ;	f0 - Running time in seconds
 public _getRunningTimeSeconds
 _getRunningTimeSeconds:
-	mov r0, 1 ; Clock is at busid 1
-	mov r1, 0 ; Clock function 0 gives us the running time
+	; Clock is at bus 1
+	; Clock function 0 gives us the running time
+	mov ip, (1<<24) | 0
 	hwi
 	; Running time in seconds is already in f0, so return
 	mov pc, lr
 
 ;
 ; Full hwi call
+; In
+; r0 - bus
+; r1 - function number
+; r2 - pointer to array of 4 words
 public _hwiCall
 _hwiCall:
-	push {r4-r10,lr} ; save registers we will need to restore
-	mov ip, r0; save the pointer to the data
+	push {r4,lr} ; save registers we will need to restore
+	
+	sll ip, r0, 24
+	or ip, ip, r1	
+	mov r4, r2
 	
 	; setup call to hwi.
-	ldr r0, [ip + 4*0]
-	ldr r1, [ip + 4*1]
-	ldr r2, [ip + 4*2]
-	ldr r3, [ip + 4*3]
-	ldr r4, [ip + 4*4]
-	ldr r5, [ip + 4*5]
-	ldr r6, [ip + 4*6]
+	ldr r0, [r4 + 4*0]
+	ldr r1, [r4 + 4*1]
+	ldr r2, [r4 + 4*2]
+	ldr r3, [r4 + 4*3]
 	hwi
 	; Save outputs back to the struct
-	str [ip + 4*0], r0
-	str [ip + 4*1], r1
-	str [ip + 4*2], r2
-	str [ip + 4*3], r3
-	str [ip + 4*4], r4
-	str [ip + 4*5], r5
-	str [ip + 4*6], r6
+	str [r4 + 4*0], r0
+	str [r4 + 4*1], r1
+	str [r4 + 4*2], r2
+	str [r4 + 4*3], r3
+
+	; hwi puts any error codes in ip, move setup the return value
+	mov r0, ip
 	
-	pop {r4-r10,pc}
+	pop {r4,pc}
 
 ;*******************************************************************************
 ;    Keyboard functions
@@ -77,8 +83,9 @@ _hwiCall:
 
 public _kybClearBuffer
 _kybClearBuffer:
-	mov r0, 3 ; Keyboard is on bus 3
-	mov r1, 0 ; Function 0 : Clear bnuffer
+	; Keyboard fixed on bus 3
+	; Keyboard function 0: Clear buffer
+	mov ip, (0x3<<24) | 0
 	hwi
 	mov pc, lr
 	
@@ -91,18 +98,19 @@ _kybClearBuffer:
 ;
 public _kybGetKey
 _kybGetKey:
-	mov r0, 3 ; Keyboard is on bus 3
-	mov r1, 1 ; Function 1 : Get next character in queue
+	; Keyboard fixed on bus 3
+	; Keyboard function 0: Get next character in queue
+	mov ip, (0x3<<24) | 1
 	hwi
+
 	; hwi result:
-	;	r0 - error code if any
-	;	r1 - Event type (0:Empty, 1:Pressed, 2:Released, 3:Typed)
-	;	r2 - key
-	cmp r1, 3
+	;	r0 - Event type (0:Empty, 1:Pressed, 2:Released, 3:Typed)
+	;	r1 - key
+	cmp r0, 3
 	bne _kybGetKey ; Keep looping until we get a Typed event
-	mov r0, r2
+	mov r0, r1
 	mov pc, lr
-	
+
 ;*******************************************************************************
 ;		Standard C library functions
 ;*******************************************************************************

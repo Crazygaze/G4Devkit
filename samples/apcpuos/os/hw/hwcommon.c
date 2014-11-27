@@ -56,10 +56,8 @@ void hw_initAll(void)
 	
 	// Initialize the rest of the default devices
 	for(int bus=0; bus<HWBUS_DEFAULTDEVICES_MAX; bus++) {
-		hw_HwiData h;
-		h.regs[0] = bus;
-		h.regs[1] = HWDEFAULT_FUNC_QUERYINFO;
-		HWERROR err = hw_hwiFull(&h);
+		hw_HwiData data;
+		HWERROR err = hw_hwiFull(bus, HWDEFAULT_FUNC_QUERYINFO, &data);
 		
 		if (err==HWERR_DEFAULT_DEVICENOTFOUND) {
 			continue;
@@ -68,8 +66,8 @@ void hw_initAll(void)
 			continue;
 		}
 		
-		uint32_t id = h.regs[1];
-		uint32_t version = h.regs[2];
+		uint32_t id = data.regs[0];
+		uint32_t version = data.regs[1];
 		
 		krn_bootLog("BUS %d: %c%c%c%c v0x%X...",
 			bus, id>>24, (id>>16)&0xFF, (id>>8)&0xFF, id&0xFF,

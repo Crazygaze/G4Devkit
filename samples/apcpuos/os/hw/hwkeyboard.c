@@ -52,11 +52,9 @@ void hw_kyb_clearBuffer(void)
 uint8_t hw_kyb_getNextEvent(uint8_t* key)
 {
 	hw_HwiData hwi;
-	hwi.regs[0] = HWBUS_KYB;
-	hwi.regs[1] = HW_KYB_FUNC_GETEVENT;
-	hw_hwiFull(&hwi);
-	*key = hwi.regs[2];
-	return hwi.regs[1];
+	hw_hwiFull(HWBUS_KYB, HW_KYB_FUNC_GETEVENT, &hwi);
+	*key = hwi.regs[1];
+	return hwi.regs[0];
 }
 
 static void hw_kyb_updateModifier(int flag, uint8_t event)

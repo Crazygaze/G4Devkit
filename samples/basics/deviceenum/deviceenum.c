@@ -73,9 +73,7 @@ void appMain(void)
 		// Get Device ID
 		// We also use this to detect if a device exists at that bus
 		HwiData data;
-		data.regs[0] = bus;
-		data.regs[1] = HWIFUNC_ID;
-		int res = hwiCall(&data);
+		int res = hwiCall(bus, HWIFUNC_ID, &data);
 		if (res!=HWIERR_SUCCESS) {
 			logString("NO DEVICE");
 			continue; // No device, so look in the next bus
@@ -83,21 +81,19 @@ void appMain(void)
 
 		// Print the Device ID information
 		logString("FOUND: ID=");
-		logString(idToString(data.regs[1]));
+		logString(idToString(data.regs[0]));
 		logString(", Version=");
-		logNumber(data.regs[2]);
+		logNumber(data.regs[1]);
 		logString(", Manuf.=");
-		logString(idToString(data.regs[3]));
+		logString(idToString(data.regs[2]));
 		
 		
 		//
 		// Get the device description
-		data.regs[0] = bus;
-		data.regs[1] = HWIFUNC_DESCRIPTION;
-		hwiCall(&data);
+		hwiCall(bus, HWIFUNC_DESCRIPTION, &data);
 		char desc[4*4+1];
 		memset(desc, 0, sizeof(desc));
-		memcpy(desc, &data.regs[1], 4*4);
+		memcpy(desc, &data.regs[0], 4*4);
 		logString(", Desc=");
 		logString(desc);
 	}

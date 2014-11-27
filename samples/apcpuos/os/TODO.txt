@@ -12,3 +12,6 @@ If I add a CPU instruction to check an address, change the function to suport it
 thread and secondary threads. At the moment a process's main thread is created
 with one function, and secondaries in another. Is is bug prone, as any thread
 changes I need to make, I need to change both functions
+
+
+- Change hw_HwiData to have only the required registers

@@ -28,9 +28,9 @@ typedef struct ROMProcessInfo
 } ROMProcessInfo;
 extern ROMProcessInfo processInfo;
 
-#define NO_INTERRUPT 15
-extern const int krn_currentIntr;
-extern const int krn_previousIntr;
+#define NO_INTERRUPT -1
+extern const int krn_currentIntrReason;
+extern const int krn_previousIntrReason;
 
 #endif
 

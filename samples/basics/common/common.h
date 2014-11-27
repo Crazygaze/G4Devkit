@@ -42,12 +42,10 @@ void pause(int ms);
  * Struct used to make hwi calls. It's used for both input and output
  */
 typedef struct HwiData {
-	// r0 up to r6 can be used with this struct
-	// If any device uses more registers, this needs to be changed
-	unsigned int regs[7];
+	unsigned int regs[4];
 } HwiData;
 
-int hwiCall(HwiData* data);
+int hwiCall(int bus, int funcNum, HwiData* data);
 
 //******************************************************************************
 //		Screen functions
