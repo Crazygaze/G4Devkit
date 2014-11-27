@@ -21,11 +21,17 @@ int text_editor (int cookie)
 	
 	char title_tmp[128];
 	sprintf (title_tmp, "File: %s", prcArguments);
-	draw_window(&rootCanvas, title_tmp, 0, 1, rootCanvas.width, rootCanvas.height - 3,
-						kTXTCLR_BRIGHT_GREEN, kTXTCLR_BLACK, kTXTCLR_BLACK);		
 	
-	draw_window(&rootCanvas, "Commands:", 0, rootCanvas.height - 3, rootCanvas.width, 3,
-						kTXTCLR_BLUE, kTXTCLR_BLACK, kTXTCLR_WHITE);		
+	Window * win_editor = create_window(title_tmp, 0, 1, rootCanvas.width, rootCanvas.height - 3,
+						kTXTCLR_BRIGHT_GREEN, kTXTCLR_BLACK, kTXTCLR_BLACK);
+	
+	Window * win_command = create_window("Commands:", 0, rootCanvas.height - 3, rootCanvas.width, 3,	
+						kTXTCLR_BLUE, kTXTCLR_BLACK, kTXTCLR_WHITE);
+	
+	draw_window(&rootCanvas, win_editor);
+	
+	
+	draw_window(&rootCanvas, win_command);
 
 	txtui_printAtXY(&rootCanvas, 1, rootCanvas.height - 2, "Press BACKSPASE to exit");
 
@@ -61,6 +67,10 @@ int text_editor (int cookie)
 			case MSG_KEY_PRESSED:
 				if (msg.param1 == KEY_BACKSPACE)
 					return EXIT_SUCCESS;
+				break;
+			case MSG_QUIT:
+				release_window(win_editor);
+				release_window(win_command);
 				break;
 		}
 	}
