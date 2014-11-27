@@ -220,6 +220,19 @@ PCB* prc_setDefaultFocus(void);
 */
 void prc_giveAccessToKernel(PCB* pcb, bool status);
 
+
+/*!
+* Gives the address of a variable that belongs to shared data, in the context
+* of the given process
+*
+* For example, suppose you have a global variable named "someFoo" that is part
+* of shared data. To get the address of that variable in the address space of
+* the process somePcb, you do
+*
+* void* addr = prc_getPtrToShared(somePcb, &someFoo);
+*/
+void* prc_getPtrToShared(PCB* pcb, void* var);
+
 #ifdef DEBUG
 void prc_logAllThreads(const char* title);
 #endif

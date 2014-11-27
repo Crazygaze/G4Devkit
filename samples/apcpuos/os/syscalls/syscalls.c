@@ -32,30 +32,45 @@ bool syscall_createProcess(void)
 	PCB* pcb = krn.interruptedTcb->pcb;
 	int* regs = (int*)krn.interruptedTcb->cpuctx;
 	
-	AppInfo* info = (AppInfo*) regs[0];
+	ProcessCreateInfo* info = (ProcessCreateInfo*) regs[0];
+	const char* args = (const char*) regs[1];
+	int argsSize = regs[1];
+	argsSize = min(argsSize, PRC_ARGUMENTS_MAXSIZE);
 
 	// Make sure the process can write to the address it has given us
 	if (!check_user_ptr(pcb, kMMUAccess_Write, info, sizeof(*info)))
 		return FALSE;
-
-	prc_giveAccessToKernel(pcb, true);
-	PCB * pcb_created = prc_create(info->name, info->startFunc, info->privileged, info->stacksize, info->memsize);
-	if (pcb_created == NULL){
-		regs[0] = 0;
 		
-		prc_giveAccessToKernel(pcb, false);
+	// Make sure args string the process passed is valid
+	if (!check_user_ptr(pcb, kMMUAccess_Write, args, argsSize))
 		return FALSE;
-	}
-	
-	prc_giveAccessToKernel(pcb_created, true);
-	pcb_created->info.flags = info->flags;
-	pcb_created->info.cookie = info->cookie;
-	
-	prc_giveAccessToKernel(pcb_created, false);
+
+	ProcessCreateInfo localInfo;
+	prc_giveAccessToKernel(pcb, true);
+	memcpy(&localInfo, info, sizeof(*info));
 	prc_giveAccessToKernel(pcb, false);
 	
-	regs[0] = pcb_created->info.pid;
+	PCB * newpcb = prc_create(localInfo.name, localInfo.startFunc, FALSE,
+		localInfo.stacksize, localInfo.memsize);
+	if (newpcb == NULL){
+		regs[0] = 0;
+		return TRUE;
+	}	
+	newpcb->info.flags = localInfo.flags;
 	
+	// Setup arguments string
+	{
+		prc_giveAccessToKernel(newpcb, true);
+		prc_giveAccessToKernel(pcb, true);
+		char* addr = prc_getPtrToShared(newpcb, &prcArguments);
+		KERNEL_DEBUG("&prcArguments=%d", (u32)addr);
+		strncpy(addr, args, argsSize);
+		prc_giveAccessToKernel(pcb, false);
+		prc_giveAccessToKernel(newpcb, false);
+	}
+	
+	regs[0] = newpcb->info.pid;
+
 	return TRUE;
 }
 

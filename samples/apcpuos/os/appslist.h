@@ -6,7 +6,7 @@
 #include "appsdk/kernel_shared/process_shared.h"
 
 
-typedef struct AppInfo
+typedef struct KernelAppInfo
 {
 	const char* name;
 	
@@ -26,9 +26,9 @@ typedef struct AppInfo
 	
 	// User defined cookie. Can be anything 
 	uint32_t cookie;
-} AppInfo;
+} KernelAppInfo;
 
 int os_getNumApps(void);
-AppInfo* os_getAppInfo(uint32_t appnumber);
+KernelAppInfo* os_getAppInfo(uint32_t appnumber);
 
 #endif

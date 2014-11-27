@@ -237,26 +237,19 @@ void changeDir(char * path, char * next_dir)
 void callEditor(const char * path)
 {
 	LOG ("ASKJDLAKS %s", path);
-	AppInfoShared app_info;
-	app_info.name = malloc(strlen("TextEditor")*sizeof(char));
+	ProcessCreateInfo app_info;
 	strcpy(app_info.name, "TextEditor");
 	app_info.startFunc = text_editor;
-	app_info.privileged = FALSE;
 	app_info.stacksize = 1024+4000*2;
 	app_info.memsize = 1024+4000*8;
-	app_info.flags = APPFLAG_WANTSCANVAS | APPFLAG_WANTSKEYS | APPFLAG_WANTSSTATUSBAR;
-	/*
-		TODO: make shared_memory plz!
-	*/
-	app_info.cookie = 0; // app_info.cookie = (int) path;
-	
+	app_info.flags = APPFLAG_WANTSCANVAS | APPFLAG_WANTSKEYS | APPFLAG_WANTSSTATUSBAR;	
 	
 	// temporary save path to shared file
 	FILE * file = fopen("TESM.TXT", "w");
 	if (file){
 		fputs(path, file);
 		fclose(file);
-		int PID = app_createProcess(&app_info);
+		int PID = app_createProcess(&app_info, path);
 		
 		if (PID){
 			while (!app_setFocusTo( PID )){
@@ -264,8 +257,7 @@ void callEditor(const char * path)
 			}
 		}
 	}
-	
-	
+
 }
 
 int file_manager (int proc_num)
