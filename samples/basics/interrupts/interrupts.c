@@ -188,8 +188,8 @@ void handleCpuInterrupt(u32 reason,u32 data0, u32 data1, u32 data2, u32 data3)
 		case CPU_INTERRUPT_SWI:
 			// NOTE
 			// The system call parameters are in the interrupted context's
-			// registers,		// so I'm printing r0 and r1 to show this came frome the assembly function
-			// '_causeSystemCall'
+			// registers, so I'm printing r0 and r1 to show this came frome the
+			// assembly function "_causeSystemCall"
 			printInterruptDetails(interruptedCtx, reasons[reason],
 				interruptedCtx->gregs[0], interruptedCtx->gregs[1],0,0);
 
