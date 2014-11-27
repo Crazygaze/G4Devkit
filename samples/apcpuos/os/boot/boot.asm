@@ -114,8 +114,8 @@ _intrCtxStart:
 ;*******************************************************************************
 ;
 _intrHandler_Reset:
-	str [_krn_previousIntr], 15
-	str [_krn_currentIntr], 0
+	str [_krn_previousIntrReason], -1
+	str [_krn_currentIntrReason], 0
 	
 	;
 	; Setup a temporary stack frame so we can call C code to do most of the work
@@ -126,11 +126,10 @@ _intrHandler_Reset:
 	; ram is free to be used for the screen buffer
 	
 	; Check how much RAM we have
-	mov r0, 0
-	mov r1, 0
+	mov ip, (0<<24) | 0; Bus 0, function 0
 	hwi
-	str [_ramAmount] , r1
-	mov sp, r1 ; set stack to top address
+	str [_ramAmount] , r0
+	mov sp, r0 ; set stack to top address
 
 	; Boot first pass to initialize basics
 	; This is required, so we setup a stack where we want, exit the preboot
@@ -144,9 +143,10 @@ _intrHandler_Reset:
 	; krnInit returns the context we should switch to
 	;
 	bl _krn_init
+	str [_krn_currentIntrReason], -1
+	
 	
 	; Switch to the contex to run.
-	str [_krn_currentIntr], 15 ; Mark as not inside any interrupts
 	ctxswitch [r0]
 
 	; We will only get here if some other context changes to our context, which
@@ -161,42 +161,36 @@ extern _krn_panicDoubleFault
 extern _krn_handleInterrupt
 
 _intrHandler_Abort:
-	mov r4, 1
 	b _dispatchIntr
 
 _intrHandler_DivideByZero:
-	mov r4, 2
 	b _dispatchIntr
 
 _intrHandler_UndefinedInstruction:
-	mov r4, 3
 	b _dispatchIntr
 	
 _intrHandler_IllegalInstruction:
-	mov r4, 4
 	b _dispatchIntr
 
 _intrHandler_SWI:
-	mov r4, 5
 	b _dispatchIntr
 
 _intrHandler_IRQ:
-	mov r4, 6
 	b _dispatchIntr
 
 _intrHandler_RESERVED:
-	mov r4, 7
 	b _dispatchIntr
 	
 
 ;
 ; It expects the current interrupt type in r4
 _dispatchIntr:
-	ldr ip, [_krn_currentIntr]
-	str [_krn_previousIntr], ip
-	str [_krn_currentIntr], r4
+	str [_krn_interruptedCtx], lr
+	ldr r4, [_krn_currentIntrReason]
+	str [_krn_previousIntrReason], r4
+	str [_krn_currentIntrReason], ip
 	bl _krn_handleInterrupt
-	str [_krn_currentIntr], 15
+	str [_krn_currentIntrReason], -1
 	ctxswitch [r0]
 	; We will only get here if some other context changes to our context, which
 	; per design, we don't allow
@@ -223,13 +217,17 @@ _ramAmount:
 ; Keeping track of the previous, so the kernel panic function can tell what
 ; interrupt type we were executing
 ;
-public _krn_currentIntr
-_krn_currentIntr:
+public _krn_currentIntrReason
+_krn_currentIntrReason:
 .word 15
-public _krn_previousIntr
-_krn_previousIntr:
+public _krn_previousIntrReason
+_krn_previousIntrReason:
 .word 15
 
+; Set when an interrupt occurs
+public _krn_interruptedCtx
+_krn_interruptedCtx:
+.word 0
 
 ;
 ; Read only data (after we set MMU)

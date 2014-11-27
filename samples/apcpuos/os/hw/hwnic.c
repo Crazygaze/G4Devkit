@@ -27,13 +27,10 @@ void hw_nic_dtor(hw_Drv* drv)
 HWERROR hw_nic_sendDebug(const char* str)
 {
 	hw_HwiData hwi;
-	hwi.regs[0] = HWBUS_NIC; // Network card busID
-	hwi.regs[1] = HW_NIC_FUNC_SEND; // function : Buffer outgoing data
-	hwi.regs[2] = 0; // Destination id (0 is a debug destination)
-	hwi.regs[3] = (unsigned int)str;
-	hwi.regs[4] = strlen(str)+1;
-	hw_hwiFull(&hwi);
-	return hwi.regs[0];
+	hwi.regs[0] = 0; // Destination id (0 is a debug destination)
+	hwi.regs[1] = (unsigned int)str;
+	hwi.regs[2] = strlen(str)+1;
+	return hw_hwiFull(HWBUS_NIC,HW_NIC_FUNC_SEND, &hwi);
 }
 
 HWERROR hw_nic_sendDebugV(const char* fmt, ...)

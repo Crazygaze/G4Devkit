@@ -20,6 +20,11 @@ typedef struct Ctx
 // This will be used as the application execution context
 Ctx appCtx;
 
+// The assembly interrupt handler sets this whenever an interrupt happens
+Ctx* interruptedCtx;
+// The assembly interrupt handler sets this whenever an IRQ interrupt happens
+u32 interruptReason;
+
 // We use this small memory block as a stack for the application context
 #define APPSTACKSIZE 4096
 char appStack[APPSTACKSIZE];
@@ -93,16 +98,18 @@ void printNumberData(int x, int y, const char* name, int number, int base)
 
 void printInterruptDetails(
 	Ctx* interruptedCtx, const char* title,
-	u32 data1, u32 data2, u32 data3)
+	u32 data0, u32 data1, u32 data2, u32 data3)
 {
 	redrawScreen(TRUE);
 	
 	int x = 4;
 	int y = 1;
 	printStringData(x,++y, "Interrupt type: ", title);
+	printNumberData(x+50,y, "Bus|Reason: ", interruptReason,16);
 	printStringData(x,++y, "Interrupted context name: ", interruptedCtx->name);
 	printNumberData(x,++y, "Num interrupts: ", interruptsCount, 10);
 	printNumberData(x,++y, "Num of application restarts: ", restartsCount, 10);
+	printNumberData(x,++y, "Interrupt Data0: ", data0, 16);
 	printNumberData(x,++y, "Interrupt Data1: ", data1, 16);
 	printNumberData(x,++y, "Interrupt Data2: ", data2, 16);
 	printNumberData(x,++y, "Interrupt Data3: ", data3, 16);
@@ -125,7 +132,7 @@ Ctx* handleReset(void)
 	return &appCtx;
 }
 
-Ctx* handleAbort(Ctx* interruptedCtx, unsigned address, unsigned type)
+Ctx* handleAbort(unsigned address, unsigned type)
 {
 	static const char* names[3] = {
 		"Abort (Execute)",
@@ -133,36 +140,36 @@ Ctx* handleAbort(Ctx* interruptedCtx, unsigned address, unsigned type)
 		"Abort (Read)"};
 		
 	interruptsCount++;
-	printInterruptDetails(interruptedCtx, names[type], address, type, 0);
+	printInterruptDetails(interruptedCtx, names[type], address, type, 0, 0);
 	setupAppCtx();
-	return interruptedCtx;
+	return &appCtx;
 }
 
-Ctx* handleDivideByZero(Ctx* interruptedCtx)
+Ctx* handleDivideByZero(void)
 {
 	interruptsCount++;
-	printInterruptDetails(interruptedCtx, "DivideByZero",0,0,0);
+	printInterruptDetails(interruptedCtx, "DivideByZero",0,0,0,0);
 	setupAppCtx();
-	return interruptedCtx;
+	return &appCtx;
 }
 
-Ctx* handleUndefinedInstruction(Ctx* interruptedCtx)
+Ctx* handleUndefinedInstruction(void)
 {
 	interruptsCount++;
-	printInterruptDetails(interruptedCtx, "UndefinedInstruction",0,0,0);
+	printInterruptDetails(interruptedCtx, "UndefinedInstruction",0,0,0,0);
 	setupAppCtx();
-	return interruptedCtx;
+	return &appCtx;
 }
 
-Ctx* handleIllegalIntruction(Ctx* interruptedCtx)
+Ctx* handleIllegalIntruction(void)
 {
 	interruptsCount++;
-	printInterruptDetails(interruptedCtx, "IllegalInstruction",0,0,0);
+	printInterruptDetails(interruptedCtx, "IllegalInstruction",0,0,0,0);
 	setupAppCtx();	
-	return interruptedCtx;
+	return &appCtx;
 }
 
-Ctx* handleSystemCall(Ctx* interruptedCtx)
+Ctx* handleSystemCall(void)
 {
 	interruptsCount++;
 	// NOTE
@@ -170,7 +177,7 @@ Ctx* handleSystemCall(Ctx* interruptedCtx)
 	// so I'm printing r0 and r1 to show this came frome the assembly function
 	// '_causeSystemCall'
 	printInterruptDetails(interruptedCtx, "SystemCall",
-		interruptedCtx->gregs[0], interruptedCtx->gregs[1],0);
+		interruptedCtx->gregs[0], interruptedCtx->gregs[1],0,0);
 
 	
 	// A SWI interrupt handler should set the interrupted context's registers
@@ -183,10 +190,10 @@ Ctx* handleSystemCall(Ctx* interruptedCtx)
 	return interruptedCtx;
 }
 
-Ctx* handleIRQ(Ctx* interruptedCtx, u32 data1, u32 data2, u32 data3)
+Ctx* handleIRQ(u32 data0, u32 data1, u32 data2, u32 data3)
 {
 	interruptsCount++;
-	printInterruptDetails(interruptedCtx, "IRQ",data1,data2,data3);
+	printInterruptDetails(interruptedCtx, "IRQ",data0,data1,data2,data3);
 	// Note that for an IRQ handler, an operating system would just handle it
 	// then resume the application.
 	// That's why I'm not calling "restart" here
@@ -214,7 +221,7 @@ void causeIRQ(void);
 void showMenu(void)
 {
 	int x = 10;
-	int y = 11;
+	int y = 12;
 	printString(x, y++, "1. Test Abort (Execute)");
 	printString(x, y++, "2. Test Abort (Write)");
 	printString(x, y++, "3. Test Abort (Read)");

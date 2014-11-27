@@ -157,17 +157,15 @@ static bool hw_dkc_query(u32 diskNum)
 	memset(dsk, 0, sizeof(*dsk));		
 
 	hw_HwiData hwi;
-	hwi.regs[0] = HWBUS_DKC;
-	hwi.regs[1] = HW_DKC_FUNC_QUERY;
-	hwi.regs[2] = diskNum;
-	HWERROR err = hw_hwiFull(&hwi);
+	hwi.regs[0] = diskNum;
+	HWERROR err = hw_hwiFull(HWBUS_DKC, HW_DKC_FUNC_QUERY, &hwi);
 	if (err==HW_DKC_ERROR_NOMEDIA) {
 		return FALSE;
 	} else {
-		dsk->status = hwi.regs[1];
+		dsk->status = hwi.regs[0];
 		hw_dkc_setFlag(dsk, HW_DKC_FLAG_PRESENT);
-		dsk->numSectors = hwi.regs[2];
-		dsk->sectorSize = hwi.regs[3];
+		dsk->numSectors = hwi.regs[1];
+		dsk->sectorSize = hwi.regs[2];
 		return TRUE;
 	}
 }
@@ -198,13 +196,10 @@ void hw_dkc_read(u32 diskNum, u32 sectorNum, char* data, int size)
 	kernel_check(hw_dkc_canRead(dsk));
 	
 	hw_HwiData hwi;
-	hwi.regs[0] = HWBUS_DKC;
-	hwi.regs[1] = HW_DKC_FUNC_READSECTOR;
-	hwi.regs[2] = diskNum;
-	hwi.regs[3] = sectorNum;
-	hwi.regs[4] = (u32)data;
-	hwi.regs[5] = size;
-	HWERROR err = hw_hwiFull(&hwi);
+	hwi.regs[0] = (sectorNum << 8) | diskNum;
+	hwi.regs[1] = (u32)data;
+	hwi.regs[2] = size;
+	HWERROR err = hw_hwiFull(HWBUS_DKC, HW_DKC_FUNC_READSECTOR, &hwi);
 	kernel_check(err==HWERR_SUCCESS);
 	hw_dkc_setFlag(dsk, HW_DKC_FLAG_READING);
 }
@@ -215,13 +210,10 @@ void hw_dkc_write(u32 diskNum, u32 sectorNum, const char* data, int size)
 	kernel_check(hw_dkc_canWrite(dsk));
 	
 	hw_HwiData hwi;
-	hwi.regs[0] = HWBUS_DKC;
-	hwi.regs[1] = HW_DKC_FUNC_WRITESECTOR;
-	hwi.regs[2] = diskNum;
-	hwi.regs[3] = sectorNum;
-	hwi.regs[4] = (u32)data;
-	hwi.regs[5] = size;
-	HWERROR err = hw_hwiFull(&hwi);
+	hwi.regs[0] = (sectorNum << 8) | diskNum;
+	hwi.regs[1] = (u32)data;
+	hwi.regs[2] = size;
+	HWERROR err = hw_hwiFull(HWBUS_DKC, HW_DKC_FUNC_WRITESECTOR, &hwi);
 	kernel_check(err==HWERR_SUCCESS);
 	hw_dkc_setFlag(dsk, HW_DKC_FLAG_WRITING);
 }

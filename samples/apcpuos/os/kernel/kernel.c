@@ -22,6 +22,8 @@
 
 Kernel krn;
 
+extern CpuCtx* krn_interruptedCtx;
+
 void krn_spin(unsigned int ms)
 {
 	unsigned int beg;
@@ -42,7 +44,7 @@ void krn_spin(unsigned int ms)
  * This is called from the boot assembly code
  * \return stack top to use for the kernel
  */
-void* krn_preboot()
+void* krn_preboot(void)
 {
 	krn.kernelPcb = prc_initKernelPrc();
 	return krn.kernelPcb->mainthread->stackTop;
@@ -252,38 +254,13 @@ static void krn_leaveTcb(TCB* tcb, bool isSwiTime)
 }
 
 void krn_panicDoubleFault(
-			CpuCtx* interruptedCtx,
-			uint32_t data1, uint32_t data2, uint32_t data3);
+			uint32_t data0, uint32_t data1, uint32_t data2, uint32_t data3);
 
-CpuCtx* krn_handleInterrupt(
-			CpuCtx* interruptedCtx,
-			uint32_t data1, uint32_t data2, uint32_t data3)
+static void krn_handleCpuInterrupt(uint32_t reason, bool* countSwiTime,
+	uint32_t data0, uint32_t data1, uint32_t data2, uint32_t data3)
 {
-	
-	//KERNEL_DEBUG("interruptedCtx=%d", (uint32_t)interruptedCtx);
-	if (interruptedCtx==(CpuCtx*)INTRCTX_ADDR) {
-		krn.interruptedTcb = krn.kernelPcb->mainthread;
-	} else { 
-		// As part of the processes/threads creation, the CPU CTX is located
-		// right after the TCB, so we can allocate memory for both in one go.
-		// Therefore, to get the TCB from the interrupted CTX, we do the -1
-		krn.interruptedTcb = ((TCB*)(interruptedCtx))-1;
-	}
-	
-	//KERNEL_DEBUG("interruptedTcb=%d", (uint32_t)krn.interruptedTcb);
-	krn_leaveTcb(krn.interruptedTcb, false);
-
-	// Check for double faults (kernel crashes)
-	// This is detecting by checking if we were serving an interrupt before
-	if (krn_previousIntr!=NO_INTERRUPT)
+	switch(reason)
 	{
-		krn_panicDoubleFault(interruptedCtx, data1, data2, data3);
-		// note: panic never returns, so we never get here
-	}
-	
-	bool countSwiTime = false;
-
-	switch(krn_currentIntr) {
 		case 0: // Reset
 		case 1: // Abort
 		case 2: // Divide by zero
@@ -294,7 +271,7 @@ CpuCtx* krn_handleInterrupt(
 				"TASK %d:%s, REASON '%s' DATA 0x%X,0x%X",
 				krn.interruptedTcb->pcb->info.pid,
 				krn.interruptedTcb->pcb->info.name,
-				cpuIntrStr[krn_currentIntr], data1, data2);
+				cpuIntrStr[reason], data0, data1);
 			break;
 			
 		case 5: // SWI
@@ -325,41 +302,81 @@ CpuCtx* krn_handleInterrupt(
 				// eventually trigger that already
 				//krn.nextTcb = krn.idlethread;
 			} else {
-				countSwiTime = true;
+				*countSwiTime = true;
 			}
 		}
-		break;
-
-		case 6: // IRQ
+		break;	
+		
+		// IRQ : TODO - Remove this once I refactor the interrupt handlers
+		case 6:
 		{
-			unsigned int busid;
-			unsigned int reason;
-			int count=1;
-			bool hasIRQ;
-			do {
-				busid = data1 >> 24;
-				reason = data1 & 0x00FFFFFF;
-				if (busid<HWBUS_DEFAULTDEVICES_MAX && hw_drivers[busid]) {
-					hw_drivers[busid]->irqHandler(reason, data2, data3);
-				} else {
-					krn_panic(
-						"BUS %d : Received IRQ for device without driver.",
-						busid);
-				}
-
-				// Grab the next IRQ if any
-				hasIRQ = hw_cpu_nextIRQ(-1, &data1, &data2, &data3);
-				if (hasIRQ)	{
-					count++;				
-				}
-			} while(hasIRQ);
-			
+			kernel_assert(0);
 		}
 		break;
 		
 		// Invalid interrupt type
 		default:
-			krn_panic("UNKNOWN INTERRUPT TYPE: %d", krn_currentIntr);
+			krn_panic("UNKNOWN INTERRUPT TYPE: %d", reason);		
+	}
+}
+
+static void krn_handleIRQInterrupt(uint8_t bus, uint32_t reason, uint32_t data0,
+	uint32_t data1, uint32_t data2, uint32_t data3)
+{
+	int count=1;
+	bool hasIRQ;
+	do {
+		if (bus<HWBUS_DEFAULTDEVICES_MAX && hw_drivers[bus]) {
+			hw_drivers[bus]->irqHandler(reason, data0, data1);
+		} else {
+			krn_panic(
+				"BUS %d : Received IRQ for device without driver.",
+				bus);
+		}
+
+		// Grab the next IRQ if any
+		hasIRQ = hw_cpu_nextIRQ(-1, &data0, &data1);
+		if (hasIRQ)	{
+			count++;				
+		}	
+	} while(hasIRQ);
+}
+
+CpuCtx* krn_handleInterrupt(
+			uint32_t data0, uint32_t data1, uint32_t data2, uint32_t data3)
+{
+	//KERNEL_DEBUG("interruptedCtx=%d", (uint32_t)interruptedCtx);
+	if (krn_interruptedCtx==(CpuCtx*)INTRCTX_ADDR) {
+		krn.interruptedTcb = krn.kernelPcb->mainthread;
+	} else { 
+		// As part of the processes/threads creation, the CPU CTX is located
+		// right after the TCB, so we can allocate memory for both in one go.
+		// Therefore, to get the TCB from the interrupted CTX, we do the -1
+		krn.interruptedTcb = ((TCB*)(krn_interruptedCtx))-1;
+	}
+	
+	//KERNEL_DEBUG("interruptedTcb=%d", (uint32_t)krn.interruptedTcb);
+	krn_leaveTcb(krn.interruptedTcb, false);
+
+	// Check for double faults (kernel crashes)
+	// This is detecting by checking if we were serving an interrupt before
+	if (krn_previousIntrReason!=NO_INTERRUPT)
+	{
+		krn_panicDoubleFault(data0, data1, data2, data3);
+		// note: panic never returns, so we never get here
+	}
+	
+	bool countSwiTime = false;
+
+	uint8_t bus = krn_currentIntrReason >> 24;
+	uint32_t reason = krn_currentIntrReason & 0x80FFFFFF;
+	
+	// bus 0 means its a CPU interrupt
+	if (bus==0) {
+		krn_handleCpuInterrupt(reason, &countSwiTime, data0, data1, data2,
+			data3);
+	} else {
+		krn_handleIRQInterrupt(bus, reason, data0, data1, data2, data3);
 	}
 
 	krn_leaveTcb(krn.kernelPcb->mainthread, countSwiTime);
@@ -368,15 +385,15 @@ CpuCtx* krn_handleInterrupt(
 }
 
 void krn_panicDoubleFault(
-			CpuCtx* interruptedCtx,
-			uint32_t data1, uint32_t data2, uint32_t data3)
+			uint32_t data0, uint32_t data1, uint32_t data2, uint32_t data3)
 {
 	krn_panic(
-		"DOUBLE FAULT: '%s' PREVIOUS %d, DATA 0x%X,0x%X,0x%X",
-		cpuIntrStr[krn_currentIntr], krn_previousIntr, data1, data2, data3);
+		"DOUBLE FAULT: '%s' PREVIOUS %d, DATA 0x%X,0x%X,0x%X,0x%X",
+		cpuIntrStr[krn_currentIntrReason & 0x80FFFFFF], krn_previousIntrReason,
+		data0, data1, data2, data3);
 }
 
-void krn_panicUnexpectedCtxSwitch()
+void krn_panicUnexpectedCtxSwitch(void)
 {
 	krn_panic("Unexpected explicit switch to interrupt context.","");
 }

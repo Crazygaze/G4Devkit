@@ -56,7 +56,8 @@ extern _handleUndefinedInstruction
 extern _handleIllegalIntruction
 extern _handleSystemCall
 extern _handleIRQ
-
+extern _interruptedCtx
+extern _interruptReason
 .text
 
 ;*******************************************************************************
@@ -66,31 +67,45 @@ extern _handleIRQ
 ;*******************************************************************************
 public _interrupt_Reset
 _interrupt_Reset:
+	str [_interruptedCtx], lr ; save interrupted context
+	str [_interruptReason], ip ; save interrupt reason
 	bl _handleReset
 	ctxswitch [r0] ; resume context the handler wants us to resume	
 	; We should never get here...
 	
 _interrupt_Abort:
+	str [_interruptedCtx], lr ; save interrupted context
+	str [_interruptReason], ip ; save interrupt reason
 	bl _handleAbort
 	ctxswitch [r0] ; resume context the handler wants us to resume	
 	
 _interrupt_DivideByZero:
+	str [_interruptedCtx], lr ; save interrupted context
+	str [_interruptReason], ip ; save interrupt reason
 	bl _handleDivideByZero
 	ctxswitch [r0] ; resume context the handler wants us to resume	
 	
 _interrupt_UndefinedInstruction:
+	str [_interruptedCtx], lr ; save interrupted context
+	str [_interruptReason], ip ; save interrupt reason
 	bl _handleUndefinedInstruction
 	ctxswitch [r0] ; resume context the handler wants us to resume	
 	
 _interrupt_IllegalInstruction:
+	str [_interruptedCtx], lr ; save interrupted context
+	str [_interruptReason], ip ; save interrupt reason
 	bl _handleIllegalIntruction
 	ctxswitch [r0] ; resume context the handler wants us to resume	
 	
 _interrupt_SystemCall:
+	str [_interruptedCtx], lr ; save interrupted context
+	str [_interruptReason], ip ; save interrupt reason
 	bl _handleSystemCall
 	ctxswitch [r0] ; resume context the handler wants us to resume	
 	
 _interrupt_IRQ:
+	str [_interruptedCtx], lr ; save interrupted context
+	str [_interruptReason], ip ; save interrupt reason
 	bl _handleIRQ
 	ctxswitch [r0] ; resume context the handler wants us to resume	
 	
@@ -137,11 +152,12 @@ _causeSystemCall:
 public _causeIRQ
 _causeIRQ:
 	push {lr}
-	mov r0, 1 ; Clock is on bus 1
-	mov r1, 2 ; Function 2 sets a timer
-	; Read the Clock documentation to understand the parameters
-	mov r2, 0x40000000 ; Timer 0, IRQ mode, No auto reset
-	mov r3, 100 ; Trigger the timer in 1 ms.
+	; Clock is fixed at bus 1
+	; Clock function 2 sets a timer
+	; Read the Clock documentation to understand all the parameters	
+	mov ip, (0x1 << 24) | 2;	
+	mov r0, 0x40000007 ; Timer 7, IRQ mode, No auto reset
+	mov r1, 100 ; Trigger the timer in 1 ms.
 	hwi
 	pop {pc}
 

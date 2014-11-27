@@ -27,11 +27,12 @@ public _startup
 _startup:
 
 	; Get the address of the screen device buffer
-	mov r0, 2 ; Screen device is always in device bus 2
-	mov r1, 0 ; Device function 0
+	; Screen device is always on device bus 2
+	; Device function 0 gets the screen buffer address
+	mov ip, (0x2<<24) | 0 ;
 	hwi
-
-	mov r9, r1 ; keep the screen address in r9
+	; The screen buffer address is returned in r0
+	mov r9, r0 ; keep the screen address in r9
 
 	;
 	; Prints a "Hello World" null terminated string 

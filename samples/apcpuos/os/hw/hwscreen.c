@@ -27,13 +27,12 @@ static hw_scr_Drv driver;
 static void hw_scr_initInfo(void)
 {
 	hw_HwiData h;
-	h.regs[0] = HWBUS_SCR;
-	h.regs[1] = HW_SCR_FUNC_GETINFO;
-	hw_hwiFull(&h);
-	driver.canvas.width = h.regs[2];
-	driver.canvas.height = h.regs[3];
+	hw_hwiFull(HWBUS_SCR, HW_SCR_FUNC_GETINFO, &h);
+	// h.regs[0] has the buffer address, but we set it explicitly later
+	driver.canvas.width = h.regs[1];
+	driver.canvas.height = h.regs[2];
 	driver.canvas.stride = driver.canvas.width;
-	driver.bytesperchar = h.regs[4];
+	driver.bytesperchar = h.regs[3];
 	driver.buffersize =
 		driver.canvas.width*driver.canvas.height*driver.bytesperchar;
 	
