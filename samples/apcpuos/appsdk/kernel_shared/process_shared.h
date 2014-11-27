@@ -2,6 +2,7 @@
 #define _process_shared_h_
 
 #include <stddef_shared.h>
+#include "syscalls_shared.h"
 
 #define PRC_NAME_SIZE 9
 
@@ -41,6 +42,9 @@ typedef struct ProcessInfo
 	
 } ProcessInfo;
 
+#define PRC_ARGUMENTS_MAXSIZE 128
+extern char prcArguments[PRC_ARGUMENTS_MAXSIZE];
+
 /*! Miscellaneous OS and kernel stats
 */
 typedef struct OSInfo
@@ -73,6 +77,24 @@ typedef struct ThreadMsg
 	uint32_t param1;
 	uint32_t param2;
 } ThreadMsg;
+
+
+typedef struct ProcessCreateInfo
+{
+	char name[PRC_NAME_SIZE];
+	
+	PrcEntryFunc startFunc;
+
+	// How much stack space to give to this app.
+	uint32_t stacksize;
+	
+	// How much memory to reserve for dynamic memory allocations
+	uint32_t memsize;
+	
+	// Flags to tweak some behaviour
+	uint32_t flags;
+} ProcessCreateInfo;
+
 
 //
 // Messages

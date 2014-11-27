@@ -12,25 +12,15 @@
 
 
 int text_editor (int cookie)
-{
+{	
 	if (!change_drive(0)){
 		return EXIT_FAILURE;
 	}
-		
-	FILE * temp_file = fopen("TESM.TXT", "r");
-	char file_name[128];
-	
-	if (temp_file){
-		fgets(file_name, 128, temp_file);
-		fclose(temp_file);
-	} else {
-		return EXIT_FAILURE;
-	}
-	
+
 	print_header(&rootCanvas, "APCPU Text Viewer", kTXTCLR_BLUE, kTXTCLR_WHITE);
 	
 	char title_tmp[128];
-	sprintf (title_tmp, "File: %s", file_name);
+	sprintf (title_tmp, "File: %s", prcArguments);
 	draw_window(&rootCanvas, title_tmp, 0, 1, rootCanvas.width, rootCanvas.height - 3,
 						kTXTCLR_BRIGHT_GREEN, kTXTCLR_BLACK, kTXTCLR_BLACK);		
 	
@@ -39,9 +29,9 @@ int text_editor (int cookie)
 
 	txtui_printAtXY(&rootCanvas, 1, rootCanvas.height - 2, "Press BACKSPASE to exit");
 
-	LOG ("FILENAME: %s", file_name);
+	LOG ("FILENAME: %s", prcArguments);
 
-	FILE * file = fopen(file_name, "r");
+	FILE * file = fopen(prcArguments, "r");
 	if (file){
 		int column = 0;
 		int line = 0;

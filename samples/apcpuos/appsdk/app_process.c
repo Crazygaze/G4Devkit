@@ -4,6 +4,8 @@
 #include <string.h>
 #include "kernel_shared/txtui_shared.h"
 
+char prcArguments[PRC_ARGUMENTS_MAXSIZE];
+
 AppInfo* app_info;
 
 /*
@@ -17,9 +19,11 @@ The way TLS is supported is:
 */
 AppTLS* app_tls;
 
-int app_createProcess(AppInfoShared * app_info)
+int app_createProcess(ProcessCreateInfo* app_info, const char* args)
 {
-	return (app_syscall1(kSysCall_CreateProcess, (int)app_info));	
+	int len = strlen(args);
+	return app_syscall3(kSysCall_CreateProcess, (uint32_t)app_info,
+		(uint32_t)args, len);
 }
 
 int app_outputDebugString(const char* fmt, ...)

@@ -182,8 +182,14 @@ static bool prc_setupMemory(
 	return TRUE;
 }
 
-PCB* prc_initKernelPrc(void)
+void* prc_getPtrToShared(PCB* pcb, void* var)
 {
+	u32 offset = (u32)var - rootthread.cpuctx->gregs[CPU_REG_DS];
+	return (void*)(pcb->mainthread->cpuctx->gregs[CPU_REG_DS] + offset);
+}
+
+PCB* prc_initKernelPrc(void)
+{	
 	//
 	// Initialize PCB
 	strncpy(rootpcb.info.name, "kernel", PRC_NAME_SIZE);
@@ -417,6 +423,7 @@ PCB* prc_create(const char* name, PrcEntryFunc entryfunc, bool privileged,
 		0x00000000 |
 		(privileged ? (1<<CPU_FLAGSREG_SUPERVISOR) : 0) |
 		MMU_KEY(pcb->info.pid, pcb->info.pid, pcb->info.pid);
+		
 	
 	// Setup the links
 	linkedlist_addAfter(rootpcb.previous, pcb);

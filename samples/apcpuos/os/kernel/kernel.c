@@ -135,7 +135,7 @@ CpuCtx* krn_init()
 	// Launch all apps
 	for(int i=0; i<os_getNumApps(); i++)
 	{
-		AppInfo* info = os_getAppInfo(i);
+		KernelAppInfo* info = os_getAppInfo(i);
 		krn_bootLog(
 			"Creating task '%s', stack %u, memory %u...",
 			info->name, info->stacksize, info->memsize);

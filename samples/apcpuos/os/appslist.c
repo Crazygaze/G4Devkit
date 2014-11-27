@@ -11,7 +11,7 @@ int sysstats_main(int p1);
 
 int file_manager(int p1);
 
-static AppInfo apps[NUM_APPS] =
+static KernelAppInfo apps[NUM_APPS] =
 {
 	{ "idle", krn_idleTask, TRUE, 800, 0, APPFLAG_NOFOCUS, 0},
 	{ "file_manager", file_manager, FALSE, 1024*4, 1024+4000*10, APPFLAG_WANTSKEYS|APPFLAG_WANTSSTATUSBAR|APPFLAG_WANTSCANVAS, 1},
@@ -29,7 +29,7 @@ int os_getNumApps(void)
 	return NUM_APPS;
 }
 
-AppInfo* os_getAppInfo(uint32_t appnumber)
+KernelAppInfo* os_getAppInfo(uint32_t appnumber)
 {
 	kernel_assert(appnumber<NUM_APPS);
 	return &apps[appnumber];
