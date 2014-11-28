@@ -22,7 +22,9 @@
 				"$(SolutionDir)appsdk\/stdc",
 				"$(SolutionDir)stdcshared",
 				"$(SolutionDir)filesystem",
+				"$(SolutionDir)graphsystem\/selection_list",
 				"$(SolutionDir)graphsystem",
+				"$(SolutionDir)utilshared",
 				"$(SolutionDir)texteditor",
 				"$(SolutionDir)os"
 			],

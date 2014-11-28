@@ -22,10 +22,10 @@ int text_editor (int cookie)
 	char title_tmp[128];
 	sprintf (title_tmp, "File: %s", prcArguments);
 	
-	Window * win_editor = create_window(title_tmp, 0, 1, rootCanvas.width, rootCanvas.height - 3,
+	GraphWindow * win_editor = create_window(title_tmp, 0, 1, rootCanvas.width, rootCanvas.height - 3,
 						kTXTCLR_BRIGHT_GREEN, kTXTCLR_BLACK, kTXTCLR_BLACK);
 	
-	Window * win_command = create_window("Commands:", 0, rootCanvas.height - 3, rootCanvas.width, 3,	
+	GraphWindow * win_command = create_window("Commands:", 0, rootCanvas.height - 3, rootCanvas.width, 3,	
 						kTXTCLR_BLUE, kTXTCLR_BLACK, kTXTCLR_WHITE);
 	
 	draw_window(&rootCanvas, win_editor);

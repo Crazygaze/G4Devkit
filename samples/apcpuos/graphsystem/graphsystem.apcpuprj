@@ -21,7 +21,8 @@
 				"$(SolutionDir)graphsystem",
 				"$(SolutionDir)appsdk",
 				"$(SolutionDir)appsdk\/stdc",
-				"$(SolutionDir)stdcshared"
+				"$(SolutionDir)stdcshared",
+				"$(SolutionDir)utilshared"
 			],
 			"defines": [
 				"DEBUG"
@@ -45,6 +46,14 @@
 
 	],
 	"files": [
+		{
+			"path": ".\\selection_list\\selection_list.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\selection_list\\selection_list.h",
+			"bootfile": false
+		},
 		{
 			"path": ".\\windows.c",
 			"bootfile": false
