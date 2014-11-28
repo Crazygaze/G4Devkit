@@ -16,18 +16,17 @@ void print_header(TxtCanvas * canvas, const char * title,
 	txtui_printAtXY(&rootCanvas, 0, 0, header_title);
 }
 
-Window * create_window(const char * title, int x, int y, 
+GraphWindow * create_window(const char * title, int x, int y, 
 							int width, int height, 
 							TxtColour color_frame, TxtColour color_back, 
 							TxtColour color_text )
 {
-	Window * win = malloc (sizeof(Window));
+	GraphWindow * win = malloc (sizeof(GraphWindow));
 	if (!win){
-		LOG("MALLOC FAILED");
 		return NULL;
 	}
 	
-	memset(win, 0, sizeof(Window));	
+	memset(win, 0, sizeof(GraphWindow));	
 	
 	win->x = x;
 	win->y = y;
@@ -45,15 +44,13 @@ Window * create_window(const char * title, int x, int y,
 	return win;
 }
 
-void release_window(Window * win)
+void release_window(GraphWindow * win)
 {
 	free (win);
 }
 
-void draw_window(TxtCanvas * canvas, Window * win )
+void draw_window(TxtCanvas * canvas, GraphWindow * win )
 {
-	LOG("WINDOW: %s", win->title);
-
 	// Frame
 	txtui_setColour(&rootCanvas, win->color_frame, win->color_text);
 	txtui_fillArea(&rootCanvas, win->x, win->y, win->width, win->height, ' ');
@@ -66,12 +63,8 @@ void draw_window(TxtCanvas * canvas, Window * win )
 	txtui_fillArea(&rootCanvas, win->x+1, win->y+1, win->width-2, win->height-2, ' ');
 }
 
-void draw_button(TxtCanvas * canvas, const char * label, int x, int y,
-					TxtColour color_back, TxtColour color_text)
+void clean_window(TxtCanvas * canvas, GraphWindow * win)
 {
-	int width = strlen(label) + 2;
-
-	txtui_setColour(&rootCanvas, color_back, color_text);
-	txtui_fillArea(&rootCanvas, x, y, width, 1, ' ');
-	txtui_printfAtXY(&rootCanvas, x + width/2 - strlen(label)/2, y, label);
+	txtui_setColour(&rootCanvas, win->color_back, win->color_text);
+	txtui_fillArea(&rootCanvas, win->x+1, win->y+1, win->width-2, win->height-2, ' ');
 }

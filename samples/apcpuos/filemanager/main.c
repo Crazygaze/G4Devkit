@@ -15,6 +15,7 @@
 #include "app_diskdrive.h"
 
 #include "windows.h"
+#include "selection_list.h"
 
 #include "file_system_provider.h"
 
@@ -29,6 +30,7 @@ static int text_offset_y = 0;
 static int mounted_drive = -1;
 static bool cursor_blink = false;
 static int cursor_pos = 1;
+static GraphWindow * win_drive;
 
 void printHelp()
 {
@@ -124,22 +126,9 @@ static int items_on_screen = 0;
 static int selected_index = 0;
 static char selected_item[14];
 static FS_ITEM items[32];
+static GraphSelectionList * list_dir_entries;
 
-void draw_item(FS_ITEM item, bool selected, int ypos)
-{
-	if (selected){
-		txtui_setColour(&rootCanvas, kTXTCLR_WHITE, kTXTCLR_BLACK);
-		memset(selected_item, 0, 14*sizeof(char));
-		memcpy(selected_item, item.path, strlen(item.path));
-	} else {
-		txtui_setColour(&rootCanvas, kTXTCLR_BLACK, kTXTCLR_WHITE);
-	}	
-
-	txtui_printfAtXY(&rootCanvas, 2, 4+ypos, "%c   %s", (item.type==T_FILE)?'f':'d', item.path);
-	txtui_printfAtXY(&rootCanvas, 15, 4+ypos, "%d", item.size);
-}
-
-void print_dir_entries(const char * path, bool redraw)
+void print_dir_entries_header(const char * path)
 {
 	txtui_fillArea(&rootCanvas, 1, 2, rootCanvas.width/2-2, rootCanvas.height-3-2, ' ');
 	
@@ -153,28 +142,34 @@ void print_dir_entries(const char * path, bool redraw)
 	txtui_fillArea(&rootCanvas, 1, 3, rootCanvas.width/2-2, 1, ' ');
 	
 	txtui_printfAtXY(&rootCanvas, 1, 3, "TYPE NAME     SIZE", path);
+}
+
+void update_filelist(const char * path)
+{
+	clear_selectionList(list_dir_entries);
+
+	DIRECTORY * dir = opendir(path);
 	
-	txtui_setColour(&rootCanvas, kTXTCLR_BLACK, kTXTCLR_WHITE);
-	
-	if (redraw){
-		DIRECTORY * dir = opendir(path);
-		
-		if (dir){
-			int i = 0;
-			FS_ITEM item;
-			while (readdir(dir, &item)){
-				draw_item(item, i == selected_index, i);
-				
-				items[i++] = item;
-			}
-			items_on_screen = i;
+	if (dir){
+		int i = 0;
+		FS_ITEM item;
+		while (readdir(dir, &item)){
+			char spaces[10];
+			memset(spaces, 0, 10);
+			strncpy(spaces, "          ", 9-strlen(item.path));
 			
-			closedir(dir);
+			
+			char line[40];
+			memset(line, 0, 40);
+			sprintf(line, "%c %s%s %d", ((item.type == T_DIR)?'d':'f'), item.path, spaces, item.size);
+						
+			add_to_selectionList(list_dir_entries, line);
+			
+			items[i++] = item;
 		}
-	} else {
-		for (int i = 0; i < items_on_screen; i++){
-			draw_item(items[i], i == selected_index, i);
-		}
+		items_on_screen = i;
+		
+		closedir(dir);
 	}
 }
 
@@ -195,7 +190,6 @@ int parse_command(const char * command, char * fist, char * second)
 			memcpy(fist, command, (space_pos)*sizeof(char));
 			memcpy(second, &command[space_pos + 1], strlen(command) - space_pos - 1);
 					
-			LOG(":LIFEJOISDJF %s %s", command, second);
 			return 1;
 		}	
 	}
@@ -216,48 +210,53 @@ void upToParrentDir(char * path)
 				break;
 			}
 		}
-		print_dir_entries(path, TRUE);
+		
+		update_filelist(path);
+		clean_window(&rootCanvas, win_drive);
+		print_dir_entries_header(path);
+		draw_selectionList(&rootCanvas, list_dir_entries, selected_index);
+		
+		sprintf(selected_item, "%s",items[selected_index].path);
 	}
 }
 
 void changeDir(char * path, char * next_dir)
 {
-	LOG("NEXT DIR: %s", next_dir);
 	char tmp_buf[128];
 	sprintf(tmp_buf, "%s/%s", path, next_dir);
 	
-	if (is_dir_exist(tmp_buf))
+	if (is_dir_exist(tmp_buf)){
 		sprintf(&path[strlen(path)], "/%s", next_dir);
+	} else {
+		return;
+	}
 		
 	selected_index = 0;	
 	
-	print_dir_entries(path, TRUE);
+	update_filelist(path);
+	clean_window(&rootCanvas, win_drive);
+	print_dir_entries_header(path);
+	draw_selectionList(&rootCanvas, list_dir_entries, selected_index);
+	
+	sprintf(selected_item, "%s",items[selected_index].path);
 }
 
 void callEditor(const char * path)
 {
-	LOG ("ASKJDLAKS %s", path);
 	ProcessCreateInfo app_info;
-	strcpy(app_info.name, "TextEditor");
+	strcpy(app_info.name, "TxtEditr");
 	app_info.startFunc = text_editor;
-	app_info.stacksize = 1024+4000*2;
-	app_info.memsize = 1024+4000*8;
+	app_info.stacksize = 1024*4;
+	app_info.memsize = 1024*8+4000;
 	app_info.flags = APPFLAG_WANTSCANVAS | APPFLAG_WANTSKEYS | APPFLAG_WANTSSTATUSBAR;	
 	
-	// temporary save path to shared file
-	FILE * file = fopen("TESM.TXT", "w");
-	if (file){
-		fputs(path, file);
-		fclose(file);
-		int PID = app_createProcess(&app_info, path);
+	int PID = app_createProcess(&app_info, path);
 		
-		if (PID){
-			while (!app_setFocusTo( PID )){
-				app_sleep(100);
-			}
+	if (PID){
+		while (!app_setFocusTo( PID )){
+			app_sleep(100);
 		}
 	}
-
 }
 
 int file_manager (int proc_num)
@@ -276,10 +275,10 @@ int file_manager (int proc_num)
 		char drive_name[12];
 		sprintf(drive_name, "Drive: \'%d\'", mounted_drive);
 		
-		Window * win_drive = create_window(drive_name, 0, 1, rootCanvas.width/2, rootCanvas.height-2, 
+		win_drive = create_window(drive_name, 0, 1, rootCanvas.width/2, rootCanvas.height-2, 
 						kTXTCLR_BRIGHT_YELLOW, kTXTCLR_BLACK, kTXTCLR_BRIGHT_WHITE);
 		
-		Window * win_command = create_window(drive_name, 0, 1, rootCanvas.width/2, rootCanvas.height-2, 
+		GraphWindow * win_command = create_window("Commands:", 0, rootCanvas.height-2, rootCanvas.width, 3, 
 						kTXTCLR_BRIGHT_YELLOW, kTXTCLR_BLACK, kTXTCLR_BRIGHT_WHITE);
 		
 		draw_window(&rootCanvas, win_drive);			
@@ -288,11 +287,19 @@ int file_manager (int proc_num)
 		
 		printHelp();
 		
-		print_dir_entries("/", TRUE);
-	
-	
-		app_setTimer(1, 500, true);
+		list_dir_entries = create_selectionList(win_drive->x + 3, win_drive->y + 3, 
+							win_drive->width - 2, win_drive->height - 5,
+							kTXTCLR_BLACK, kTXTCLR_BRIGHT_WHITE,
+							kTXTCLR_WHITE, kTXTCLR_BLACK);
+				
+		update_filelist("/");
 		
+		print_dir_entries_header(path);
+		draw_selectionList(&rootCanvas, list_dir_entries, selected_index);
+		sprintf(selected_item, "%s",items[selected_index].path);
+		
+		app_setTimer(1, 500, true);
+				
 		// Infinite loop to lock the application
 		ThreadMsg msg;
 		while(app_getMessage(&msg)) {
@@ -318,7 +325,8 @@ int file_manager (int proc_num)
 									sprintf(tmp_buf, "%s/%s", path, str_argument);
 									
 									make_dir(tmp_buf);
-									print_dir_entries(path, TRUE);
+									update_filelist(path);
+									draw_selectionList(&rootCanvas, list_dir_entries, selected_index);
 								}
 								
 								if (strcmp(str_command, "UNLINK") == 0){
@@ -326,7 +334,8 @@ int file_manager (int proc_num)
 									sprintf(tmp_buf, "%s/%s", path, str_argument);
 									
 									unlink(tmp_buf);
-									print_dir_entries(path, TRUE);
+									update_filelist(path);
+									draw_selectionList(&rootCanvas, list_dir_entries, selected_index);
 								}
 								
 								if (strcmp(str_command, "CD") == 0){
@@ -370,13 +379,19 @@ int file_manager (int proc_num)
 					if (msg.param1 == KEY_UP){
 						if (selected_index > 0)
 							selected_index--;
-						print_dir_entries(path, FALSE);
+						
+						sprintf(selected_item, "%s",items[selected_index].path);
+						
+						draw_selectionList(&rootCanvas, list_dir_entries, selected_index);
 					}
 					
 					if (msg.param1 == KEY_DOWN){
 						if (selected_index < items_on_screen - 1)
 							selected_index++;
-						print_dir_entries(path, FALSE);
+						
+						sprintf(selected_item, "%s",items[selected_index].path);
+						
+						draw_selectionList(&rootCanvas, list_dir_entries, selected_index);
 					}					
 				
 					
@@ -393,6 +408,7 @@ int file_manager (int proc_num)
 					txtui_printAtXY(&rootCanvas, 1, rootCanvas.height-1, command);
 					break;
 				case MSG_QUIT:
+					release_selectionList(list_dir_entries);
 					release_window(win_drive);
 					release_window(win_command);
 					break;

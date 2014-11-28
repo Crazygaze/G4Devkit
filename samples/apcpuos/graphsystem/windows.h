@@ -5,7 +5,7 @@
 
 #define MAX_TITLE_LENGHT 128
 
-typedef struct Window{
+typedef struct GraphWindow{
 	int x, y;
 	int width, height;
 	
@@ -14,21 +14,20 @@ typedef struct Window{
 	TxtColour color_frame;
 	TxtColour color_back;
 	TxtColour color_text;
-} Window;
+} GraphWindow;
 
 void print_header(TxtCanvas * canvas, const char * title, 
 							TxtColour color_back, TxtColour color_text);
 							
-Window * create_window(const char * title, int x, int y, 
+GraphWindow * create_window(const char * title, int x, int y, 
 							int width, int height, 
 							TxtColour color_frame, TxtColour color_back, 
 							TxtColour color_text );
 
-void release_window(Window * win);							
+void release_window(GraphWindow * win);							
 							
-void draw_window(TxtCanvas * canvas, Window * win);
+void draw_window(TxtCanvas * canvas, GraphWindow * win);
 
-void draw_button(TxtCanvas * canvas, const char * label, int x, int y,
-					TxtColour color_back, TxtColour color_text);
+void clean_window(TxtCanvas * canvas, GraphWindow * win);
 
 #endif
