@@ -6,10 +6,10 @@
 
 ; Interrupt vector
 .word _interrupt_Reset ; RESET interrupt handler
-.zero 28 ; Space for the other interrupts
+.word 0 ; Space for the other interrupts
 
 ;
-; The default CPU context is fixed at address 32
+; The default CPU context is fixed at address 8
 _mainCtx:
 .zero 196 ; registers (r0..pc), flags register, and floating point registers
 

@@ -21,6 +21,12 @@ int line=1;
 static int x;
 static int y;
 
+
+int doAdd(int a, int b)
+{
+	return a+b;
+}
+
 void logString(const char* str)
 {
 	printString(x, y, str);

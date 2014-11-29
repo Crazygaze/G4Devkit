@@ -54,6 +54,7 @@ typedef struct Kernel {
 
 
 extern Kernel krn;
+extern bool krn_countSwiTime;
 
 /*! Sets the thread to run next 
 */

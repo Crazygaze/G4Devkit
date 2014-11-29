@@ -39,7 +39,7 @@ typedef struct hw_dkc_Drv {
 } hw_dkc_Drv;
 
 static hw_dkc_Drv drv;
-static void hw_dkc_irqHandler(u16 reason, u32 data1, u32 data2);
+static void hw_dkc_irqHandler(u32 reason, u32 data1, u32 data2);
 static bool hw_dkc_query(u32 diskNum);
 
 #define hw_dkc_isWriteProtected(dsk) \
@@ -114,7 +114,7 @@ static hw_dkc_Disk* hw_dkc_getDisk(u32 diskNum)
 	return &drv.disks[diskNum];
 }
 
-static void hw_dkc_irqHandler(u16 reason, u32 data1, u32 data2)
+static void hw_dkc_irqHandler(u32 reason, u32 data1, u32 data2)
 {
 	u32 diskNum = data1;
 	hw_dkc_Disk* dsk = hw_dkc_getDisk(diskNum);

@@ -41,9 +41,6 @@ static void app_setupTLS(AppTLS* tls)
  */
 void app_startup(PrcEntryFunc func)
 {
-#if TEST_TASKBOOT_FAIL
-	krn_forceCrash();
-#endif
 
 	//
 	// Initialize AppInfo struct

@@ -81,7 +81,7 @@ hlt");
  INLINEASM("\t\
  ctxswitch [r0]");
 
- const char* hw_cpu_getIntrReasonMsg(uint16_t reason);
+ const char* hw_cpu_getIntrReasonMsg(uint32_t reason);
 
 /*
  * Returns how many queued up IRQs we have

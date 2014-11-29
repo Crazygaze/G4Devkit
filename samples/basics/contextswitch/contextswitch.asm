@@ -5,8 +5,8 @@
 ;
 ;              - Overview how the sample works -
 ;
-; - On boot the cpu changes to context at fixed location 32 (_mainCtx here),
-;   and sets the PC register of that context to the RESET interrupt handler,
+; - On boot the cpu changes to context at fixed location 8 (_mainCtx here),
+;   and sets the PC register of that context to the RESET handler,
 ;	named here as label _startup
 ; - What _startup does
 ;		- Get and save screen buffer address so we can use it later
@@ -32,12 +32,12 @@
 
 .text
 
-; Interrupt vector
+; Interrupt vector table
 .word _startup ; RESET interrupt handler
-.zero 28 ; Space for the other interrupts
+.word 0 ; Space for the other interrupts
 
 ;
-; The default CPU context is fixed at address 32
+; The default CPU context is fixed at address 8
 _mainCtx:
 .zero 196 ; registers (r0..pc), flags register, and floating point registers
 

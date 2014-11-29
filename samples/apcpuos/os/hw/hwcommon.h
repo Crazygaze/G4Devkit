@@ -45,7 +45,7 @@ typedef struct hw_HwiData {
 	uint32_t regs[4];
 } hw_HwiData;
 
-typedef void (*hw_IrqHandler)(uint16_t reason, uint32_t data1, uint32_t data2);
+typedef void (*hw_IrqHandler)(uint32_t reason, uint32_t data1, uint32_t data2);
 
 typedef struct hw_Drv
 {
