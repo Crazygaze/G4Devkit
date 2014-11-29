@@ -8,6 +8,7 @@
 #include "app_process.h"
 
 #include "windows.h"
+#include "text_view/text_view.h"
 #include "file_system_provider.h"
 
 
@@ -27,15 +28,13 @@ int text_editor (int cookie)
 	
 	GraphWindow * win_command = create_window("Commands:", 0, rootCanvas.height - 3, rootCanvas.width, 3,	
 						kTXTCLR_BLUE, kTXTCLR_BLACK, kTXTCLR_WHITE);
+
+	GraphTextView * text_view = create_textView(1, 2, rootCanvas.width - 2, rootCanvas.height - 2 - 2);
 	
 	draw_window(&rootCanvas, win_editor);
-	
-	
 	draw_window(&rootCanvas, win_command);
 
-	txtui_printAtXY(&rootCanvas, 1, rootCanvas.height - 2, "Press BACKSPASE to exit");
-
-	LOG ("FILENAME: %s", prcArguments);
+	txtui_printAtXY(&rootCanvas, 1, rootCanvas.height - 2, "Press BACKSPACE to exit");
 
 	FILE * file = fopen(prcArguments, "r");
 	if (file){
@@ -44,43 +43,26 @@ int text_editor (int cookie)
 		
 		txtui_setColour(&rootCanvas, kTXTCLR_BLACK, kTXTCLR_WHITE);
 		
+		int lenght = 0;
+		char * text = NULL;
+		
 		char buf[205];
 		memset(buf, 0, 205);
 		
 		while (fgets(buf, 200, file)){	
-			int cur_pos = 0;
-			int nl_pos = find(buf, '\n', cur_pos);
+			int new_lenght = lenght + strlen(buf);
 			
-			if (nl_pos != -1){
-				while (nl_pos != -1){
-					char buf_line[256];
-					memset(buf_line, 0, 256);
-					memcpy(buf_line, &buf[cur_pos], nl_pos - cur_pos);
-				
-					txtui_printAtXY(&rootCanvas, column + 1, line + 2, buf_line);
-					
-					cur_pos = nl_pos + 1;
-					nl_pos = find(buf, '\n', cur_pos);
-					
-					line++;
-					column = 0;
-					
-					if (nl_pos == -1){
-						memset(buf_line, 0, 256);
-						memcpy(buf_line, &buf[cur_pos], strlen(buf) - cur_pos + 1);
-						txtui_printAtXY(&rootCanvas, column + 1, line + 2, buf_line);
-						
-						column += strlen(buf) - cur_pos;
-					} 
-				}
-			} else {
-				txtui_printAtXY(&rootCanvas, column + 1, line + 2, buf);
-				column += strlen(buf);
-			}
+			text = realloc(text, new_lenght + 1);
+			memset(&text[lenght], 0, strlen(buf));
 			
-			memset(buf, 0, 256);
+			sprintf(&text[strlen(text)], "%s", buf);
+			lenght = strlen(text);
+
+			memset(buf, 0, 205);
 		}
 		
+		setString_textView(text_view, text);
+		draw_textView(&rootCanvas, text_view);
 		fclose(file);
 	} else {
 		LOG ("FILE NOT OPEND");

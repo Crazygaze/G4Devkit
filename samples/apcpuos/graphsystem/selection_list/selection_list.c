@@ -86,7 +86,6 @@ void draw_selectionList(TxtCanvas * canvas, GraphSelectionList * list, unsigned 
 	SelectionListElement * item = list->first;
 
 	while (item){
-		LOG ("LIST: %s", item->path);		
 		if (ypos != selected_item){
 			txtui_setColour(canvas, list->color_back, list->color_text);
 			txtui_printAtXY(canvas, list->x, list->y + ypos, item->path);
