@@ -19,6 +19,18 @@ int strlen(const char* str);
 */
 char* strcpy(char* dest, const char *src);
 
+/*! Find first position of char
+* \param str
+*	 String to find
+* \param ch
+*	 Char to find
+* \return
+* 	 First position of 'ch' in 'str'; -1 otherwise
+* \note
+*	 Added by brick_btv. Not copied from anywhere.
+*/
+int find (const char* str, const char ch, int start_pos);
+
 /*! Copies a string to a specified destination
 * \param dest
 *	Where to copy to
