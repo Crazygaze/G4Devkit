@@ -257,7 +257,7 @@ void callEditor(const char * path)
 	strcpy(app_info.name, "TxtEditr");
 	app_info.startFunc = text_editor;
 	app_info.stacksize = 1024*4;
-	app_info.memsize = 1024*32+4000;
+	app_info.memsize = 1024*64+4000;
 	app_info.flags = APPFLAG_WANTSCANVAS | APPFLAG_WANTSKEYS | APPFLAG_WANTSSTATUSBAR;	
 	
 	int PID = app_createProcess(&app_info, path);

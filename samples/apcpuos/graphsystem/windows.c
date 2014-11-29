@@ -38,9 +38,7 @@ GraphWindow * create_window(const char * title, int x, int y,
 	win->color_back = color_back;
 	win->color_frame = color_frame;
 	win->color_text = color_text;
-	
-	LOG("WINDOW: %s", win->title);
-	
+
 	return win;
 }
 
