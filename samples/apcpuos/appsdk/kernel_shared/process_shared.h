@@ -126,5 +126,7 @@ typedef struct ThreadMsg
 //! Cpu usage stats will be calculated
 #define OSINFO_CPU (1<<1)
 
+
+
 #endif
 

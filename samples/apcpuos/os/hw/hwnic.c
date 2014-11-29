@@ -12,7 +12,7 @@ typedef struct hw_nic_Drv {
 } hw_nic_Drv;
 
 static hw_nic_Drv driver;
-static void hw_nic_irqHandler(uint16_t reason, u32 data1, u32 data2);
+static void hw_nic_irqHandler(u32 reason, u32 data1, u32 data2);
 
 hw_Drv* hw_nic_ctor(hw_BusId busid)
 {
@@ -52,6 +52,6 @@ HWERROR hw_nic_sendDebugVA(const char* fmt,  int* valist)
 	return hw_nic_sendDebug(buffer);
 }
 
-static void hw_nic_irqHandler(uint16_t reason, u32 data1, u32 data2)
+static void hw_nic_irqHandler(u32 reason, u32 data1, u32 data2)
 {
 }

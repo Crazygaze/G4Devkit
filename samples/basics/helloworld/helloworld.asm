@@ -4,14 +4,15 @@
 ; the RAM is reserved
 ;*******************************************************************************
 
-;
-; Interrupt handlers. We only need to set the one that jumps to our main
-; function, but we still need to reserve the space for the others.
+; Interrupt Vector Table
+; We only need to set the one that jumps to our main function.
+; In this sample, we don't make use of other Interrupts.
 .text
-.word _startup ; RESET interrupt handler
-.zero 28 ; Space for the other interrupts
+.word _startup ; RESET handler
+.word 0  ; Interrupt handler (not used in this sample)
+
 ;
-; The default CPU context is fixed at address 32, and we need to reserve that
+; The default CPU context is fixed at address 8, and we need to reserve that
 ; space
 .zero 196 ; registers (r0..pc), flags register, and floating point registers
 
@@ -20,9 +21,8 @@
 ; 
 ;*******************************************************************************
 .text
-; When the computer boots, it switches to the context found at address 32
-; and starts executing the interrupt specified at the address 0,
-; which is the RESET interrupt
+; When the computer boots, it switches to the context found at address 8
+; and starts executing the RESET handler
 public _startup
 _startup:
 

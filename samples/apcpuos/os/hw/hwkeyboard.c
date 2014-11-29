@@ -30,7 +30,7 @@ typedef struct hw_kyb_Drv {
 } hw_kyb_Drv;
 
 static hw_kyb_Drv drv;
-static void hw_kyb_irqHandler(uint16_t reason, u32 data1, u32 data2);
+static void hw_kyb_irqHandler(u32 reason, u32 data1, u32 data2);
 
 hw_Drv* hw_kyb_ctor(hw_BusId busid)
 {
@@ -66,7 +66,7 @@ static void hw_kyb_updateModifier(int flag, uint8_t event)
 	}
 }
 
-static void hw_kyb_irqHandler(uint16_t reason, u32 data1, u32 data2)
+static void hw_kyb_irqHandler(u32 reason, u32 data1, u32 data2)
 {
 	uint8_t key;
 	uint8_t event;

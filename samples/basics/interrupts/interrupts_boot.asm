@@ -7,7 +7,8 @@
 ; break mode, you should detach the debugger after launching the sample
 ;
 ; The code flow for this sample goes something like this:
-;	- The Interrupt vector table specifies the handler for every interrupt type
+;	- The Interrupt vector table specifies the handler for the RESET and
+;	  hardware interrupt type.
 ;	- When an interrupt occurs, the handler passes control to the respective C
 ;	  function. It's easier to only have the bare minimum in assembly, and do
 ;	  most of the work in C
@@ -27,32 +28,27 @@
 
 .text
 
-; Interrupt vector table (32 bytes)
-.word _interruptHandler ; Reset
-.word _interruptHandler ; Abort
-.word _interruptHandler ; DivideByZero
-.word _interruptHandler ; Undefined Instruction
-.word _interruptHandler ; Illegal Instruction 
-.word _interruptHandler ; SWI
-.word _interruptHandler ; IRQ
-.word _interrupt_RESERVED ; RESERVED - not used
+; Interrupt vector table
+.word _resetHandler
+.word _interruptHandler
 
 ;
-; The default Execution context is fixed at address 32
-; It's the context the cpu switches to a boot or for interrupts
+; The default Execution context is fixed at address 8
+; It's the context the cpu switches to at boot or for interrupts
 ;
 ; Note that that there is an extra word at the end which is a pointer to the
 ; context name. This is so that our interrupt context matches the Ctx struct
 ; defined in the C file
 _interruptCtx:
 .zero 196 ; registers (r0...pc), flags register, and floating point registers
-.word _interruptCtxName
 
 ; Functions in the C file, which have the real interrupt handlers
+extern _handleReset
 extern _handleInterrupt
 
 ; Variables in the C file
 extern _interruptedCtx
+extern _interruptBus
 extern _interruptReason
 .text
 
@@ -62,18 +58,24 @@ extern _interruptReason
 ; It's easier to work with C than Assembly
 ;*******************************************************************************
 
+_resetHandler:
+	bl _handleReset
+	ctxswitch [r0]
+
 ;
 ; All interrupts handlers call this, to avoid code duplication
 _interruptHandler:
 	str [_interruptedCtx], lr ; save interrupted context
-	str [_interruptReason], ip ; save interrupt reason
+
+	; Save the Bus and reason that caused the interrupt
+	srl r4, ip, 24
+	str [_interruptBus], r4;
+	and r4, ip, 0x80FFFFFF
+	str [_interruptReason], r4;
+	
 	bl _handleInterrupt
 	ctxswitch [r0]
 	; We should never get here...
-	
-_interrupt_RESERVED:
-	; This is reserved for future use.
-	b _interrupt_RESERVED
 
 
 ;*******************************************************************************
@@ -108,6 +110,8 @@ _causeSystemCall:
 	; you want to pass to the kernel
 	mov r0, 0xF00D
 	mov r1, 0xBEEF
+	mov r2, 0
+	mov r3, 0
 	swi
 	; NOTE: The SWI interrupt handler will set our r0 to the result
 	mov pc, lr
@@ -129,4 +133,3 @@ _causeIRQ:
 ;*******************************************************************************
 .data
 	_interruptCtxName:
-	.string "Interrupt Context"
