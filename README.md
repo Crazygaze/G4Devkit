@@ -168,7 +168,7 @@ They mostly emulate Visual Studio and/or Visual Assist shortcuts
 * **CTRL + ALT + F7** - Full rebuild
 * **CTRL + F7** - Compile only the current file
 * **F5** - Starts the program. **Once running it, it won't let you edit code unless you detach the debugger. Click the big red "STOP" button on the top bar.**
-* **CTR + F5** - Starts the program without the debugger
+* **CTRL + F5** - Starts the program without the debugger
 * **CTRL + S** - Save your bacon. **SAVE YOUR BACON!**
 * **CTRL + F** - Find in current file
 * **CTRL + SHIFT + F** - Find in workspace
