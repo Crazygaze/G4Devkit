@@ -55,6 +55,14 @@
 			"bootfile": false
 		},
 		{
+			"path": ".\\text_edit\\text_edit.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\text_edit\\text_edit.h",
+			"bootfile": false
+		},
+		{
 			"path": ".\\text_view\\text_view.c",
 			"bootfile": false
 		},

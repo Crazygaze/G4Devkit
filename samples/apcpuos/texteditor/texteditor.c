@@ -9,6 +9,7 @@
 
 #include "windows.h"
 #include "text_view/text_view.h"
+#include "text_edit/text_edit.h"
 #include "file_system_provider.h"
 
 
@@ -18,7 +19,7 @@ int text_editor (int cookie)
 		return EXIT_FAILURE;
 	}
 
-	print_header(&rootCanvas, "APCPU Text Viewer", kTXTCLR_BLUE, kTXTCLR_WHITE);
+	print_header(&rootCanvas, "APCPU Text Editor", kTXTCLR_BLUE, kTXTCLR_WHITE);
 	
 	char title_tmp[128];
 	sprintf (title_tmp, "File: %s", prcArguments);
@@ -29,7 +30,9 @@ int text_editor (int cookie)
 	GraphWindow * win_command = create_window("Commands:", 0, rootCanvas.height - 3, rootCanvas.width, 3,	
 						kTXTCLR_BLUE, kTXTCLR_BLACK, kTXTCLR_WHITE);
 
-	GraphTextView * text_view = create_textView(1, 2, rootCanvas.width - 2, rootCanvas.height - 2 - 2);
+	GraphTextEdit * text_edit = create_textEdit(1, 2, rootCanvas.width - 2, rootCanvas.height - 2 - 2,
+										kTXTCLR_BLACK, kTXTCLR_WHITE,
+										kTXTCLR_WHITE, kTXTCLR_BLACK);					
 	
 	draw_window(&rootCanvas, win_editor);
 	draw_window(&rootCanvas, win_command);
@@ -61,8 +64,8 @@ int text_editor (int cookie)
 			memset(buf, 0, 205);
 		}
 		
-		setString_textView(text_view, text);
-		draw_textView(&rootCanvas, text_view);
+		setString_textEdit(text_edit, text);
+		draw_textEdit(&rootCanvas, text_edit);
 		fclose(file);
 	} else {
 		LOG ("FILE NOT OPEND");
@@ -71,13 +74,39 @@ int text_editor (int cookie)
 	ThreadMsg msg;
 	while(app_getMessage(&msg)) {
 		switch(msg.id) {
-			case MSG_KEY_PRESSED:
-				if (msg.param1 == KEY_BACKSPACE)
-					return EXIT_SUCCESS;
+			case MSG_KEY_TYPED:
+			
+				switch(msg.param1){
+					case KEY_BACKSPACE:
+						return EXIT_SUCCESS;
+					
+					// Navigation
+					case KEY_RIGHT:
+						moveCursor_textEdit(&rootCanvas, text_edit, text_edit->cp_x + 1, text_edit->cp_y);
+						break;
+										
+					case KEY_LEFT:
+						moveCursor_textEdit(&rootCanvas, text_edit, text_edit->cp_x - 1, text_edit->cp_y);
+						break;
+					
+					case KEY_UP:
+						moveCursor_textEdit(&rootCanvas, text_edit, text_edit->cp_x, text_edit->cp_y - 1);
+						break;
+										
+					case KEY_DOWN:
+						moveCursor_textEdit(&rootCanvas, text_edit, text_edit->cp_x, text_edit->cp_y + 1);
+						break;
+					
+				}
+				
+				if (msg.param1 >= ' ' && msg.param1 <= '~')
+					putChar_textEditor(&rootCanvas, text_edit, msg.param1);
+				
 				break;
 			case MSG_QUIT:
 				release_window(win_editor);
 				release_window(win_command);
+				release_textEdit(text_edit);
 				break;
 		}
 	}
