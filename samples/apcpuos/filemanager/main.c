@@ -16,6 +16,7 @@
 
 #include "windows.h"
 #include "selection_list.h"
+#include "text_view.h"
 
 #include "file_system_provider.h"
 
@@ -34,13 +35,21 @@ static GraphWindow * win_drive;
 
 void printHelp()
 {
-	txtui_printAtXY(&rootCanvas, rootCanvas.width/2 + 18, 5, "HELP:");
-	txtui_printAtXY(&rootCanvas, rootCanvas.width/2 + 3, 6, "MKDIR name - create new directory");
-	txtui_printAtXY(&rootCanvas, rootCanvas.width/2 + 3, 7, "                  (8 symbols max)");
-	txtui_printAtXY(&rootCanvas, rootCanvas.width/2 + 3, 8, "UNLINK name - remove dir or file ");
-	txtui_printAtXY(&rootCanvas, rootCanvas.width/2 + 3, 9, "CD name - change dir             ");
-	txtui_printAtXY(&rootCanvas, rootCanvas.width/2 + 3, 10, "UP - return to the previous dire");
-	txtui_printAtXY(&rootCanvas, rootCanvas.width/2 + 3, 11, "                 ctory (like ..)");
+	char help_text[400] = "           HELP:\n" \
+		 "MKDIR name - create new directory\n" \
+		 "                  (8 symbols max)\n" \
+		 "UNLINK name - remove dir or file \n" \
+		 "CD name - change dir             \n" \
+		 "UP - return to the previous dire \n" \
+		 "                 ctory (like ..) \n" \
+		 "use ARROW KEYS to navigate in dir\n" \
+		 "use ENTER and BACKSPACE to enter \n" \
+		 "             and exit directories\n";
+
+	
+	GraphTextView * view = create_textView(rootCanvas.width/2 + 3, 5, 30, 25);
+	setString_textView(view, help_text);
+	draw_textView(&rootCanvas, view);	
 }
 
 int checkDrivesAndGetFirst(){
@@ -106,7 +115,7 @@ bool initialization()
 		fwrite("       / || ||   \n", 1, strlen("=================="), file);
 		fwrite("   ====__||_||   \n", 1, strlen("=================="), file);
 		fwrite("=================\n", 1, strlen("=================="), file);
-		fwrite("tested\nmore\nnew\nlines\n!", 1, strlen("testednmorennewnlinesn!"), file);
+		fwrite("tested\n\nmore\nnew\nlines\n!", 1, strlen("testednmorennnewnlinesn!"), file);
 		
 		fclose(file);
 	}
@@ -248,7 +257,7 @@ void callEditor(const char * path)
 	strcpy(app_info.name, "TxtEditr");
 	app_info.startFunc = text_editor;
 	app_info.stacksize = 1024*4;
-	app_info.memsize = 1024*8+4000;
+	app_info.memsize = 1024*32+4000;
 	app_info.flags = APPFLAG_WANTSCANVAS | APPFLAG_WANTSKEYS | APPFLAG_WANTSSTATUSBAR;	
 	
 	int PID = app_createProcess(&app_info, path);

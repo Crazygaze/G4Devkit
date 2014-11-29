@@ -23,6 +23,7 @@
 				"$(SolutionDir)stdcshared",
 				"$(SolutionDir)filesystem",
 				"$(SolutionDir)graphsystem\/selection_list",
+				"$(SolutionDir)graphsystem\/text_view",
 				"$(SolutionDir)graphsystem",
 				"$(SolutionDir)utilshared",
 				"$(SolutionDir)texteditor",
