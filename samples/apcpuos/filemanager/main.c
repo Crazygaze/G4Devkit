@@ -33,6 +33,8 @@ static bool cursor_blink = false;
 static int cursor_pos = 1;
 static GraphWindow * win_drive;
 
+static bool focus;
+
 void printHelp()
 {
 	char help_text[400] = "           HELP:\n" \
@@ -316,6 +318,8 @@ int file_manager (int proc_num)
 
 			switch(msg.id) {
 				case MSG_KEY_PRESSED:
+					if (focus == FALSE)
+						break;
 					
 					if (msg.param1 == KEY_RETURN){
 						// command always have format "cmd agr" or "cmd"
@@ -430,6 +434,14 @@ int file_manager (int proc_num)
 					// if backspaced
 					txtui_setColour(&rootCanvas, kTXTCLR_BLACK, kTXTCLR_WHITE);
 					txtui_printCharAtXY(&rootCanvas, cursor_pos+1, rootCanvas.height-1, ' ');
+					break;
+					
+				case MSG_FOCUSGAINED:
+					focus = TRUE;
+					break;
+					
+				case MSG_FOCUSLOST:
+					focus = FALSE;
 					break;
 					
 				case MSG_KEY_RELEASED:
