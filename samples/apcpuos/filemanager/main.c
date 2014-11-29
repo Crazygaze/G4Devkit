@@ -106,6 +106,7 @@ bool initialization()
 		fwrite("       / || ||   \n", 1, strlen("=================="), file);
 		fwrite("   ====__||_||   \n", 1, strlen("=================="), file);
 		fwrite("=================\n", 1, strlen("=================="), file);
+		fwrite("tested\nmore\nnew\nlines\n!", 1, strlen("testednmorennewnlinesn!"), file);
 		
 		fclose(file);
 	}

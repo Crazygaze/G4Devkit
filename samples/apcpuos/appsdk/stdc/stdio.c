@@ -89,8 +89,12 @@ char * fgets ( char * str, int num, FILE * stream )
 		return NULL;
 		
 	char buff[1024];
-	if (fread(buff, 1, num, stream)){
-		memcpy(str, buff, num);
+	memset(buff, 0, 1024);
+	memset(str, 0, num);
+	int readed = fread(buff, 1, num, stream);
+	
+	if (readed > 0 && readed <= num){
+		memcpy(&str[0], &buff[0], readed);
 		return str;
 	}
 	

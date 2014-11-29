@@ -44,16 +44,41 @@ int text_editor (int cookie)
 		
 		txtui_setColour(&rootCanvas, kTXTCLR_BLACK, kTXTCLR_WHITE);
 		
-		char ch = 0;
-		while ((ch = fgetc(file)) != EOF){
-			if (ch == '\n'){
-				line++;
-				column = 0;
-				continue;
+		char buf[205];
+		memset(buf, 0, 205);
+		
+		while (fgets(buf, 200, file)){	
+			int cur_pos = 0;
+			int nl_pos = find(buf, '\n', cur_pos);
+			
+			if (nl_pos != -1){
+				while (nl_pos != -1){
+					char buf_line[256];
+					memset(buf_line, 0, 256);
+					memcpy(buf_line, &buf[cur_pos], nl_pos - cur_pos);
+				
+					txtui_printAtXY(&rootCanvas, column + 1, line + 2, buf_line);
+					
+					cur_pos = nl_pos + 1;
+					nl_pos = find(buf, '\n', cur_pos);
+					
+					line++;
+					column = 0;
+					
+					if (nl_pos == -1){
+						memset(buf_line, 0, 256);
+						memcpy(buf_line, &buf[cur_pos], strlen(buf) - cur_pos + 1);
+						txtui_printAtXY(&rootCanvas, column + 1, line + 2, buf_line);
+						
+						column += strlen(buf) - cur_pos;
+					} 
+				}
 			} else {
-				column++;
+				txtui_printAtXY(&rootCanvas, column + 1, line + 2, buf);
+				column += strlen(buf);
 			}
-			txtui_printCharAtXY(&rootCanvas, column+1, line+2, ch);
+			
+			memset(buf, 0, 256);
 		}
 		
 		fclose(file);

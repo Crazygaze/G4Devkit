@@ -22,6 +22,27 @@ char* strcpy(char* dest, const char *src)
 	return dest;
 }
 
+// added by brick_btv 
+int find (const char* str, const char ch, int start_pos)
+{
+	assert(str);
+	int str_len = strlen(str);	
+	int i = start_pos;
+	char ch_i = str[i];
+	
+	if (start_pos > str_len){
+		return -1;
+	}
+	
+	for (int i = start_pos; i < str_len; i++){
+		if (str[i] == ch){
+			return i;
+		}
+	}
+	
+	return -1;
+}
+
 // copied from http://linux.die.net/man/3/strncpy
 char* strncpy(char *dest, const char *src, size_t num)
 {
