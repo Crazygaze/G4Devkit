@@ -30,14 +30,14 @@ int text_editor (int cookie)
 	GraphWindow * win_command = window_create("Commands:", 0, rootCanvas.height - 3, rootCanvas.width, 3,	
 						kTXTCLR_BLUE, kTXTCLR_BLACK, kTXTCLR_WHITE);
 
-	GraphTextEdit * text_edit = textEdit_create(1, 2, rootCanvas.width - 2, rootCanvas.height - 2 - 2,
+	GraphTextEdit * text_edit = textEdit_create(1, 2, rootCanvas.width - 2, rootCanvas.height - 2 - 4,
 										kTXTCLR_BLACK, kTXTCLR_WHITE,
 										kTXTCLR_WHITE, kTXTCLR_BLACK);					
 	
 	window_draw(&rootCanvas, win_editor);
 	window_draw(&rootCanvas, win_command);
 
-	txtui_printAtXY(&rootCanvas, 1, rootCanvas.height - 2, "Press BACKSPACE to exit");
+	txtui_printAtXY(&rootCanvas, 1, rootCanvas.height - 2, "Press TAB to exit");
 
 	FILE * file = fopen(prcArguments, "r");
 	if (file){
@@ -76,8 +76,13 @@ int text_editor (int cookie)
 		switch(msg.id) {
 			case MSG_KEY_TYPED:
 			
+				if (msg.param1 >= ' ' && msg.param1 <= '~'){
+					textEdit_put_char(&rootCanvas, text_edit, msg.param1);
+					break;
+				}
+			
 				switch(msg.param1){
-					case KEY_BACKSPACE:
+					case KEY_TAB:
 						return EXIT_SUCCESS;
 					
 					// Navigation
@@ -97,10 +102,18 @@ int text_editor (int cookie)
 						textEdit_move_cursor(&rootCanvas, text_edit, text_edit->cp_x, text_edit->cp_y + 1);
 						break;
 					
+					case KEY_DELETE:
+						textEdit_del_char(&rootCanvas, text_edit);
+						break;
+					
+					case KEY_BACKSPACE:
+						textEdit_backspace_char(&rootCanvas, text_edit);
+						break;
+						
+					case KEY_RETURN:
+						textEdit_new_line(&rootCanvas, text_edit);
+						break;
 				}
-				
-				if (msg.param1 >= ' ' && msg.param1 <= '~')
-					textEdit_put_char(&rootCanvas, text_edit, msg.param1);
 				
 				break;
 			case MSG_QUIT:
