@@ -1,18 +1,7 @@
 #ifndef _common_h_
 #define _common_h_
 
-
-#define TRUE 1
-#define FALSE 0
-
-typedef unsigned char u8;
-typedef signed char s8;
-
-typedef unsigned short u16;
-typedef signed short s16;
-
-typedef unsigned int u32;
-typedef signed int s32;
+#include <stddef.h>
 
 //******************************************************************************
 //		System functions
@@ -54,21 +43,13 @@ int hwiCall(int bus, int funcNum, HwiData* data);
 
 /*! Prints a character at the specified location
 */
-void printCharacter(int x, int y, unsigned char ch);
+void printCharacterAtXY(int x, int y, unsigned char ch);
 
 /*! Prints a string at the specified location
 */
-void printString(int x, int y, const char* str);
+void printStringAtXY(int x, int y, const char* str);
 
-/*! Prints a number at the specified location, with base
-* \param x,y
-*	Location to print at
-* \param number
-*	Number to print
-* \param base
-*	Base used to convert to string. E.g: 10 decimal or 16 for hexadecimal
-*/
-void printNumber(int x, int y, int number, int base);
+int printfAtXY(int x, int y, const char* fmt, ...);
 
 /*! Clears the screen
 */
@@ -82,14 +63,8 @@ void kybClearBuffer(void);
 int kybGetKey(void);
 
 
-//******************************************************************************
-//		Standard C library functions
-//******************************************************************************
 
-void itoa(int value, char *str, int base);
-int strlen(const char* str);
-void* memcpy(void* dest, const void* src, int count);
-void* memset(void* dest, int c, int count);
-void* memmove(void* dest, const void* src, int count);
+int sprintf (char *buffer, const char *format, ...);
+
 
 #endif

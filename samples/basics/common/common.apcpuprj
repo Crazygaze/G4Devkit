@@ -55,7 +55,55 @@
 			"bootfile": false
 		},
 		{
+			"path": ".\\extern\\printf\\printf.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\extern\\printf\\printf.h",
+			"bootfile": false
+		},
+		{
 			"path": ".\\readme.txt",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stdarg.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stddef.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stdint.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stdio.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stdio.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stdlib.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stdlib.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\string.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\string.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\string_aux.asm",
 			"bootfile": false
 		}
 	]
