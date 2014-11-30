@@ -49,9 +49,9 @@ void printHelp()
 		 "             and exit directories\n";
 
 	
-	GraphTextView * view = create_textView(rootCanvas.width/2 + 3, 5, 30, 25);
-	setString_textView(view, help_text);
-	draw_textView(&rootCanvas, view);	
+	GraphTextView * view = textView_create(rootCanvas.width/2 + 3, 5, 30, 25);
+	textView_set_string(view, help_text);
+	textView_draw(&rootCanvas, view);	
 }
 
 int checkDrivesAndGetFirst(){
@@ -224,7 +224,7 @@ void upToParrentDir(char * path)
 		}
 		
 		update_filelist(path);
-		clean_window(&rootCanvas, win_drive);
+		window_clean(&rootCanvas, win_drive);
 		print_dir_entries_header(path);
 		draw_selectionList(&rootCanvas, list_dir_entries, selected_index);
 		
@@ -246,7 +246,7 @@ void changeDir(char * path, char * next_dir)
 	selected_index = 0;	
 	
 	update_filelist(path);
-	clean_window(&rootCanvas, win_drive);
+	window_clean(&rootCanvas, win_drive);
 	print_dir_entries_header(path);
 	draw_selectionList(&rootCanvas, list_dir_entries, selected_index);
 	
@@ -287,15 +287,15 @@ int file_manager (int proc_num)
 		char drive_name[12];
 		sprintf(drive_name, "Drive: \'%d\'", mounted_drive);
 		
-		win_drive = create_window(drive_name, 0, 1, rootCanvas.width/2, rootCanvas.height-2, 
+		win_drive = window_create(drive_name, 0, 1, rootCanvas.width/2, rootCanvas.height-2, 
 						kTXTCLR_BRIGHT_YELLOW, kTXTCLR_BLACK, kTXTCLR_BRIGHT_WHITE);
 		
-		GraphWindow * win_command = create_window("Commands:", 0, rootCanvas.height-2, rootCanvas.width, 3, 
+		GraphWindow * win_command = window_create("Commands:", 0, rootCanvas.height-2, rootCanvas.width, 3, 
 						kTXTCLR_BRIGHT_YELLOW, kTXTCLR_BLACK, kTXTCLR_BRIGHT_WHITE);
 		
-		draw_window(&rootCanvas, win_drive);			
+		window_draw(&rootCanvas, win_drive);			
 		
-		draw_window(&rootCanvas, win_command);	
+		window_draw(&rootCanvas, win_command);	
 		
 		printHelp();
 		
@@ -423,8 +423,8 @@ int file_manager (int proc_num)
 					break;
 				case MSG_QUIT:
 					release_selectionList(list_dir_entries);
-					release_window(win_drive);
-					release_window(win_command);
+					window_release(win_drive);
+					window_release(win_command);
 					break;
 				
 				case MSG_TIMER:

@@ -20,18 +20,18 @@ typedef struct GraphTextEdit{
 	TxtColour color_cursor_text;
 } GraphTextEdit;
 
-GraphTextEdit * create_textEdit(int x, int y, int widht, int height, 
+GraphTextEdit * textEdit_create(int x, int y, int widht, int height, 
 				TxtColour color_back,
 				TxtColour color_text,
 				TxtColour color_cursor_back,
 				TxtColour color_cursor_text);
-void release_textEdit(GraphTextEdit * edit);
+void textEdit_release(GraphTextEdit * edit);
 
-void setString_textEdit(GraphTextEdit * edit, const char * text);
-void draw_textEdit(TxtCanvas * canvas, GraphTextEdit * edit);
+void textEdit_set_string(GraphTextEdit * edit, const char * text);
+void textEdit_draw(TxtCanvas * canvas, GraphTextEdit * edit);
 
-void moveCursor_textEdit(TxtCanvas * canvas, GraphTextEdit * edit, int x, int y);
+void textEdit_move_cursor(TxtCanvas * canvas, GraphTextEdit * edit, int x, int y);
 
-void putChar_textEditor(TxtCanvas * canvas, GraphTextEdit * edit, char ch);
+void textEdit_put_char(TxtCanvas * canvas, GraphTextEdit * edit, char ch);
 
 #endif

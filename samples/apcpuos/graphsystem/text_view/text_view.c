@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-GraphTextView * create_textView(int x, int y, int widht, int height)
+GraphTextView * textView_create(int x, int y, int widht, int height)
 {
 	GraphTextView * view = malloc(sizeof(GraphTextView));
 	
@@ -15,20 +15,20 @@ GraphTextView * create_textView(int x, int y, int widht, int height)
 	return view;
 }
 
-void release_textView(GraphTextView * view)
+void textView_release(GraphTextView * view)
 {
 	free(view->text);
 	free(view);
 }
 
-void setString_textView(GraphTextView * view, const char * text)
+void textView_set_string(GraphTextView * view, const char * text)
 {
 	view->text = malloc(strlen(text));
 	
 	memcpy(view->text, text, strlen(text));
 }
 
-void draw_textView(TxtCanvas * canvas, GraphTextView * view)
+void textView_draw(TxtCanvas * canvas, GraphTextView * view)
 {
 	int column = view->x;
 	int line = view->y;

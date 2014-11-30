@@ -24,18 +24,18 @@ int text_editor (int cookie)
 	char title_tmp[128];
 	sprintf (title_tmp, "File: %s", prcArguments);
 	
-	GraphWindow * win_editor = create_window(title_tmp, 0, 1, rootCanvas.width, rootCanvas.height - 3,
+	GraphWindow * win_editor = window_create(title_tmp, 0, 1, rootCanvas.width, rootCanvas.height - 3,
 						kTXTCLR_BRIGHT_GREEN, kTXTCLR_BLACK, kTXTCLR_BLACK);
 	
-	GraphWindow * win_command = create_window("Commands:", 0, rootCanvas.height - 3, rootCanvas.width, 3,	
+	GraphWindow * win_command = window_create("Commands:", 0, rootCanvas.height - 3, rootCanvas.width, 3,	
 						kTXTCLR_BLUE, kTXTCLR_BLACK, kTXTCLR_WHITE);
 
-	GraphTextEdit * text_edit = create_textEdit(1, 2, rootCanvas.width - 2, rootCanvas.height - 2 - 2,
+	GraphTextEdit * text_edit = textEdit_create(1, 2, rootCanvas.width - 2, rootCanvas.height - 2 - 2,
 										kTXTCLR_BLACK, kTXTCLR_WHITE,
 										kTXTCLR_WHITE, kTXTCLR_BLACK);					
 	
-	draw_window(&rootCanvas, win_editor);
-	draw_window(&rootCanvas, win_command);
+	window_draw(&rootCanvas, win_editor);
+	window_draw(&rootCanvas, win_command);
 
 	txtui_printAtXY(&rootCanvas, 1, rootCanvas.height - 2, "Press BACKSPACE to exit");
 
@@ -64,8 +64,8 @@ int text_editor (int cookie)
 			memset(buf, 0, 205);
 		}
 		
-		setString_textEdit(text_edit, text);
-		draw_textEdit(&rootCanvas, text_edit);
+		textEdit_set_string(text_edit, text);
+		textEdit_draw(&rootCanvas, text_edit);
 		fclose(file);
 	} else {
 		LOG ("FILE NOT OPEND");
@@ -82,31 +82,31 @@ int text_editor (int cookie)
 					
 					// Navigation
 					case KEY_RIGHT:
-						moveCursor_textEdit(&rootCanvas, text_edit, text_edit->cp_x + 1, text_edit->cp_y);
+						textEdit_move_cursor(&rootCanvas, text_edit, text_edit->cp_x + 1, text_edit->cp_y);
 						break;
 										
 					case KEY_LEFT:
-						moveCursor_textEdit(&rootCanvas, text_edit, text_edit->cp_x - 1, text_edit->cp_y);
+						textEdit_move_cursor(&rootCanvas, text_edit, text_edit->cp_x - 1, text_edit->cp_y);
 						break;
 					
 					case KEY_UP:
-						moveCursor_textEdit(&rootCanvas, text_edit, text_edit->cp_x, text_edit->cp_y - 1);
+						textEdit_move_cursor(&rootCanvas, text_edit, text_edit->cp_x, text_edit->cp_y - 1);
 						break;
 										
 					case KEY_DOWN:
-						moveCursor_textEdit(&rootCanvas, text_edit, text_edit->cp_x, text_edit->cp_y + 1);
+						textEdit_move_cursor(&rootCanvas, text_edit, text_edit->cp_x, text_edit->cp_y + 1);
 						break;
 					
 				}
 				
 				if (msg.param1 >= ' ' && msg.param1 <= '~')
-					putChar_textEditor(&rootCanvas, text_edit, msg.param1);
+					textEdit_put_char(&rootCanvas, text_edit, msg.param1);
 				
 				break;
 			case MSG_QUIT:
-				release_window(win_editor);
-				release_window(win_command);
-				release_textEdit(text_edit);
+				window_release(win_editor);
+				window_release(win_command);
+				textEdit_release(text_edit);
 				break;
 		}
 	}

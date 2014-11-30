@@ -10,10 +10,10 @@ typedef struct GraphTextView{
 	char * text;
 } GraphTextView;
 
-GraphTextView * create_textView(int x, int y, int widht, int height);
-void release_textView(GraphTextView * view);
+GraphTextView * textView_create(int x, int y, int widht, int height);
+void textView_release(GraphTextView * view);
 
-void setString_textView(GraphTextView * view, const char * text);
-void draw_textView(TxtCanvas * canvas, GraphTextView * view);
+void textView_set_string(GraphTextView * view, const char * text);
+void textView_draw(TxtCanvas * canvas, GraphTextView * view);
 
 #endif
