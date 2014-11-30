@@ -14,7 +14,7 @@
 hw_Drv* hw_drivers[HWBUS_DEFAULTDEVICES_MAX];
 
 #define HWID(c1,c2,c3,c4) \
-	(uint32_t)c1<<24 | (uint32_t)c2<<16 | (uint32_t)c3<<8 | (uint32_t)c4
+	(uint32_t)c1 | (uint32_t)c2<<8 | (uint32_t)c3<<16 | (uint32_t)c4<<24
 
 typedef struct hw_DrvCreator {
 	uint32_t id; // device hardware ID
@@ -70,7 +70,7 @@ void hw_initAll(void)
 		uint32_t version = data.regs[1];
 		
 		krn_bootLog("BUS %d: %c%c%c%c v0x%X...",
-			bus, id>>24, (id>>16)&0xFF, (id>>8)&0xFF, id&0xFF,
+			bus, (id>>0)0xFF, (id>>8)&0xFF, (id>>16)&0xFF, (id>>24)&0xFF,
 			version);
 
 		if (hw_drivers[bus]) { // skip screen device
