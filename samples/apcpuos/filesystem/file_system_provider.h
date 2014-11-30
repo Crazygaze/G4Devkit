@@ -19,7 +19,7 @@ typedef enum FS_ITEM_TYPE{
 
 typedef struct FS_ITEM{
 	char 			path[14];
-	unsigned long	size;	
+	unsigned int	size;	
 	int				date;	
 	int				time;	
 	unsigned char	attrib;

@@ -287,9 +287,12 @@ void textEdit_new_line(TxtCanvas * canvas, GraphTextEdit * edit)
 	
 	// redraw lines
 	txtui_setColour(canvas, edit->color_back, edit->color_text);
-	txtui_fillArea(canvas, edit->x, edit->y + edit->cp_y, edit->width, edit->height - edit->cp_y, ' ');
+	txtui_fillArea(canvas, edit->x, edit->y + edit->cp_y, edit->width,
+		edit->height - edit->cp_y, ' ');
 	
-	int lines_to_screen = (edit->line_num > edit->height) ? edit->height : edit->line_num;
+	int lines_to_screen = (edit->line_num > edit->height) ?
+		edit->height : edit->line_num;
+		
 	for (int i = edit->cp_y; i <= lines_to_screen; i++){
 		txtui_printAtXY(canvas, edit->x, edit->y + i, edit->text[i]);
 	}
