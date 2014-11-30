@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-GraphSelectionList * create_selectionList(int x, int y, int width, int height,
+GraphSelectionList * selectionList_create(int x, int y, int width, int height,
 						TxtColour color_back, TxtColour color_selected, 
 						TxtColour color_text, TxtColour color_text_selected)
 {
@@ -26,7 +26,7 @@ GraphSelectionList * create_selectionList(int x, int y, int width, int height,
 	return list;
 }
 
-void clear_selectionList(GraphSelectionList * list)
+void selectionList_clear(GraphSelectionList * list)
 {
 	SelectionListElement * item = list->first;
 
@@ -41,16 +41,16 @@ void clear_selectionList(GraphSelectionList * list)
 	list->size = 0;
 }
 
-void release_selectionList(GraphSelectionList * list)
+void selectionList_release(GraphSelectionList * list)
 {
 	SelectionListElement * item = list->first;
 
-	clear_selectionList(list);
+	selectionList_clear(list);
 	
 	free(list);
 }
 
-void add_to_selectionList(GraphSelectionList * list, const char * path)
+void selectionList_add(GraphSelectionList * list, const char * path)
 {
 	if (list->first == NULL){
 		list->first = malloc(sizeof(SelectionListElement));
@@ -79,7 +79,7 @@ void add_to_selectionList(GraphSelectionList * list, const char * path)
 	}
 }
 
-void draw_selectionList(TxtCanvas * canvas, GraphSelectionList * list, unsigned int selected_item)
+void selectionList_draw(TxtCanvas * canvas, GraphSelectionList * list, unsigned int selected_item)
 {
 	int ypos = 0;
 

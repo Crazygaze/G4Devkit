@@ -156,7 +156,7 @@ void print_dir_entries_header(const char * path)
 
 void update_filelist(const char * path)
 {
-	clear_selectionList(list_dir_entries);
+	selectionList_clear(list_dir_entries);
 
 	DIRECTORY * dir = opendir(path);
 	
@@ -173,7 +173,7 @@ void update_filelist(const char * path)
 			memset(line, 0, 40);
 			sprintf(line, "%c %s%s %d", ((item.type == T_DIR)?'d':'f'), item.path, spaces, item.size);
 						
-			add_to_selectionList(list_dir_entries, line);
+			selectionList_add(list_dir_entries, line);
 			
 			items[i++] = item;
 		}
@@ -224,7 +224,7 @@ void upToParrentDir(char * path)
 		update_filelist(path);
 		window_clean(&rootCanvas, win_drive);
 		print_dir_entries_header(path);
-		draw_selectionList(&rootCanvas, list_dir_entries, selected_index);
+		selectionList_draw(&rootCanvas, list_dir_entries, selected_index);
 		
 		sprintf(selected_item, "%s",items[selected_index].path);
 	}
@@ -246,7 +246,7 @@ void changeDir(char * path, char * next_dir)
 	update_filelist(path);
 	window_clean(&rootCanvas, win_drive);
 	print_dir_entries_header(path);
-	draw_selectionList(&rootCanvas, list_dir_entries, selected_index);
+	selectionList_draw(&rootCanvas, list_dir_entries, selected_index);
 	
 	sprintf(selected_item, "%s",items[selected_index].path);
 }
@@ -297,7 +297,7 @@ int file_manager (int proc_num)
 		
 		printHelp();
 		
-		list_dir_entries = create_selectionList(win_drive->x + 3, win_drive->y + 3, 
+		list_dir_entries = selectionList_create(win_drive->x + 3, win_drive->y + 3, 
 							win_drive->width - 2, win_drive->height - 5,
 							kTXTCLR_BLACK, kTXTCLR_BRIGHT_WHITE,
 							kTXTCLR_WHITE, kTXTCLR_BLACK);
@@ -305,7 +305,7 @@ int file_manager (int proc_num)
 		update_filelist("/");
 		
 		print_dir_entries_header(path);
-		draw_selectionList(&rootCanvas, list_dir_entries, selected_index);
+		selectionList_draw(&rootCanvas, list_dir_entries, selected_index);
 		sprintf(selected_item, "%s",items[selected_index].path);
 		
 		app_setTimer(1, 500, true);
@@ -338,7 +338,7 @@ int file_manager (int proc_num)
 									
 									make_dir(tmp_buf);
 									update_filelist(path);
-									draw_selectionList(&rootCanvas, list_dir_entries, selected_index);
+									selectionList_draw(&rootCanvas, list_dir_entries, selected_index);
 								}
 								
 								if (strcmp(str_command, "UNLINK") == 0){
@@ -347,7 +347,7 @@ int file_manager (int proc_num)
 									
 									unlink(tmp_buf);
 									update_filelist(path);
-									draw_selectionList(&rootCanvas, list_dir_entries, selected_index);
+									selectionList_draw(&rootCanvas, list_dir_entries, selected_index);
 								}
 								
 								if (strcmp(str_command, "CD") == 0){
@@ -394,7 +394,7 @@ int file_manager (int proc_num)
 						
 						sprintf(selected_item, "%s",items[selected_index].path);
 						
-						draw_selectionList(&rootCanvas, list_dir_entries, selected_index);
+						selectionList_draw(&rootCanvas, list_dir_entries, selected_index);
 					}
 					
 					if (msg.param1 == KEY_DOWN){
@@ -403,7 +403,7 @@ int file_manager (int proc_num)
 						
 						sprintf(selected_item, "%s",items[selected_index].path);
 						
-						draw_selectionList(&rootCanvas, list_dir_entries, selected_index);
+						selectionList_draw(&rootCanvas, list_dir_entries, selected_index);
 					}					
 				
 					
@@ -420,7 +420,7 @@ int file_manager (int proc_num)
 					txtui_printAtXY(&rootCanvas, 1, rootCanvas.height-1, command);
 					break;
 				case MSG_QUIT:
-					release_selectionList(list_dir_entries);
+					selectionList_release(list_dir_entries);
 					window_release(win_drive);
 					window_release(win_command);
 					break;

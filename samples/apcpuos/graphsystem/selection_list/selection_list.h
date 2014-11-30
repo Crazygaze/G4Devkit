@@ -3,7 +3,7 @@
 
 #include "app_txtui.h"
 
-#define MAX_ELEMENT_LENGHT 15
+#define MAX_ELEMENT_LENGHT 20
 
 typedef struct SelectionListElement{
 	char path[MAX_ELEMENT_LENGHT];
@@ -27,15 +27,15 @@ typedef struct GraphSelectionList{
 	TxtColour color_text_selected;
 } GraphSelectionList;
 
-GraphSelectionList * create_selectionList(int x, int y, int width, int height,
+GraphSelectionList * selectionList_create(int x, int y, int width, int height,
 						TxtColour color_back, TxtColour color_selected, 
 						TxtColour color_text, TxtColour color_text_selected);
 
-void release_selectionList(GraphSelectionList * list);
+void selectionList_release(GraphSelectionList * list);
 
-void add_to_selectionList(GraphSelectionList * list, const char * path);
-void clear_selectionList(GraphSelectionList * list);
-void draw_selectionList(TxtCanvas * canvas, GraphSelectionList * list, 
+void selectionList_add(GraphSelectionList * list, const char * path);
+void selectionList_clear(GraphSelectionList * list);
+void selectionList_draw(TxtCanvas * canvas, GraphSelectionList * list, 
 				unsigned int selected_item);
 
 #endif

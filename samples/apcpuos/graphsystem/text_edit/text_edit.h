@@ -37,4 +37,8 @@ void textEdit_del_char(TxtCanvas * canvas, GraphTextEdit * edit);
 void textEdit_backspace_char(TxtCanvas * canvas, GraphTextEdit * edit);
 void textEdit_new_line(TxtCanvas * canvas, GraphTextEdit * edit);
 
+
+int textEdit_getLineNum(GraphTextEdit * edit);
+char * textEdit_getLine(GraphTextEdit * edit, int line);
+
 #endif
