@@ -70,7 +70,7 @@ void hw_initAll(void)
 		uint32_t version = data.regs[1];
 		
 		krn_bootLog("BUS %d: %c%c%c%c v0x%X...",
-			bus, (id>>0)0xFF, (id>>8)&0xFF, (id>>16)&0xFF, (id>>24)&0xFF,
+			bus, (id>>0)&0xFF, (id>>8)&0xFF, (id>>16)&0xFF, (id>>24)&0xFF,
 			version);
 
 		if (hw_drivers[bus]) { // skip screen device
