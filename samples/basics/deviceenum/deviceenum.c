@@ -28,15 +28,11 @@ The byte order is different, so this is necessary.
 The ID byte order will change in the future, so there won't be a need to reverse
 the bytes order
 */
-const char* idToString(int id)
-{
-	static char buf[5];
-	buf[0] = ((char*)(&id))[3];
-	buf[1] = ((char*)(&id))[2];
-	buf[2] = ((char*)(&id))[1];
-	buf[3] = ((char*)(&id))[0];
-	buf[4] = 0;
-	return buf;
+const char* idToString(int id, char* dst)
+{	
+	memcpy(dst, &id, 4);
+	dst[4] = 0;
+	return dst;
 }
 
 void appMain(void)
@@ -59,12 +55,14 @@ void appMain(void)
 		HwiData data;
 		int res = hwiCall(bus, HWIFUNC_ID, &data);
 		
+		char deviceId[5];
+		char manufacturerId[5];
 		if (res==HWIERR_SUCCESS) {
 			// Print the Device ID information
 			x += printfAtXY(x,y,"FOUND: ID=%s, Version=%d, Manuf.=%s",
-				idToString(data.regs[0]),
+				idToString(data.regs[0], deviceId),
 				data.regs[1],
-				idToString(data.regs[2]));				
+				idToString(data.regs[2], manufacturerId));				
 			
 			//
 			// Get the device description
