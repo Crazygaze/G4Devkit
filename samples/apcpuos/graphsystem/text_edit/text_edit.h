@@ -33,5 +33,8 @@ void textEdit_draw(TxtCanvas * canvas, GraphTextEdit * edit);
 void textEdit_move_cursor(TxtCanvas * canvas, GraphTextEdit * edit, int x, int y);
 
 void textEdit_put_char(TxtCanvas * canvas, GraphTextEdit * edit, char ch);
+void textEdit_del_char(TxtCanvas * canvas, GraphTextEdit * edit);
+void textEdit_backspace_char(TxtCanvas * canvas, GraphTextEdit * edit);
+void textEdit_new_line(TxtCanvas * canvas, GraphTextEdit * edit);
 
 #endif
