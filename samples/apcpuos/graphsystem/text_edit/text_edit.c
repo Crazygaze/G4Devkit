@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-GraphTextEdit * create_textEdit(int x, int y, int widht, int height,
+GraphTextEdit * textEdit_create(int x, int y, int widht, int height,
 				TxtColour color_back,
 				TxtColour color_text,
 				TxtColour color_cursor_back,
@@ -27,7 +27,7 @@ GraphTextEdit * create_textEdit(int x, int y, int widht, int height,
 	return edit;
 }
 
-void release_textEdit(GraphTextEdit * edit)
+void textEdit_release(GraphTextEdit * edit)
 {
 	for (int i = 0; i < edit->line_num; i++)
 		free(edit->text[i]);
@@ -35,7 +35,7 @@ void release_textEdit(GraphTextEdit * edit)
 	free(edit);
 }
 
-void setString_textEdit(GraphTextEdit * edit, const char * text)
+void textEdit_set_string(GraphTextEdit * edit, const char * text)
 {		
 	int column = 0;
 	int line = 0;
@@ -73,14 +73,14 @@ void setString_textEdit(GraphTextEdit * edit, const char * text)
 	edit->line_num = line;
 }
 
-void draw_textEdit(TxtCanvas * canvas, GraphTextEdit * edit)
+void textEdit_draw(TxtCanvas * canvas, GraphTextEdit * edit)
 {
 	txtui_setColour(canvas, edit->color_back, edit->color_text);
 	for (int i = 0; i < edit->line_num; i++){
 		txtui_printAtXY(canvas, edit->x, edit->y + i, edit->text[i]);
 	}
 	
-	moveCursor_textEdit(canvas, edit, edit->cp_x, edit->cp_y);
+	textEdit_move_cursor(canvas, edit, edit->cp_x, edit->cp_y);
 }
 
 bool is_printable_char(char ch)
@@ -94,12 +94,12 @@ bool is_printable_char(char ch)
 int strlen_printable(char * str)
 {
 	int l = 0
-	while(is_printable_char(str[l++]){}
+	while(is_printable_char(str[l++])){};
 	
 	return l;
 }
 
-void moveCursor_textEdit(TxtCanvas * canvas, GraphTextEdit * edit, int x, int y)
+void textEdit_move_cursor(TxtCanvas * canvas, GraphTextEdit * edit, int x, int y)
 {
 	// checking input
 	if (x < 0 || y < 0)
@@ -138,7 +138,7 @@ void moveCursor_textEdit(TxtCanvas * canvas, GraphTextEdit * edit, int x, int y)
 	edit->cp_y = y;
 }
 
-void putChar_textEditor(TxtCanvas * canvas, GraphTextEdit * edit, char ch)
+void textEdit_put_char(TxtCanvas * canvas, GraphTextEdit * edit, char ch)
 {
 	char * line = edit->text[edit->cp_y];
 	LOG("LINE_: %s", line);
@@ -169,5 +169,5 @@ void putChar_textEditor(TxtCanvas * canvas, GraphTextEdit * edit, char ch)
 	txtui_setColour(canvas, edit->color_back, edit->color_text);
 	txtui_printAtXY(canvas, edit->x, edit->y + edit->cp_y, edit->text[edit->cp_y]);
 	
-	moveCursor_textEdit(canvas, edit, edit->cp_x + 1, edit->cp_y);
+	textEdit_move_cursor(canvas, edit, edit->cp_x + 1, edit->cp_y);
 }

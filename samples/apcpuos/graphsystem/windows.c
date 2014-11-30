@@ -16,7 +16,7 @@ void print_header(TxtCanvas * canvas, const char * title,
 	txtui_printAtXY(&rootCanvas, 0, 0, header_title);
 }
 
-GraphWindow * create_window(const char * title, int x, int y, 
+GraphWindow * window_create(const char * title, int x, int y, 
 							int width, int height, 
 							TxtColour color_frame, TxtColour color_back, 
 							TxtColour color_text )
@@ -42,12 +42,12 @@ GraphWindow * create_window(const char * title, int x, int y,
 	return win;
 }
 
-void release_window(GraphWindow * win)
+void window_release(GraphWindow * win)
 {
 	free (win);
 }
 
-void draw_window(TxtCanvas * canvas, GraphWindow * win )
+void window_draw(TxtCanvas * canvas, GraphWindow * win )
 {
 	// Frame
 	txtui_setColour(&rootCanvas, win->color_frame, win->color_text);
@@ -61,7 +61,7 @@ void draw_window(TxtCanvas * canvas, GraphWindow * win )
 	txtui_fillArea(&rootCanvas, win->x+1, win->y+1, win->width-2, win->height-2, ' ');
 }
 
-void clean_window(TxtCanvas * canvas, GraphWindow * win)
+void window_clean(TxtCanvas * canvas, GraphWindow * win)
 {
 	txtui_setColour(&rootCanvas, win->color_back, win->color_text);
 	txtui_fillArea(&rootCanvas, win->x+1, win->y+1, win->width-2, win->height-2, ' ');

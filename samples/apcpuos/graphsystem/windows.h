@@ -19,15 +19,15 @@ typedef struct GraphWindow{
 void print_header(TxtCanvas * canvas, const char * title, 
 							TxtColour color_back, TxtColour color_text);
 							
-GraphWindow * create_window(const char * title, int x, int y, 
+GraphWindow * window_create(const char * title, int x, int y, 
 							int width, int height, 
 							TxtColour color_frame, TxtColour color_back, 
 							TxtColour color_text );
 
-void release_window(GraphWindow * win);							
+void window_release(GraphWindow * win);							
 							
-void draw_window(TxtCanvas * canvas, GraphWindow * win);
+void window_draw(TxtCanvas * canvas, GraphWindow * win);
 
-void clean_window(TxtCanvas * canvas, GraphWindow * win);
+void window_clean(TxtCanvas * canvas, GraphWindow * win);
 
 #endif
