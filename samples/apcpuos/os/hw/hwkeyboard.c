@@ -30,7 +30,7 @@ typedef struct hw_kyb_Drv {
 } hw_kyb_Drv;
 
 static hw_kyb_Drv drv;
-static void hw_kyb_irqHandler(uint16_t reason, u32 data1, u32 data2);
+static void hw_kyb_irqHandler(u32 reason, u32 data1, u32 data2);
 
 hw_Drv* hw_kyb_ctor(hw_BusId busid)
 {
@@ -52,11 +52,9 @@ void hw_kyb_clearBuffer(void)
 uint8_t hw_kyb_getNextEvent(uint8_t* key)
 {
 	hw_HwiData hwi;
-	hwi.regs[0] = HWBUS_KYB;
-	hwi.regs[1] = HW_KYB_FUNC_GETEVENT;
-	hw_hwiFull(&hwi);
-	*key = hwi.regs[2];
-	return hwi.regs[1];
+	hw_hwiFull(HWBUS_KYB, HW_KYB_FUNC_GETEVENT, &hwi);
+	*key = hwi.regs[1];
+	return hwi.regs[0];
 }
 
 static void hw_kyb_updateModifier(int flag, uint8_t event)
@@ -68,7 +66,7 @@ static void hw_kyb_updateModifier(int flag, uint8_t event)
 	}
 }
 
-static void hw_kyb_irqHandler(uint16_t reason, u32 data1, u32 data2)
+static void hw_kyb_irqHandler(u32 reason, u32 data1, u32 data2)
 {
 	uint8_t key;
 	uint8_t event;

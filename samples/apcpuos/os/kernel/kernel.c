@@ -21,6 +21,9 @@
 #include "appsdk/kernel_shared/txtui_shared.h"
 
 Kernel krn;
+bool krn_countSwiTime;
+
+extern CpuCtx* krn_interruptedCtx;
 
 void krn_spin(unsigned int ms)
 {
@@ -42,7 +45,7 @@ void krn_spin(unsigned int ms)
  * This is called from the boot assembly code
  * \return stack top to use for the kernel
  */
-void* krn_preboot()
+void* krn_preboot(void)
 {
 	krn.kernelPcb = prc_initKernelPrc();
 	return krn.kernelPcb->mainthread->stackTop;
@@ -54,6 +57,11 @@ void* krn_preboot()
 // The IDLE task just powers down the cpu until an interrupt happens
 uint32_t krn_idleTask(uint32_t p1)
 {
+
+#if TEST_TASKBOOT_FAIL
+	krn_forceCrash();
+#endif
+
 #if TEST_UNEXPECTED_CTXSWITCH
 	hw_cpu_ctxswitch((CpuCtx*)(&intrCtxStart));
 #endif
@@ -198,17 +206,6 @@ bool krn_taskScheduler(void* userData)
 	return TRUE;
 }
 
-static const char * const cpuIntrStr[8] = {
-	"Reset",
-	"Access violation",	
-	"Divide by zero",
-	"Undefined instruction",
-	"Illegal instruction",
-	"SWI",
-	"IRQ",
-	"RESERVED"	
-};
-
 static void krn_leaveTcb(TCB* tcb, bool isSwiTime)
 {
 	static double lasttime=0;
@@ -226,132 +223,66 @@ static void krn_leaveTcb(TCB* tcb, bool isSwiTime)
 	lasttime = hw_clk_currSecs;
 }
 
-void krn_panicDoubleFault(
-			CpuCtx* interruptedCtx,
-			uint32_t data1, uint32_t data2, uint32_t data3);
+void krn_panicUnexpectedCtxSwitch(void)
+{
+	krn_panic("Unexpected explicit switch to interrupt context.","");
+}
+
 
 CpuCtx* krn_handleInterrupt(
-			CpuCtx* interruptedCtx,
-			uint32_t data1, uint32_t data2, uint32_t data3)
+			uint32_t data0, uint32_t data1, uint32_t data2, uint32_t data3)
 {
-	
+	// Check for double faults (kernel crashes)
+	// This is detecting by checking if we were serving an interrupt before
+	if (krn_prevIntrBusAndReason!=NO_INTERRUPT)
+	{
+		krn_panic(
+			"DOUBLE FAULT: '%s' PREVIOUS %d, DATA 0x%X,0x%X,0x%X,0x%X",
+			hw_cpu_getIntrReasonMsg(krn_currIntrBusAndReason & 0x80FFFFFF),
+			krn_prevIntrBusAndReason, data0, data1, data2, data3);
+		// note: panic never returns, so we never get here
+	}
+
 	//KERNEL_DEBUG("interruptedCtx=%d", (uint32_t)interruptedCtx);
-	if (interruptedCtx==(CpuCtx*)INTRCTX_ADDR) {
+	if (krn_interruptedCtx==(CpuCtx*)INTRCTX_ADDR) {
 		krn.interruptedTcb = krn.kernelPcb->mainthread;
 	} else { 
 		// As part of the processes/threads creation, the CPU CTX is located
 		// right after the TCB, so we can allocate memory for both in one go.
 		// Therefore, to get the TCB from the interrupted CTX, we do the -1
-		krn.interruptedTcb = ((TCB*)(interruptedCtx))-1;
+		krn.interruptedTcb = ((TCB*)(krn_interruptedCtx))-1;
 	}
 	
-	//KERNEL_DEBUG("interruptedTcb=%d", (uint32_t)krn.interruptedTcb);
-	krn_leaveTcb(krn.interruptedTcb, false);
-
-	// Check for double faults (kernel crashes)
-	// This is detecting by checking if we were serving an interrupt before
-	if (krn_previousIntr!=NO_INTERRUPT)
-	{
-		krn_panicDoubleFault(interruptedCtx, data1, data2, data3);
-		// note: panic never returns, so we never get here
-	}
+	krn_leaveTcb(krn.interruptedTcb, false);	
 	
-	bool countSwiTime = false;
+	krn_countSwiTime = false;
 
-	switch(krn_currentIntr) {
-		case 0: // Reset
-		case 1: // Abort
-		case 2: // Divide by zero
-		case 3: // Undefined instruction
-		case 4: // Illegal instruction
-			// TODO : Instead of doing a kernel panic, close the offender app
-			krn_panic(
-				"TASK %d:%s, REASON '%s' DATA 0x%X,0x%X",
-				krn.interruptedTcb->pcb->info.pid,
-				krn.interruptedTcb->pcb->info.name,
-				cpuIntrStr[krn_currentIntr], data1, data2);
-			break;
-			
-		case 5: // SWI
-		{
-			int* regs = (int*)krn.interruptedTcb->cpuctx;
-			uint32_t id = regs[SYSCALL_ID_REGISTER];
-			bool ok;
-			if (id<kSysCall_Max) {
-				ok = krn_syscalls[id]();
-			} else {
-				// TODO : Instead of doing a kernel panic, close the
-				// offender app
-				KERNEL_DEBUG(
-					"TASK %d:%s, Invalid SWI ID '%u'",
-					krn.interruptedTcb->pcb->info.pid,
-					krn.interruptedTcb->pcb->info.name, id);
-				ok = false;
-			}
-			
-			if (!ok) {
-				KERNEL_DEBUG(
-					"TASK %d:%s, killed calling SWI ID '%u'",
-					krn.interruptedTcb->pcb->info.pid,
-					krn.interruptedTcb->pcb->info.name, id);
-				prc_delete(krn.interruptedTcb->pcb);
-				
-				// No need to set the next thread, as prc_delete will
-				// eventually trigger that already
-				//krn.nextTcb = krn.idlethread;
-			} else {
-				countSwiTime = true;
-			}
-		}
-		break;
-
-		case 6: // IRQ
-		{
-			unsigned int busid;
-			unsigned int reason;
-			int count=1;
-			bool hasIRQ;
-			do {
-				busid = data1 >> 24;
-				reason = data1 & 0x00FFFFFF;
-				if (busid<HWBUS_DEFAULTDEVICES_MAX && hw_drivers[busid]) {
-					hw_drivers[busid]->irqHandler(reason, data2, data3);
-				} else {
-					krn_panic(
-						"BUS %d : Received IRQ for device without driver.",
-						busid);
-				}
-
-				// Grab the next IRQ if any
-				hasIRQ = hw_cpu_nextIRQ(-1, &data1, &data2, &data3);
-				if (hasIRQ)	{
-					count++;				
-				}
-			} while(hasIRQ);
-			
-		}
-		break;
+	uint32_t busAndReason = krn_currIntrBusAndReason;
+	do {
+		uint8_t bus = busAndReason >> 24;
+		uint32_t reason = busAndReason & 0x80FFFFFF;
 		
-		// Invalid interrupt type
-		default:
-			krn_panic("UNKNOWN INTERRUPT TYPE: %d", krn_currentIntr);
-	}
+		if (bus<HWBUS_DEFAULTDEVICES_MAX && hw_drivers[bus]) {
+			hw_drivers[bus]->irqHandler(reason, data0, data1);
+		} else {
+			krn_panic(
+				"BUS %d : Received IRQ for device without driver.",
+				bus);
+		}
 
-	krn_leaveTcb(krn.kernelPcb->mainthread, countSwiTime);
+		// If it's a cpu interrupt, we only serve 1, so we can correctly
+		// calculate the the time spent in System Calls.
+		if (bus==HWBUS_CPU)
+		{
+		break;
+		} else {
+			// Grab the next IRQ if any
+			busAndReason = hw_cpu_nextIRQ(-1, &data0, &data1);
+		}
+		
+	} while(busAndReason);	
+	
+	krn_leaveTcb(krn.kernelPcb->mainthread, krn_countSwiTime);
 		
 	return krn.nextTcb->cpuctx;
-}
-
-void krn_panicDoubleFault(
-			CpuCtx* interruptedCtx,
-			uint32_t data1, uint32_t data2, uint32_t data3)
-{
-	krn_panic(
-		"DOUBLE FAULT: '%s' PREVIOUS %d, DATA 0x%X,0x%X,0x%X",
-		cpuIntrStr[krn_currentIntr], krn_previousIntr, data1, data2, data3);
-}
-
-void krn_panicUnexpectedCtxSwitch()
-{
-	krn_panic("Unexpected explicit switch to interrupt context.","");
 }

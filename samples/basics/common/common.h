@@ -38,6 +38,14 @@ double getRunningTimeSeconds(void);
 */
 void pause(int ms);
 
+/*!
+ * Struct used to make hwi calls. It's used for both input and output
+ */
+typedef struct HwiData {
+	unsigned int regs[4];
+} HwiData;
+
+int hwiCall(int bus, int funcNum, HwiData* data);
 
 //******************************************************************************
 //		Screen functions
