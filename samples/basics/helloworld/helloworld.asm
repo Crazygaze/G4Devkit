@@ -45,7 +45,8 @@ _startup:
 
 	printCharacter:
 		or r3, r2, 0x0F00 ; Add colour information
-		struh [r9], r3 ; print character as half word (1 byte for colour, 1 for the character)
+		; print character as half word (1 byte for colour, 1 for the character)
+		struh [r9], r3
 		add r9, r9, 2 ; move screen pointer to the next position
 		add r1, r1, 1 ; advance to the net character
 		ldrub r2, [r1] ; read character

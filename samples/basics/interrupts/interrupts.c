@@ -1,5 +1,6 @@
 
-#include "common/common.h"
+#include "common.h"
+#include <string.h>
 
 /*!
 This struct matches a register set.
@@ -62,27 +63,6 @@ void setupAppCtx(void)
 	appCtx.flags = 0x04000000;	
 }
 
-/*******************************************************************************
-*		Utility functions to print things to the screen
-*******************************************************************************/
-
-void printStringData(int x, int y, const char* name, const char* data)
-{
-	printString(x,y,name);
-	printString(x+strlen(name), y, data);
-}
-
-void printNumberData(int x, int y, const char* name, int number, int base)
-{
-	printString(x,y,name);
-	x += strlen(name);
-	if (base==16) {
-		printString(x,y, "0x");
-		x +=2;
-	}
-	printNumber(x, y, number, base);
-}
-
 void printInterruptDetails(
 	Ctx* interruptedCtx, const char* title,
 	u32 data0, u32 data1, u32 data2, u32 data3)
@@ -91,24 +71,23 @@ void printInterruptDetails(
 	
 	int x = 4;
 	int y = 1;
-	printStringData(x,++y, "Interrupt type: ", title);
-	printNumberData(x+40,y, "Bus ", interruptBus, 10);
-	printNumberData(x+50,y, "Reason ", interruptReason, 10);
-	printNumberData(x,++y, "Num interrupts: ", interruptsCount, 10);
+	printfAtXY(x,++y , "Interrupt type: %s", title);
+	printfAtXY(x+40,y, "Bus %d, Reason %d", interruptBus, interruptReason);
+	printfAtXY(x,++y , "Num interrupts: %d", interruptsCount);
 	
 	int yy = y;
-	printNumberData(x,++y, "Interrupt ctx r0: ", data0, 16);
-	printNumberData(x,++y, "Interrupt ctx r1: ", data1, 16);
-	printNumberData(x,++y, "Interrupt ctx r2: ", data2, 16);
-	printNumberData(x,++y, "Interrupt ctx r3: ", data3, 16);
+	printfAtXY(x,++y, "Interrupt ctx r0: 0x%X", data0);
+	printfAtXY(x,++y, "Interrupt ctx r1: 0x%X", data1);
+	printfAtXY(x,++y, "Interrupt ctx r2: 0x%X", data2);
+	printfAtXY(x,++y, "Interrupt ctx r3: 0x%X", data3);
 	
 	y = yy;
 	x = 40;
-	printNumberData(x,++y, "App ctx r0: ", interruptedCtx->gregs[0], 16);
-	printNumberData(x,++y, "App ctx r1: ", interruptedCtx->gregs[1], 16);
-	printNumberData(x,++y, "App ctx r2: ", interruptedCtx->gregs[2], 16);
-	printNumberData(x,++y, "App ctx r3: ", interruptedCtx->gregs[3], 16);
-	printNumberData(x,++y, "Last SWI call result: ", lastSystemCallResult, 10);
+	printfAtXY(x,++y, "App ctx r0: 0x%X", interruptedCtx->gregs[0]);
+	printfAtXY(x,++y, "App ctx r1: 0x%X", interruptedCtx->gregs[1]);
+	printfAtXY(x,++y, "App ctx r2: 0x%X", interruptedCtx->gregs[2]);
+	printfAtXY(x,++y, "App ctx r3: 0x%X", interruptedCtx->gregs[3]);
+	printfAtXY(x,++y, "Last SWI call result: %d", lastSystemCallResult);
 }
 
 /*******************************************************************************
@@ -206,14 +185,14 @@ void showMenu(void)
 {
 	int x = 4;
 	int y = 12;
-	printString(x, y++, "1. Test ABORT (Execute)");
-	printString(x, y++, "2. Test ABORT (Write)");
-	printString(x, y++, "3. Test ABORT (Read)");
-	printString(x, y++, "4. Test DIVIDE BY ZERO");
-	printString(x, y++, "5. Test UNDEFINED INSTRUCTION");
-	printString(x, y++, "6. Test ILLEGAL INSTRUCTION");
-	printString(x, y++, "7. Test SWI (System Call) (will pass 0xf00d,0xbeef,0x0,0x0 to the handler)");
-	printString(x, y++, "8. Test IRQ (triggers a one-off timer)");
+	printfAtXY(x, y++, "1. Test ABORT (Execute)");
+	printfAtXY(x, y++, "2. Test ABORT (Write)");
+	printfAtXY(x, y++, "3. Test ABORT (Read)");
+	printfAtXY(x, y++, "4. Test DIVIDE BY ZERO");
+	printfAtXY(x, y++, "5. Test UNDEFINED INSTRUCTION");
+	printfAtXY(x, y++, "6. Test ILLEGAL INSTRUCTION");
+	printfAtXY(x, y++, "7. Test SWI (System Call) (will pass 0xf00d,0xbeef,0x0,0x0 to the handler)");
+	printfAtXY(x, y++, "8. Test IRQ (triggers a one-off timer)");
 }
 
 void redrawScreen(int doClear)
@@ -221,7 +200,7 @@ void redrawScreen(int doClear)
 	if (doClear) {
 		clearScreen();
 	}
-	printString(0,0,
+	printfAtXY(0,0,
 		"Interrupts example: Make sure you disconnect the debugger");
 	showMenu();
 }
