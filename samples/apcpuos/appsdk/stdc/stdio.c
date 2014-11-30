@@ -118,3 +118,36 @@ int fputs ( const char * str, FILE * stream )
 	
 	return EOF;
 }
+
+/*
+	TODO: replace this by std functions
+*/
+bool is_disk_exist(int driveNum)
+{
+	return fs_is_disk_exist(driveNum);
+}
+
+bool is_file_system_exist()
+{
+	return fs_is_file_system_exist();
+}
+
+bool is_dir_exist(const char * path)
+{
+	return fs_is_dir_exist(path);
+}
+
+bool make_file_system(int driveNum)
+{
+	return fs_make_file_system(driveNum);
+}
+
+bool make_dir(const char * dir_name)
+{
+	return fs_make_dir(dir_name);
+}
+
+bool unlink(const char * link)
+{
+	return fs_unlink(link);
+}

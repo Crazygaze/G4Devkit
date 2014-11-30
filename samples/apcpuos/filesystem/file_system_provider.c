@@ -106,7 +106,7 @@ int mount_drive(int driveNum)
 	return res;
 }
 
-bool make_file_system(int driveNum)
+bool fs_make_file_system(int driveNum)
 {
 	if (mount_drive(driveNum) != FR_OK){
 		return 1;
@@ -133,7 +133,7 @@ bool change_drive(int driveNum){
 	return TRUE;
 }
 
-bool is_disk_exist(int driveNum)
+bool fs_is_disk_exist(int driveNum)
 {
 	DSTATUS res = disk_status( driveNum );
 	
@@ -148,7 +148,7 @@ bool is_disk_exist(int driveNum)
 	return TRUE;
 }
 
-bool is_file_system_exist()
+bool fs_is_file_system_exist()
 {	
 	DIR dir;
 	FRESULT res = f_opendir(&dir, "none.fil");
@@ -168,7 +168,7 @@ bool is_file_system_exist()
  */
 
 
-bool make_dir(const char * dir_name)
+bool fs_make_dir(const char * dir_name)
 {
 	FRESULT res = f_mkdir(dir_name);
 	
@@ -179,7 +179,7 @@ bool make_dir(const char * dir_name)
 	return (res == FR_OK);
 }
 
-bool unlink(const char * link)
+bool fs_unlink(const char * link)
 {
 	FRESULT res = f_unlink(link);
 	
@@ -190,7 +190,7 @@ bool unlink(const char * link)
 	return (res == FR_OK);
 }
 
-bool is_dir_exist(const char * path)
+bool fs_is_dir_exist(const char * path)
 {
 	DIR dir;
 	FRESULT res = f_opendir(&dir, path);
