@@ -14,11 +14,11 @@ extern _krn_init
 ;
 ; When booting, the following happens:
 ;
-; - Execution context set to fixed location 0x20 (32)
+; - Execution context set to fixed location 0x8
 ;   This is also the execution context used for any other interrupts
 ; - PC is set to the "Reset" interrupt handler.
 ; - Some registers are set:
-;   r0,r1,r2 - 0
+;   r0,r1,r2,r3 - 0
 ;	flags
 ;		- IRQs are disabled
 ;		- CPU is set to Supervisor mode
@@ -28,57 +28,16 @@ extern _krn_init
 ;
 ; These is a brief explanation about each interrupt type. Please refer to the
 ; architecture documentation for detailed information
-; 
-; - Execution context changes to fixed address 0x20 (32)
-; - PC is set to the respective interrupt handler
-; - Some registers are set, depending on the interrupt type:
-;       r0 - set to the interrupted context
-;       r1,r2,r3 - Values dependent on the the interrupt type. See below
-;       flags register :
-;		    Cpu Mode set to Supervisor
-;		    IRQs are disabled
 ;
-; The following is a list of the meaning of r1,r2,r3 for each interrupt type
-;
-; Reset:
-; 	r1 = 0
-; 	r2 = 0
-;	r3 = 0
-;
-; Abort:
-; 	r1 = Address access that cause the interrupt
-; 	r2 = Type of violation:
-;		0 : Execute
-;		1 : Write
-;		2 : Read
-;	r3 = 0
-;
-; DivideByZero:
-;	r1 = 0
-;	r2 = 0
-;	r3 = 0
-;
-; UndefinedInstruction
-;	r1 = 0
-;	r2 = 0
-;	r3 = 0
-;
-; IllegalInstruction
-;	r1 = 0
-;	r2 = 0
-;	r3 = 0
-;
-; SWI (System call)
-;	r1 = 0
-;	r2 = 0
-;	r3 = 0
-;
-; IRQ (Hardware Interrupt)
-;	r1 = (BusId<<24) | reason
-;			BusId - Identifies the device that caused the IRQ
-;			reason - Specific to the device that caused the IRQ.
-;	r2 = Dependent on the device that caused the interrupt
-;	r3 = Dependent on the device that caused the interrupt
+; When an interrupt occurs:
+; - Execution context changes to fixed address 0x8
+; - PC is set to the Interrupt Handler
+; - Cpu Mode set to Supervisor
+; - IRQs are disabled
+; - Some registers are set:
+;		lr - The interrupted context
+;		ip - Bus and Reason for the interrupt: (bus << 24) | reason
+;       r0,r1,r2,r3 - Values dependent on the interrupt type.
 ;
 ;*******************************************************************************
 
@@ -87,13 +46,7 @@ extern _krn_init
 ; handler
 _intrHandlerAddr:
 .word _intrHandler_Reset;
-.word _intrHandler_Abort
-.word _intrHandler_DivideByZero
-.word _intrHandler_UndefinedInstruction
-.word _intrHandler_IllegalInstruction
-.word _intrHandler_SWI
-.word _intrHandler_IRQ
-.word _intrHandler_RESERVED ; Reserved for future use
+.word _intrHandler_All
 
 ; This is the default execution context
 public _intrCtxStart
@@ -114,8 +67,8 @@ _intrCtxStart:
 ;*******************************************************************************
 ;
 _intrHandler_Reset:
-	str [_krn_previousIntr], 15
-	str [_krn_currentIntr], 0
+	str [_krn_currIntrBusAndReason], 0
+	str [_krn_prevIntrBusAndReason], 0
 	
 	;
 	; Setup a temporary stack frame so we can call C code to do most of the work
@@ -126,11 +79,10 @@ _intrHandler_Reset:
 	; ram is free to be used for the screen buffer
 	
 	; Check how much RAM we have
-	mov r0, 0
-	mov r1, 0
+	mov ip, (0<<24) | 0; Bus 0, function 0
 	hwi
-	str [_ramAmount] , r1
-	mov sp, r1 ; set stack to top address
+	str [_ramAmount] , r0
+	mov sp, r0 ; set stack to top address
 
 	; Boot first pass to initialize basics
 	; This is required, so we setup a stack where we want, exit the preboot
@@ -144,9 +96,9 @@ _intrHandler_Reset:
 	; krnInit returns the context we should switch to
 	;
 	bl _krn_init
+	str [_krn_currIntrBusAndReason], -1
 	
 	; Switch to the contex to run.
-	str [_krn_currentIntr], 15 ; Mark as not inside any interrupts
 	ctxswitch [r0]
 
 	; We will only get here if some other context changes to our context, which
@@ -157,46 +109,23 @@ _intrHandler_Reset:
 ;*******************************************************************************
 ;              INTERRUPT HANDLERS
 ;*******************************************************************************
-extern _krn_panicDoubleFault
 extern _krn_handleInterrupt
 
-_intrHandler_Abort:
-	mov r4, 1
-	b _dispatchIntr
-
-_intrHandler_DivideByZero:
-	mov r4, 2
-	b _dispatchIntr
-
-_intrHandler_UndefinedInstruction:
-	mov r4, 3
-	b _dispatchIntr
+_intrHandler_All:
+	; Save the interrupted context
+	str [_krn_interruptedCtx], lr
 	
-_intrHandler_IllegalInstruction:
-	mov r4, 4
-	b _dispatchIntr
-
-_intrHandler_SWI:
-	mov r4, 5
-	b _dispatchIntr
-
-_intrHandler_IRQ:
-	mov r4, 6
-	b _dispatchIntr
-
-_intrHandler_RESERVED:
-	mov r4, 7
-	b _dispatchIntr
+	; Set the previous bus and reason variable
+	; This allows us to detect kernel double faults
+	ldr r4, [_krn_currIntrBusAndReason]
+	str [_krn_prevIntrBusAndReason], r4
+	str [_krn_currIntrBusAndReason], ip
 	
-
-;
-; It expects the current interrupt type in r4
-_dispatchIntr:
-	ldr ip, [_krn_currentIntr]
-	str [_krn_previousIntr], ip
-	str [_krn_currentIntr], r4
 	bl _krn_handleInterrupt
-	str [_krn_currentIntr], 15
+	
+	; We are done with the interrupt servicing, so martk it as so.
+	str [_krn_currIntrBusAndReason], -1
+	
 	ctxswitch [r0]
 	; We will only get here if some other context changes to our context, which
 	; per design, we don't allow
@@ -214,22 +143,21 @@ _dispatchIntr:
 
 public _ramAmount
 _ramAmount:
-.zero 4
+.word 0
 
-;
-; This tells what interrupt type we were are serving, and the one at the moment
-; 0..7 - Serving an interrupt of that type
-; 15 - No interrupt being served
-; Keeping track of the previous, so the kernel panic function can tell what
-; interrupt type we were executing
-;
-public _krn_currentIntr
-_krn_currentIntr:
+; These two variables allows detection of double faults.
+; When we are serving an interrupt, if another one happens, it's a double fault.
+public _krn_currIntrBusAndReason
+_krn_currIntrBusAndReason:
 .word 15
-public _krn_previousIntr
-_krn_previousIntr:
+public _krn_prevIntrBusAndReason
+_krn_prevIntrBusAndReason:
 .word 15
 
+; Set when an interrupt occurs
+public _krn_interruptedCtx
+_krn_interruptedCtx:
+.word 0
 
 ;
 ; Read only data (after we set MMU)

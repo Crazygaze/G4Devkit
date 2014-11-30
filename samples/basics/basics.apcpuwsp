@@ -6,6 +6,7 @@
 		".\\helloworld\\helloworld.apcpuprj",
 		".\\contextswitch\\contextswitch.apcpuprj",
 		".\\common\\common.apcpuprj",
-		".\\interrupts\\interrupts.apcpuprj"
+		".\\interrupts\\interrupts.apcpuprj",
+		".\\deviceenum\\deviceenum.apcpuprj"
 	]
 }

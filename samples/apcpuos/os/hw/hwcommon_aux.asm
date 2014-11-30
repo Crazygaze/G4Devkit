@@ -4,14 +4,25 @@
 ; Full hwi call
 public _hw_hwiFull
 _hw_hwiFull:
-	stmfd sp!, {r4-r10,lr} ; save registers we will need to restore
-	mov ip, r0; save the parameter
+	push {r4,lr} ; save registers we will need to restore
+	
+	; Setup the bus|function register
+	sll ip, r0, 24
+	or ip, ip, r1
 	
 	; setup call to hwi.
-	; This loads r0-r10 with the contents of the memory starting at ip
-	ldmia ip, {r0-r10}
+	mov r4, r2
+	ldr r0, [r4 + 4*0]
+	ldr r1, [r4 + 4*1]
+	ldr r2, [r4 + 4*2]
+	ldr r3, [r4 + 4*3]
 	hwi
+	; Save the results
+	str [r4 + 4*0], r0
+	str [r4 + 4*1], r1
+	str [r4 + 4*2], r2
+	str [r4 + 4*3], r3
+	; ip has the error code, if any
+	mov r0, ip
 	
-	; save the state of the registers after hwi into the output structure
-	stmia ip, {r0-r10}
-	ldmfd sp!, {r4-r10,pc}
+	pop {r4,pc}

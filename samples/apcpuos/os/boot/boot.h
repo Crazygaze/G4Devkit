@@ -9,14 +9,13 @@
 extern const int intrCtxStart;
 extern const int intrCtxEnd;
 
-/*
+/*!
  * Ram amount, in bytes
  */
 extern const int ramAmount;
 
-/*
+/*!
  */
-
 typedef struct ROMProcessInfo
 {
 	unsigned int readOnlyAddr; // address
@@ -28,9 +27,9 @@ typedef struct ROMProcessInfo
 } ROMProcessInfo;
 extern ROMProcessInfo processInfo;
 
-#define NO_INTERRUPT 15
-extern const int krn_currentIntr;
-extern const int krn_previousIntr;
+#define NO_INTERRUPT -1
+extern const int krn_currIntrBusAndReason;
+extern const int krn_prevIntrBusAndReason;
 
 #endif
 

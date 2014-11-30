@@ -16,8 +16,8 @@
  */
 typedef int32_t HWERROR;
 
-typedef uint16_t hw_BusId;
-#define HWBUS_MAX 0xFF
+typedef uint8_t hw_BusId;
+#define HWBUS_MAX 0x7F
 
 /*
  * Fixed devices bus numbers
@@ -42,11 +42,10 @@ typedef uint16_t hw_BusId;
  * Struct used to make hwi calls
  */
 typedef struct hw_HwiData {
-	// r0 to r10 can be used
-	unsigned int regs[11];
+	uint32_t regs[4];
 } hw_HwiData;
 
-typedef void (*hw_IrqHandler)(uint16_t reason, uint32_t data1, uint32_t data2);
+typedef void (*hw_IrqHandler)(uint32_t reason, uint32_t data1, uint32_t data2);
 
 typedef struct hw_Drv
 {
@@ -72,7 +71,7 @@ typedef void (*hw_Destroydriver)(hw_Drv*);
  *	data Register contents as requested by the device and function desired.
  *	Will also contain the register values after the call to hwi.
  */
-HWERROR hw_hwiFull(hw_HwiData* data);
+HWERROR hw_hwiFull(hw_BusId bus, uint32_t func, hw_HwiData* data);
 
 
 /*
@@ -88,14 +87,18 @@ uint32_t hw_hwiSimple0(
 	__reg("r0") hw_BusId bus,
 	__reg("r1") uint32_t func)
 INLINEASM("\t\
+sll ip, r0, 24\n\t\
+or ip, ip, r1\n\t\
 hwi \n\t\
-mov r0,r1");
+");
 
 // Same as the hw_hwiSimple0 above, but were we expect a double as a return (f0)
 double hw_hwiSimple0_Double(
 	__reg("r0") hw_BusId bus,
 	__reg("r1") uint32_t func)
 INLINEASM("\t\
+sll ip, r0, 24\n\t\
+or ip, ip, r1\n\t\
 hwi");
 
 uint32_t hw_hwiSimple1(
@@ -103,8 +106,11 @@ uint32_t hw_hwiSimple1(
 	__reg("r1") uint32_t func,
 	__reg("r2") uint32_t p1)
 INLINEASM("\t\
+sll ip, r0, 24\n\t\
+or ip, ip, r1\n\t\
+mov r0, r2\n\t\
 hwi \n\t\
-mov r0,r1");
+");
 
 uint32_t hw_hwiSimple2(
 	__reg("r0") hw_BusId bus,
@@ -112,8 +118,12 @@ uint32_t hw_hwiSimple2(
 	__reg("r2") uint32_t p1,
 	__reg("r3") uint32_t p2)
 INLINEASM("\t\
+sll ip, r0, 24\n\t\
+or ip, ip, r1\n\t\
+mov r0, r2\n\t\
+mov r1, r3\n\t\
 hwi \n\t\
-mov r0,r1");
+");
 
 extern hw_Drv* hw_drivers[HWBUS_DEFAULTDEVICES_MAX];
 void hw_initAll(void);

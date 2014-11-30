@@ -30,17 +30,16 @@ mrs r0 ; load flags register\n\t\
 or r0, r0, 1<<27 ; set bit 27 \n\t\
 msr r0 ; set flags register");
 
-bool hw_cpu_nextIRQ(
+uint32_t hw_cpu_nextIRQ(
 	__reg("r0") int busid,
-	__reg("r4") u32* data1, __reg("r5") u32* data2, __reg("r6") u32* data3)
+	__reg("r4") u32* data0, __reg("r5") u32* data1)
 INLINEASM("\t\
 nextirq r0\n\t\
-; r0 will contain 0 if no IRQ was retrieved, or 1 if it was\n\t\
-str [r4],r1\n\t\
-str [r5],r2\n\t\
-str [r6],r3\n\t\
+; ip will contain 0 if no IRQ was retrieved, (bus<<24)|reason if it was\n\t\
+str [r4],r0\n\t\
+str [r5],r1\n\t\
+mov r0, ip\n\t\
 ");
-	
 
 /*
  * Enables IRQs
@@ -82,7 +81,7 @@ hlt");
  INLINEASM("\t\
  ctxswitch [r0]");
 
- const char* hw_cpu_getIntrReasonMsg(uint16_t reason);
+ const char* hw_cpu_getIntrReasonMsg(uint32_t reason);
 
 /*
  * Returns how many queued up IRQs we have
