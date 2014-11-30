@@ -10,11 +10,14 @@
 #include "windows.h"
 #include "text_view/text_view.h"
 #include "text_edit/text_edit.h"
+#include "selection_list/selection_list.h"
 #include "file_system_provider.h"
-
 
 int text_editor (int cookie)
 {	
+	bool menu_focus = FALSE;
+	int menu_selected = 0;
+
 	if (!change_drive(0)){
 		return EXIT_FAILURE;
 	}
@@ -82,8 +85,35 @@ int text_editor (int cookie)
 				}
 			
 				switch(msg.param1){
+					// menu
 					case KEY_TAB:
-						return EXIT_SUCCESS;
+						menu_focus = TRUE;
+						// create menu window
+						GraphWindow * win_menu = window_create("MENU", 
+											rootCanvas.width/2 - 10, 
+											rootCanvas.height/2 - 3, 25, 5, 
+											kTXTCLR_WHITE,
+											kTXTCLR_BRIGHT_BLUE, 
+											kTXTCLR_BLACK); 
+						
+						GraphSelectionList * menu_list = selectionList_create(win_menu->x + 1, 
+													win_menu->y + 1, 
+													win_menu->width - 2, 
+													win_menu->height - 3,
+													kTXTCLR_BRIGHT_BLUE, 
+													kTXTCLR_WHITE, 
+													kTXTCLR_WHITE,
+													kTXTCLR_BLACK );	
+						
+						selectionList_add(menu_list, "Save And Exit");
+						selectionList_add(menu_list, "Discard And Exit");
+						selectionList_add(menu_list, "Cancel");
+						
+						window_draw(&rootCanvas, win_menu);
+						selectionList_draw(&rootCanvas, menu_list, menu_selected);
+						break;
+						//return EXIT_SUCCESS;
+						
 					
 					// Navigation
 					case KEY_RIGHT:
@@ -95,10 +125,20 @@ int text_editor (int cookie)
 						break;
 					
 					case KEY_UP:
+						if (menu_focus){
+							(menu_selected > 0)?menu_selected--:0;
+							selectionList_draw(&rootCanvas, menu_list, menu_selected);
+							break;
+						}
 						textEdit_move_cursor(&rootCanvas, text_edit, text_edit->cp_x, text_edit->cp_y - 1);
 						break;
 										
 					case KEY_DOWN:
+						if (menu_focus){
+							(menu_selected < 2)?menu_selected++:2;
+							selectionList_draw(&rootCanvas, menu_list, menu_selected);
+							break;
+						}
 						textEdit_move_cursor(&rootCanvas, text_edit, text_edit->cp_x, text_edit->cp_y + 1);
 						break;
 					
@@ -111,6 +151,35 @@ int text_editor (int cookie)
 						break;
 						
 					case KEY_RETURN:
+						if (menu_focus){
+							switch (menu_selected){
+								case 0:{	// save changes
+									FILE * write_file = fopen(prcArguments, "w");
+									
+									// get text
+									int linenum = textEdit_getLineNum(text_edit);
+									for (int i = 0; i < linenum; i++){
+										char * to_file = textEdit_getLine(text_edit, i);
+										LOG ("TO_FILE: %s", to_file);
+										
+										fputs(to_file, write_file);
+										
+										free(to_file);
+									}
+									
+									fclose(write_file);
+									return EXIT_SUCCESS;
+								}
+								case 1:	// discard changes
+									return EXIT_SUCCESS;
+								case 2: // cancel
+									menu_focus = FALSE;
+									textEdit_draw(&rootCanvas, text_edit);
+									break;
+							}
+							break;
+						}
+					
 						textEdit_new_line(&rootCanvas, text_edit);
 						break;
 				}

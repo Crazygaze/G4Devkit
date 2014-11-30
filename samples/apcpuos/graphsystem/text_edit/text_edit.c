@@ -146,7 +146,6 @@ void replace_cursor_line_on_screen(TxtCanvas * canvas, GraphTextEdit * edit, int
 	txtui_fillArea(canvas, edit->x, edit->y + edit->cp_y, edit->width, 1, ' ');
 	
 	txtui_printAtXY(canvas, edit->x, edit->y + edit->cp_y, edit->text[edit->cp_y]);
-	LOG("RL_: %s", edit->text[edit->cp_y]);
 	
 	textEdit_move_cursor(canvas, edit, edit->cp_x + cursor_move, edit->cp_y);
 }
@@ -297,4 +296,22 @@ void textEdit_new_line(TxtCanvas * canvas, GraphTextEdit * edit)
 	
 	// move cursor
 	textEdit_move_cursor(canvas, edit, 0, edit->cp_y + 1);	
+}
+
+int textEdit_getLineNum(GraphTextEdit * edit)
+{
+	return edit->line_num;
+}
+
+char * textEdit_getLine(GraphTextEdit * edit, int line)
+{
+	if (line > edit->line_num)
+		return NULL;
+		
+	char * res = malloc(strlen_printable(edit->text[line]) + 2);
+	memcpy(res, edit->text[line], strlen_printable(edit->text[line]));
+	res[strlen_printable(edit->text[line]) ] = '\n';
+	res[strlen_printable(edit->text[line]) + 1] = 0;
+	
+	return res;
 }
