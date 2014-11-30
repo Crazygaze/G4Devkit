@@ -18,8 +18,6 @@
 #include "selection_list.h"
 #include "text_view.h"
 
-#include "file_system_provider.h"
-
 static int text_offset_y = 0;
 
 #define printline(text) txtui_printAtXY(&rootCanvas, 0, text_offset_y++, text)

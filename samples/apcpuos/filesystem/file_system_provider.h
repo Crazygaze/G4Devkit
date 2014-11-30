@@ -31,11 +31,11 @@ bool open_directory(const char * path, DIR * dir);
 bool close_directory(DIR * dir);
 bool read_directory(DIR * dir, FS_ITEM * item);
 
-bool is_disk_exist(int driveNum);
-bool is_file_system_exist();
-bool is_dir_exist(const char * path);
-bool make_file_system(int driveNum);
-bool make_dir(const char * dir_name);
-bool unlink(const char * link);
+bool fs_is_disk_exist(int driveNum);
+bool fs_is_file_system_exist();
+bool fs_is_dir_exist(const char * path);
+bool fs_make_file_system(int driveNum);
+bool fs_make_dir(const char * dir_name);
+bool fs_unlink(const char * link);
 
 #endif
