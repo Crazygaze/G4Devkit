@@ -71,12 +71,8 @@ void txtui_init(const TxtCanvas* existing)
 		rootCanvas.stride = rootCanvas.width;
 		int size = rootCanvas.width*rootCanvas.height*2;
 
-		// reserve the last line as a status bar by default
-		if (app_info->prcInfo.flags & APPFLAG_WANTSSTATUSBAR) {
-			rootCanvas.flags |= TXTCANVAS_STATUSBAR;
-			rootCanvas.height--;
-		}
-
+		// We reserve the last line for the status bar, but we still
+		// need to allocate an entire screen buffer
 		rootCanvas.data = malloc(size);
 		always_assert(rootCanvas.data);
 
@@ -85,6 +81,12 @@ void txtui_init(const TxtCanvas* existing)
 		txtui_setForegroundColour(&rootCanvas, kTXTCLR_WHITE);
 		txtui_setBackgroundColour(&rootCanvas, kTXTCLR_BLACK);
 		txtui_clear(&rootCanvas);		
+
+		// reserve the last line as a status bar by default
+		if (app_info->prcInfo.flags & APPFLAG_WANTSSTATUSBAR) {
+			rootCanvas.flags |= TXTCANVAS_STATUSBAR;
+			rootCanvas.height--;
+		}
 
 		// Tell the OS we have a screen canvas
 		bool res = app_syscall2(kSysCall_SetCanvas, (u32)rootCanvas.data, size );
