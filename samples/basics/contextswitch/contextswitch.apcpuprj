@@ -39,7 +39,9 @@
 		}
 	],
 	"dependencies": [
-		"common"
+		"common",
+		"hardware",
+		"cstdlib"
 	],
 	"files": [
 		{

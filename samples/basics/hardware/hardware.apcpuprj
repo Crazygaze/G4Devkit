@@ -1,0 +1,102 @@
+{
+	"format": "Project",
+	"version": 1,
+	"name": "hardware",
+	"type": 2,
+	"globalconfiguration": {
+		"name": "Global",
+		"includePaths": [
+
+		],
+		"defines": [
+
+		],
+		"compilerOptions": "",
+		"linkerextralibs": ""
+	},
+	"configurations": [
+		{
+			"name": "Debug",
+			"includePaths": [
+				"$(SolutionDir)\/cstdlib"
+			],
+			"defines": [
+				"DEBUG"
+			],
+			"compilerOptions": "-c99 -O2 -g -size -unroll-size=0 -dontwarn=323 -dontwarn=208 -dontwarn=153",
+			"linkerextralibs": ""
+		},
+		{
+			"name": "Release",
+			"includePaths": [
+				"$(SolutionDir)\/cstdlib"
+			],
+			"defines": [
+				"NDEBUG"
+			],
+			"compilerOptions": "-c99 -O2 -k -size -unroll-size=0 -dontwarn=323 -dontwarn=208 -dontwarn=153",
+			"linkerextralibs": ""
+		}
+	],
+	"dependencies": [
+
+	],
+	"files": [
+		{
+			"path": ".\\hwclock.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hwclock.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hwclock_aux.asm",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hwcommon.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hwcommon.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hwcommon_aux.asm",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hwcpu.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hwcpu.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hwcpu_aux.asm",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hwkeyboard.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hwkeyboard.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hwkeyboard_aux.asm",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hwscreen.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hwscreen.h",
+			"bootfile": false
+		}
+	]
+}

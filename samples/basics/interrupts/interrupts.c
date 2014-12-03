@@ -1,19 +1,8 @@
 
 #include "common.h"
 #include <string.h>
-
-/*!
-This struct matches a register set.
-Having a struct like this makes it easier to use from C, instead of just a
-simple pointer/array
-*/
-typedef struct Ctx
-{
-	// Fields that must match the architecture register set
-	int gregs[16];
-	int flags;
-	double fregs[16];
-} Ctx;
+#include "hwkeyboard.h"
+#include "hwscreen.h"
 
 // This will be used as the application execution context
 Ctx appCtx;
@@ -71,23 +60,23 @@ void printInterruptDetails(
 	
 	int x = 4;
 	int y = 1;
-	printfAtXY(x,++y , "Interrupt type: %s", title);
-	printfAtXY(x+40,y, "Bus %d, Reason %d", interruptBus, interruptReason);
-	printfAtXY(x,++y , "Num interrupts: %d", interruptsCount);
+	scr_printfAtXY(x,++y , "Interrupt type: %s", title);
+	scr_printfAtXY(x+40,y, "Bus %d, Reason %d", interruptBus, interruptReason);
+	scr_printfAtXY(x,++y , "Num interrupts: %d", interruptsCount);
 	
 	int yy = y;
-	printfAtXY(x,++y, "Interrupt ctx r0: 0x%X", data0);
-	printfAtXY(x,++y, "Interrupt ctx r1: 0x%X", data1);
-	printfAtXY(x,++y, "Interrupt ctx r2: 0x%X", data2);
-	printfAtXY(x,++y, "Interrupt ctx r3: 0x%X", data3);
+	scr_printfAtXY(x,++y, "Interrupt ctx r0: 0x%X", data0);
+	scr_printfAtXY(x,++y, "Interrupt ctx r1: 0x%X", data1);
+	scr_printfAtXY(x,++y, "Interrupt ctx r2: 0x%X", data2);
+	scr_printfAtXY(x,++y, "Interrupt ctx r3: 0x%X", data3);
 	
 	y = yy;
 	x = 40;
-	printfAtXY(x,++y, "App ctx r0: 0x%X", interruptedCtx->gregs[0]);
-	printfAtXY(x,++y, "App ctx r1: 0x%X", interruptedCtx->gregs[1]);
-	printfAtXY(x,++y, "App ctx r2: 0x%X", interruptedCtx->gregs[2]);
-	printfAtXY(x,++y, "App ctx r3: 0x%X", interruptedCtx->gregs[3]);
-	printfAtXY(x,++y, "Last SWI call result: %d", lastSystemCallResult);
+	scr_printfAtXY(x,++y, "App ctx r0: 0x%X", interruptedCtx->gregs[0]);
+	scr_printfAtXY(x,++y, "App ctx r1: 0x%X", interruptedCtx->gregs[1]);
+	scr_printfAtXY(x,++y, "App ctx r2: 0x%X", interruptedCtx->gregs[2]);
+	scr_printfAtXY(x,++y, "App ctx r3: 0x%X", interruptedCtx->gregs[3]);
+	scr_printfAtXY(x,++y, "Last SWI call result: %d", lastSystemCallResult);
 }
 
 /*******************************************************************************
@@ -118,7 +107,7 @@ typedef struct Driver
 
 Ctx* handleReset(void)
 {
-	initCommon();
+	scr_init();
 	setupAppCtx();
 	return &appCtx;
 }
@@ -185,26 +174,25 @@ void showMenu(void)
 {
 	int x = 4;
 	int y = 12;
-	printfAtXY(x, y++, "1. Test ABORT (Execute)");
-	printfAtXY(x, y++, "2. Test ABORT (Write)");
-	printfAtXY(x, y++, "3. Test ABORT (Read)");
-	printfAtXY(x, y++, "4. Test DIVIDE BY ZERO");
-	printfAtXY(x, y++, "5. Test UNDEFINED INSTRUCTION");
-	printfAtXY(x, y++, "6. Test ILLEGAL INSTRUCTION");
-	printfAtXY(x, y++, "7. Test SWI (System Call) (will pass 0xf00d,0xbeef,0x0,0x0 to the handler)");
-	printfAtXY(x, y++, "8. Test IRQ (triggers a one-off timer)");
+	scr_printfAtXY(x, y++, "1. Test ABORT (Execute)");
+	scr_printfAtXY(x, y++, "2. Test ABORT (Write)");
+	scr_printfAtXY(x, y++, "3. Test ABORT (Read)");
+	scr_printfAtXY(x, y++, "4. Test DIVIDE BY ZERO");
+	scr_printfAtXY(x, y++, "5. Test UNDEFINED INSTRUCTION");
+	scr_printfAtXY(x, y++, "6. Test ILLEGAL INSTRUCTION");
+	scr_printfAtXY(x, y++, "7. Test SWI (System Call) (will pass 0xf00d,0xbeef,0x0,0x0 to the handler)");
+	scr_printfAtXY(x, y++, "8. Test IRQ (triggers a one-off timer)");
 }
 
 void redrawScreen(int doClear)
 {
 	if (doClear) {
-		clearScreen();
+		scr_clear();
 	}
-	printfAtXY(0,0,
+	scr_printfAtXY(0,0,
 		"Interrupts example: Make sure you disconnect the debugger");
 	showMenu();
 }
-
 
 /*
 Causes an Abort due to an invalid execute permissions
@@ -234,7 +222,7 @@ void appMain(void)
 	redrawScreen(FALSE);
 
 	while(1) {
-		int key = kybGetKey();
+		int key = kyb_getKey();
 		switch(key) {
 			case '1':
 				causeAbortExecute();

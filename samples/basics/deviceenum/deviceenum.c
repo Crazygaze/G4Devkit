@@ -1,5 +1,7 @@
 
 #include "common.h"
+#include "hwcommon.h"
+#include "hwscreen.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -11,22 +13,11 @@
 
 int line=1;
 
-#define HWIERR_SUCCESS 0
-#define HWIERR_NODEVICE 0x80000001
-#define HWIERR_INVALIDFUNCTION 0x80000002
-#define HWIERR_INVALIDMEMORYADDRESS 0x80000003
-
-#define HWIFUNC_ID 0x80000000
-#define HWIFUNC_DESCRIPTION 0x80000001
-#define HWIFUNC_UUID 0x80000002
 
 static int x;
 static int y;
 
-/*! This converts a Device/Manufacturer ID to a string
-The byte order is different, so this is necessary.
-The ID byte order will change in the future, so there won't be a need to reverse
-the bytes order
+/*! This converts a Device/Manufacturer ID to a string.
 */
 const char* idToString(int id, char* dst)
 {	
@@ -37,17 +28,17 @@ const char* idToString(int id, char* dst)
 
 void appMain(void)
 {
-	initCommon();
+	scr_init();
 	
 	x = 0;
 	y = 0;
-	printfAtXY(x,y,"Hardware Device Enumeration example");
+	scr_printfAtXY(x,y,"Hardware Device Enumeration example");
 	y++;
 	
 	for(int bus=0; bus<MAX_DEVICES; bus++) {
 		
 		x = 0;
-		x += printfAtXY(x,++y, "Bus %d: ", bus);
+		x += scr_printfAtXY(x,++y, "Bus %d: ", bus);
 		
 		//
 		// Get Device ID
@@ -59,7 +50,7 @@ void appMain(void)
 		char manufacturerId[5];
 		if (res==HWIERR_SUCCESS) {
 			// Print the Device ID information
-			x += printfAtXY(x,y,"FOUND: ID=%s, Version=%d, Manuf.=%s",
+			x += scr_printfAtXY(x,y,"FOUND: ID=%s, Version=%d, Manuf.=%s",
 				idToString(data.regs[0], deviceId),
 				data.regs[1],
 				idToString(data.regs[2], manufacturerId));				
@@ -70,9 +61,9 @@ void appMain(void)
 			char desc[4*4+1];
 			memset(desc, 0, sizeof(desc));
 			memcpy(desc, &data.regs[0], 4*4);
-			printfAtXY(x,y,", Desc=%s", desc);		
+			scr_printfAtXY(x,y,", Desc=%s", desc);		
 		} else {
-			printfAtXY(x,y,"NO DEVICE");
+			scr_printfAtXY(x,y,"NO DEVICE");
 		}
 	}
 	

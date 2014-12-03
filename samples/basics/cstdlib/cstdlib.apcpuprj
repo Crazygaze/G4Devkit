@@ -1,7 +1,7 @@
 {
 	"format": "Project",
 	"version": 1,
-	"name": "common",
+	"name": "cstdlib",
 	"type": 2,
 	"globalconfiguration": {
 		"name": "Global",
@@ -18,8 +18,7 @@
 		{
 			"name": "Debug",
 			"includePaths": [
-				"$(SolutionDir)\/cstdlib",
-				"$(SolutionDir)\/hardware"
+
 			],
 			"defines": [
 				"DEBUG"
@@ -30,8 +29,7 @@
 		{
 			"name": "Release",
 			"includePaths": [
-				"$(SolutionDir)\/cstdlib",
-				"$(SolutionDir)\/hardware"
+
 			],
 			"defines": [
 				"NDEBUG"
@@ -45,15 +43,55 @@
 	],
 	"files": [
 		{
-			"path": ".\\common.c",
+			"path": ".\\assert.h",
 			"bootfile": false
 		},
 		{
-			"path": ".\\common.h",
+			"path": ".\\extern\\printf\\printf.c",
 			"bootfile": false
 		},
 		{
-			"path": ".\\readme.txt",
+			"path": ".\\extern\\printf\\printf.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stdarg.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stddef.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stdint.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stdio.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stdio.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stdlib.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stdlib.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\string.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\string.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\string_aux.asm",
 			"bootfile": false
 		}
 	]
