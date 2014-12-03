@@ -18,7 +18,9 @@
 		{
 			"name": "Debug",
 			"includePaths": [
-				"$(SolutionDir)\/common"
+				"$(SolutionDir)\/common",
+				"$(SolutionDir)\/cstdlib",
+				"$(SolutionDir)\/hardware"
 			],
 			"defines": [
 				"DEBUG"
@@ -29,7 +31,9 @@
 		{
 			"name": "Release",
 			"includePaths": [
-				"$(SolutionDir)\/common"
+				"$(SolutionDir)\/common",
+				"$(SolutionDir)\/cstdlib",
+				"$(SolutionDir)\/hardware"
 			],
 			"defines": [
 				"NDEBUG"
@@ -39,7 +43,9 @@
 		}
 	],
 	"dependencies": [
-		"common"
+		"common",
+		"hardware",
+		"cstdlib"
 	],
 	"files": [
 		{

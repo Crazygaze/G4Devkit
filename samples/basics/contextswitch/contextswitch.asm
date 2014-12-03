@@ -49,9 +49,9 @@ _ctx2:
 
 ;
 ; Things we need from the common static library
-extern _initCommon
-extern _printCharacterAtXY
-extern _printStringAtXY
+extern _scr_init
+extern _scr_printCharAtXY
+extern _scr_printStringAtXY
 extern _pause
 
 ;*******************************************************************************
@@ -61,13 +61,13 @@ extern _pause
 public _startup
 _startup:
 
-	bl _initCommon
+	bl _scr_init
 	
 	; Print sample name
 	mov r0, 0
 	mov r1, 0
 	lea r2, [_sampleName]
-	bl _printStringAtXY
+	bl _scr_printStringAtXY
 	
 	;
 	; Setup the contexts
@@ -125,7 +125,7 @@ _contextLoop:
 	mov r0, r4 ; x
 	mov r1, r5 ; y
 	mov r2, 32; a space, to clear
-	bl _printCharacterAtXY
+	bl _scr_printCharAtXY
 	
 	; Increment screen column, wrapping around at the end
 	; r4 = (r4+1) % 80
@@ -136,7 +136,7 @@ _contextLoop:
 	mov r0, r4 ; x
 	mov r1, r5 ; y
 	mov r2, r6 ; character
-	bl _printCharacterAtXY
+	bl _scr_printCharAtXY
 
 	; Pause for 500 ms
 	mov r0, 500

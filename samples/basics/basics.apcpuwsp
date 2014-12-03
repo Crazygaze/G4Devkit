@@ -7,6 +7,8 @@
 		".\\contextswitch\\contextswitch.apcpuprj",
 		".\\common\\common.apcpuprj",
 		".\\interrupts\\interrupts.apcpuprj",
-		".\\deviceenum\\deviceenum.apcpuprj"
+		".\\deviceenum\\deviceenum.apcpuprj",
+		".\\hardware\\hardware.apcpuprj",
+		".\\cstdlib\\cstdlib.apcpuprj"
 	]
 }
