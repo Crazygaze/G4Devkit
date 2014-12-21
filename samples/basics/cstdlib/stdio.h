@@ -1,7 +1,8 @@
 #ifndef _stdio_h_
 #define _stdio_h_
 
-#include "stdarg.h"
+#include <stddef.h>
+#include <stdarg.h>
 
 int sprintf (char *buffer, const char *format, ...);
 int vsprintf_impl(char* buffer, const char* format, va_list* vlist);

@@ -1,6 +1,6 @@
-#include "stdio.h"
-#include "stddef.h"
-#include "stdarg.h"
+#include <stdio.h>
+#include <stddef.h>
+#include <stdarg.h>
 #include "extern/printf/printf.h"
 
 int sprintf (char *buffer, const char *format, ...)

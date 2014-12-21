@@ -1,7 +1,7 @@
 #ifndef _stdarg_h_
 #define _stdarg_h_
 
-#include "stddef.h"
+#include <stddef.h>
 
 typedef struct va_list
 {

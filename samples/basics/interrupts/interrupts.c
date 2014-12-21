@@ -3,6 +3,7 @@
 #include <string.h>
 #include "hwkeyboard.h"
 #include "hwscreen.h"
+#include "hwcpu.h"
 
 // This will be used as the application execution context
 Ctx appCtx;
@@ -43,9 +44,9 @@ void setupAppCtx(void)
 	// Setup the stack (register SP)
 	// Note that the stack grows downwards, so we point SP to the top address of
 	// the memory block we are using for the stack	
-	appCtx.gregs[13] = (int) &appStack[APPSTACKSIZE];
+	appCtx.gregs[CPU_REG_SP] = (int) &appStack[APPSTACKSIZE];
 	// Setup the PC register
-	appCtx.gregs[15] = (int) &launchApplication;
+	appCtx.gregs[CPU_REG_PC] = (int) &launchApplication;
 	// Setup the flags register
 	// The value specified (0x04000000), sets Supervisor mode, and enables
 	// IRQs	

@@ -5,4 +5,8 @@
 */
 double clk_getRunningTimeSeconds(void);
 
+/*! Pauses the program for the specified milliseconds
+*/
+void clk_pauseMS(int ms);
+
 #endif
