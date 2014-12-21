@@ -47,7 +47,7 @@ mov r0, ip\n\t\
 void hw_cpu_enableIRQ(void)
 INLINEASM("\t\
 mrs r0 ; load flags register \n\t\
-or r0, r0, ~(1<<27) ; clear bit 27 \n\t\
+and r0, r0, ~(1<<27) ; clear bit 27 \n\t\
 msr r0 ; set flags register");
 
 /*! Sets the process keys in the flags register

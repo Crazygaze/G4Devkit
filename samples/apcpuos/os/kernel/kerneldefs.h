@@ -16,7 +16,7 @@
 
 #define CPU_FLAGSREG_SUPERVISOR 26
 
-#define INTRCTX_ADDR 32
+#define INTRCTX_ADDR 0x8
 
 // Stack space for the kernel process/thread.
 // Needs to be 4 word aligned
@@ -28,11 +28,6 @@
 // The smaller it is, more often the threads get interrupted, and more time
 // wasted in the kernel scheduling
 #define THREAD_TIME_SLICE 100
-
-//
-// Interval between process stats updates
-//
-#define STATS_UPDATE_INTERVAL 1.0f
 
 //////////////////////////////////////////////////////////////////////////
 //  Various flags for tweaking things

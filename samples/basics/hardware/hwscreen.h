@@ -27,11 +27,31 @@ void scr_printCharAtXY(int x, int y, unsigned char ch);
 */
 void scr_printStringAtXY(int x, int y, const char* str);
 
+/*! Prints a printf style stringa at the specified position
+*/
 int scr_printfAtXY(int x, int y, const char* fmt, ...);
 
 /*! Clears the screen
 */
 void scr_clear(void);
 
+/*! Clears a screen area
+* Coordinates are inclusive, and x2/y2 needs to be after x1/y1 in memory
+*/
+void scr_clearArea(int x1, int y1, int x2, int y2);
+
+/*! Scrolls the screen up
+*/
+void scr_scroll(int lines);
+
+
+
+/*! Prints a string at the current cursor position
+*/
+void scr_printString(const char* str);
+
+/*! Prints a printf style string at the current cursor position
+*/
+void scr_printf(const char* fmt, ...);
 
 #endif

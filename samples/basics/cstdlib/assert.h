@@ -1,6 +1,8 @@
 #ifndef _assert_h_
 #define _assert_h_
 
+#include <stddef.h>
+
 #ifdef NDEBUG
 	// For Release build, asserts don't do anything
 	#define assert(condition) ((void)0)

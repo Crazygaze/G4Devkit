@@ -1,6 +1,8 @@
 #ifndef _hwcommon_h_
 #define _hwcommon_h_
 
+#include <stddef.h>
+
 /*!
 This struct matches a register set.
 Having a struct like this makes it easier to use from C, instead of just a
@@ -22,7 +24,10 @@ typedef struct HwiData {
 	unsigned int regs[4];
 } HwiData;
 
+typedef void (*InterruptHandler)(u32 data0, u32 data1, u32 data2, u32 data3);
+
 int hwiCall(int bus, int funcNum, HwiData* data);
+
 
 //
 // The default devices are fixed a specific bus numbers

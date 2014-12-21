@@ -9,6 +9,7 @@
 		".\\interrupts\\interrupts.apcpuprj",
 		".\\deviceenum\\deviceenum.apcpuprj",
 		".\\hardware\\hardware.apcpuprj",
-		".\\cstdlib\\cstdlib.apcpuprj"
+		".\\cstdlib\\cstdlib.apcpuprj",
+		".\\hardwaretests\\hardwaretests.apcpuprj"
 	]
 }
