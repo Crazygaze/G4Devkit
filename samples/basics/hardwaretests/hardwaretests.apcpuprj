@@ -77,6 +77,14 @@
 			"bootfile": false
 		},
 		{
+			"path": ".\\hardwaretest_screen.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hardwaretest_screen.h",
+			"bootfile": false
+		},
+		{
 			"path": ".\\hardwaretests.c",
 			"bootfile": false
 		},

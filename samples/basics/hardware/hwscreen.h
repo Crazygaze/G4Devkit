@@ -8,9 +8,21 @@
 #define SCR_BYTESPERCHARACTER 2
 #define SCR_BUFFERSIZE (SCR_XRES*SCR_YRES*SCR_BYTESPERCHARACTER)
 
+typedef struct ScreenInfo
+{
+	char* buffer;
+	int xres;
+	int yres;
+	int bytesPerCharacter;
+} ScreenInfo;
+
 /*! Initializes the screen, with the default settings
 */
 void scr_init(void);
+
+/*! Returns screen information
+*/
+void scr_getInfo(ScreenInfo* info);
 
 /*
 * \param buffer
