@@ -49,6 +49,34 @@
 	],
 	"files": [
 		{
+			"path": ".\\README.txt",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hardwaretest_clock.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hardwaretest_clock.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hardwaretest_common.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hardwaretest_common.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hardwaretest_cpu.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hardwaretest_cpu.h",
+			"bootfile": false
+		},
+		{
 			"path": ".\\hardwaretests.c",
 			"bootfile": false
 		},
