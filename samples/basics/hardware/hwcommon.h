@@ -22,9 +22,16 @@ typedef struct Ctx
  */
 typedef struct HwiData {
 	unsigned int regs[4];
+	// Some hardware functions might use floating points registers too (f0-f3)
+	double fregs[4];
 } HwiData;
 
 typedef void (*InterruptHandler)(u32 data0, u32 data1, u32 data2, u32 data3);
+typedef struct Driver
+{
+	InterruptHandler* handlers;
+	int numHanders;
+} Driver;
 
 int hwiCall(int bus, int funcNum, HwiData* data);
 
@@ -38,6 +45,7 @@ int hwiCall(int bus, int funcNum, HwiData* data);
 #define HWBUS_KYB 3
 #define HWBUS_NIC 4
 #define HWBUS_DKC 5
+#define HWBUS_DEFAULTDEVICES_MAX 6 // How many default devices we have
 
 #define HWIERR_SUCCESS 0
 #define HWIERR_NODEVICE 0x80000001

@@ -4,6 +4,7 @@
 #include "hwkeyboard.h"
 #include "hwscreen.h"
 #include "hwcpu.h"
+#include "hwclock.h"
 
 // This will be used as the application execution context
 Ctx appCtx;
@@ -84,27 +85,8 @@ void printInterruptDetails(
 *		Interrupt handlers
 *******************************************************************************/
 
-// Interrupts for the CPU
-#define CPU_INTERRUPT_ABORT 0
-#define CPU_INTERRUPT_DIVIDEBYZERO 1
-#define CPU_INTERRUPT_UNDEFINEINSTRUCTION 2
-#define CPU_INTERRUPT_ILLEGALINSTRUCTION 3
-#define CPU_INTERRUPT_SWI 4
-#define CPU_INTERRUPT_MAX 5
-
-// Interrupts for the Clock
-#define CLOCK_INTERRUPT_MAX 1
-
 // How many drivers we support in the sample
 #define NUM_DRIVERS 2
-
-typedef void (*InterruptHandler)(u32 data0, u32 data1, u32 data2, u32 data3);
-typedef struct Driver
-{
-	InterruptHandler* handlers;
-	int numHanders;
-} Driver;
-
 
 Ctx* handleReset(void)
 {
@@ -115,7 +97,7 @@ Ctx* handleReset(void)
 
 void cpu_handleGeneric(u32 data0, u32 data1, u32 data2, u32 data3)
 {
-	static const char* reasons[CPU_INTERRUPT_MAX] =
+	static const char* reasons[HWCPU_INTERRUPT_MAX] =
 	{
 		"ABORT",
 		"DIVIDE BY ZERO",
@@ -127,7 +109,7 @@ void cpu_handleGeneric(u32 data0, u32 data1, u32 data2, u32 data3)
 	printInterruptDetails(interruptedCtx, reasons[interruptReason], data0,
 			data1, data2, data3);
 	
-	if (interruptReason!=CPU_INTERRUPT_SWI) {
+	if (interruptReason!=HWCPU_INTERRUPT_SWI) {
 		// Anything other than a SWI interrupt is an unrecoverable interrupt
 		// in this sample, so lets reset the application.
 		setupAppCtx();
@@ -143,6 +125,9 @@ void clock_handleTimer(u32 data0, u32 data1, u32 data2, u32 data3)
 	printInterruptDetails(interruptedCtx, "IRQ",data0,data1,data2,data3);
 }
 
+//
+// Setup the driver structs
+//
 InterruptHandler cpu_handlers[] =
 {
 	&cpu_handleGeneric,
@@ -155,18 +140,17 @@ InterruptHandler clock_handlers[] =
 {
 	&clock_handleTimer
 };
-
-//
-// Put all the interrupt handlers together
+// Put all the the drivers together
 Driver drivers[NUM_DRIVERS] =
 {
-	{ cpu_handlers, CPU_INTERRUPT_MAX },
-	{ clock_handlers, CLOCK_INTERRUPT_MAX }
+	{ cpu_handlers, HWCPU_INTERRUPT_MAX },
+	{ clock_handlers, HWCLOCK_INTERRUPT_MAX }
 };
 
 Ctx* handleInterrupt(u32 data0, u32 data1, u32 data2, u32 data3)
 {
 	interruptsCount++;	
+	// We just forward the handling to the specific driver
 	drivers[interruptBus].handlers[interruptReason](data0, data1, data2, data3);	
 	return &appCtx;
 }

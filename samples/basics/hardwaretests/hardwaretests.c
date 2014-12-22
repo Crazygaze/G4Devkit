@@ -7,18 +7,32 @@
 #include "common.h"
 #include <stdarg.h>
 #include <stdio.h>
+#include <assert.h>
+#include "hardwaretest_common.h"
+#include "hardwaretest_cpu.h"
+#include "hardwaretest_clock.h"
 
 static Ctx appCtx;
 
-void doPause(void)
-{
-	scr_printf("Press any key to continue...\n");
-	kyb_pause();
-}
+// The assembly interrupt handler sets this whenever an interrupt happens
+Ctx* interruptedCtx;
+// The assembly interrupt handler sets this whenever an IRQ interrupt happens
+u32 interruptBus;
+u32 interruptReason;
 
-void interruptHandler(u32 d0, u32 d1, u32 d2, u32 d3)
+#define NUM_DRIVERS 2
+
+// Put all the the drivers together
+DeviceTest deviceTests[NUM_DRIVERS];
+
+Ctx* interruptHandler(u32 data0, u32 data1, u32 data2, u32 data3)
 {
-	
+	always_assert(interruptBus<NUM_DRIVERS);
+	Driver* driver = deviceTests[interruptBus].driver;
+	always_assert(interruptReason < driver->numHanders);	
+	// We just forward the handling to the specific driver
+	driver->handlers[interruptReason](data0, data1, data2, data3);	
+	return &appCtx;
 }
 
 void hardwareTests(void);
@@ -41,27 +55,20 @@ Ctx* setupAppCtx(void)
 	return &appCtx;
 }
 
-
-void hardwareTest_cpu(void)
-{
-	scr_printf("CPU Tests\n");
-	cpu_enableIRQ();
-	cpu_disableIRQ();
-	cpu_enableIRQ();
-	u32 ram = cpu_getRamAmount();
-	scr_printf("	RAM = %d bytes (%d Kbytes)\n", ram, ram/1024);
-	scr_printf("	IRQ Queue Size = %d\n", cpu_getIRQQueueSize());
-}
-
 void hardwareTests(void)
 {
 	scr_init();
+
+	// Initialize drivers 
+	hardwareTest_cpu_init(&deviceTests[HWBUS_CPU]);
+	hardwareTest_clock_init(&deviceTests[HWBUS_CLK]);
 	
-	hardwareTest_cpu();
-	doPause();
+	for(int i=0; i<NUM_DRIVERS; i++) {
+		deviceTests[i].testFunc();
+		doPause();
+	}
 	
 	// We should never return from this function
 	loopForever();
 }
-
 
