@@ -4,5 +4,5 @@
 void doPause(void)
 {
 	scr_printf("Press any key to continue...\n");
-	kyb_pause();
+	//kyb_pause();
 }

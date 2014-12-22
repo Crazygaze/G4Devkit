@@ -5,10 +5,7 @@
 #include <assert.h>
 
 
-char* scr_buffer;
-int scr_xres;
-int scr_yres;
-
+static ScreenInfo scr;
 static u16* cursor;
 
 #define HWSCRFUNC_INFO 0
@@ -17,18 +14,24 @@ static u16* cursor;
 
 static unsigned short* scr_getXYPtr(int x, int y)
 {
-	return (unsigned short*)(scr_buffer + (y*(scr_xres*2) + x*2));
+	return (unsigned short*)(scr.buffer + (y*(scr.xres*2) + x*2));
 }
 
-void scr_init(void)
+void scr_getInfo(ScreenInfo* info)
 {
 	// Get the screen info
 	HwiData data;
 	int res = hwiCall(HWBUS_SCR, HWSCRFUNC_INFO, &data);
 	always_assert(res==HWIERR_SUCCESS);
-	scr_buffer = (char*)data.regs[0];
-	scr_xres = data.regs[1];
-	scr_yres = data.regs[2];
+	info->buffer = (char*)data.regs[0];
+	info->xres = data.regs[1];
+	info->yres = data.regs[2];
+	info->bytesPerCharacter = data.regs[3];
+}
+
+void scr_init(void)
+{
+	scr_getInfo(&scr);
 	cursor = scr_getXYPtr(0,0);
 }
 
@@ -38,12 +41,12 @@ void scr_map(void* buffer)
 	data.regs[0] = (u32)buffer;
 	int res = hwiCall(HWBUS_SCR, HWSCRFUNC_MAP, &data);
 	always_assert(res==HWIERR_SUCCESS);
-	scr_buffer = buffer;
+	scr.buffer = buffer;
 }
 
 void scr_clear(void)
 {
-	memset(scr_buffer, 0, scr_xres*scr_yres*2);
+	memset(scr.buffer, 0, scr.xres*scr.yres*2);
 	cursor = scr_getXYPtr(0,0);
 }
 
@@ -94,7 +97,7 @@ static void scr_checkScroll(const u16* end)
 {
 	if (cursor>=end) {
 		scr_scroll(1);
-		cursor = scr_getXYPtr(0, scr_yres-1);
+		cursor = scr_getXYPtr(0, scr.yres-1);
 	}	
 }
 
@@ -109,7 +112,7 @@ static void scr_printStringHelper(unsigned char ch, int count, const u16* end)
 
 void scr_printString(const char* str)
 {
-	u16* end = scr_getXYPtr(scr_xres-1, scr_yres-1);
+	u16* end = scr_getXYPtr(scr.xres-1, scr.yres-1);
 	while(*str)
 	{
 		switch(*str)
@@ -119,11 +122,11 @@ void scr_printString(const char* str)
 			break;
 		case '\n':
 			cursor = scr_getXYPtr(
-				0, ((cursor - (u16*)scr_buffer)/scr_xres) + 1);
+				0, ((cursor - (u16*)scr.buffer)/scr.xres) + 1);
 			scr_checkScroll(end);
 			break;
 		case '\r':
-			cursor = scr_getXYPtr(0, (cursor - (u16*)scr_buffer)/scr_xres);
+			cursor = scr_getXYPtr(0, (cursor - (u16*)scr.buffer)/scr.xres);
 			break;
 		default:
 				scr_printStringHelper(*str,1,end);
