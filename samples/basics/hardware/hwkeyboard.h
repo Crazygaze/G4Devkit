@@ -20,6 +20,13 @@
 #define KEY_ASCII_FIRST 0x20
 #define KEY_ASCII_LAST 0x7E
 
+
+//
+// Interrupt reasons for keyboard
+//
+#define HWKYB_INTERRUPT_EVENT 0
+#define HWKYB_INTERRUPT_MAX 1
+
 typedef enum KeyEvent
 {
 	kKeyEvent_None,
