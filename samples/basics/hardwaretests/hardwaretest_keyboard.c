@@ -7,6 +7,7 @@
 typedef struct KeyboardDriver
 {
 	Driver base;
+	u32 irqCount;
 } KeyboardDriver;
 
 static KeyboardDriver keyboardDriver;
@@ -18,6 +19,29 @@ typedef struct ControlKeyTest
 	const char* name;
 	bool hasTyped;
 } ControlKeyTest;
+
+
+/*!
+* Waits until the user releases any pressed keys
+*/
+static void waitNoPress(void)
+{
+	// Wait until we release all keys
+	while(kyb_isPressed(0)){
+	}
+	kyb_clearBuffer();
+}
+
+// Interrupt handler
+void keyboard_handleIRQ(u32 data0, u32 data1, u32 data2, u32 data3)
+{
+	keyboardDriver.irqCount++;
+}
+
+InterruptHandler keyboardHandlers[HWKYB_INTERRUPT_MAX] =
+{
+	&keyboard_handleIRQ
+};
 
 static ControlKeyTest controlKeyTest[] =
 {
@@ -38,8 +62,9 @@ static ControlKeyTest controlKeyTest[] =
 static void hardwareTest_keyboard(void);
 void hardwareTest_keyboard_init(DeviceTest* data)
 {
-	keyboardDriver.base.handlers = NULL;
-	keyboardDriver.base.numHanders = 0;
+	keyboardDriver.base.handlers = keyboardHandlers;
+	keyboardDriver.base.numHanders = 
+		sizeof(keyboardHandlers)/sizeof(InterruptHandler);
 	data->driver = &keyboardDriver.base;
 	data->testFunc = &hardwareTest_keyboard;
 }
@@ -103,10 +128,7 @@ static bool readString(char* buf, int bufsize)
 		cursorCh = cursorCh==32 ? 22 : 32;
 	} while(!done);
 
-	// Wait until we release all keys
-	while(kyb_isPressed(0)){
-	}
-	kyb_clearBuffer();
+	waitNoPress();
 	
 	return done==1 ? true : false;
 }
@@ -114,6 +136,7 @@ static bool readString(char* buf, int bufsize)
 static void hardwareTest_keyboard(void)
 {
 	scr_printf("Keyboard Tests\n");
+	int code;
 
 	// Test string reading
 	char buf[32];
@@ -121,7 +144,18 @@ static void hardwareTest_keyboard(void)
 	scr_printf("	Type '%s' and press Enter:\n	>", expectedStr);
 	bool res = readString(buf, sizeof(buf));
 	check_nl(strcmp(buf, expectedStr)==0);
-	
+
+	check(keyboardDriver.irqCount==0);
+	kyb_setIRQMode(true);
+	scr_printf("	Enabled Keyboard IRQ Mode. Press any key to test. ");
+	// I'm waiting for any events, which in turn means that an interrupt must
+	// occur
+	while(!kyb_getNext(&code,true)) {
+		// do nothing
+	}
+	check_nl(keyboardDriver.irqCount!=0);
+	waitNoPress();
+
 	//
 	// Test all non-ASCII keys
 	//
@@ -129,7 +163,6 @@ static void hardwareTest_keyboard(void)
 	ControlKeyTest* test = &controlKeyTest[0];
 	while(test->name) {
 		scr_printf("	Press & release %s : ", test->name);
-		int code;
 		bool ok = true;
 		if (ok)
 			ok = (kyb_getNext(&code, true)==kKeyEvent_Press) && code==test->code;

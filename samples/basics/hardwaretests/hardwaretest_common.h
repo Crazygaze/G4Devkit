@@ -11,19 +11,27 @@ typedef struct DeviceTest
 	DeviceTestFunction testFunc;
 } DeviceTest;
 
+/*!
+*/
 #define checkf(condition, fmt, ...) \
 	if (!(condition)) scr_printf(fmt, __VA_ARGS__)
 
+/*!
+*/
 #define check(condition) \
 	if (!(condition)) \
 		scr_printf("	FAILED: Line %d: \"%s\"\n", __LINE__, #condition)
 
+/*!
+*/
 #define check_nl(condition) \
 	if (condition) \
 		scr_printf(" OK\n"); \
 	else \
 		scr_printf(" FAILED: Line %d : \"%s\"\n", __LINE__, #condition)
 
+/*!
+*/
 void doPause(void);
 
 #endif
