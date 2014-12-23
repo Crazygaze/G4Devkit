@@ -20,7 +20,7 @@ typedef struct DeviceTest
 
 #define check_nl(condition) \
 	if (condition) \
-		scr_printf("\n"); \
+		scr_printf(" OK\n"); \
 	else \
 		scr_printf(" FAILED: Line %d : \"%s\"\n", __LINE__, #condition)
 

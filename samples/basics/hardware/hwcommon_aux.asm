@@ -2,11 +2,17 @@
 
 
 ;
-; Full hwi call
+; Full hwi call.
+; It's a bit of overkill for device functions that don't use all the registers,
+; but it's flexible.
+; Whenever speed is required, a specialized function should be created that
+; only uses the required registers
+;
 ; In
 ; r0 - bus
 ; r1 - function number
-; r2 - pointer to array of 4 words
+; r2 - pointer to array of 4 words and 4 doubles
+;	This is used both as input and output
 public _hwiCall
 _hwiCall:
 	push {r4,lr} ; save registers we will need to restore
@@ -42,3 +48,4 @@ _hwiCall:
 	mov r0, ip
 	
 	pop {r4,pc}
+
