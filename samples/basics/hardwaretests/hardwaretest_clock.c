@@ -37,6 +37,8 @@ void hardwareTest_clock_init(DeviceTest* data)
 
 static void hardwareTest_clock(void)
 {
+	return;
+	
 	scr_printf("CLOCK Tests\n");
 	const int seconds = 2;
 	scr_printf("	Pausing for %d seconds\n", seconds);

@@ -128,6 +128,13 @@ void scr_printString(const char* str)
 		case '\r':
 			cursor = scr_getXYPtr(0, (cursor - (u16*)scr.buffer)/scr.xres);
 			break;
+		case '\b':
+			cursor--;
+			if ((u32)cursor<(u32)scr.buffer)
+				cursor = (u16*)scr.buffer;
+			scr_printStringHelper(' ', 1, end);
+			cursor--;
+			break;
 		default:
 				scr_printStringHelper(*str,1,end);
 		}

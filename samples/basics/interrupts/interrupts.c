@@ -207,7 +207,7 @@ void appMain(void)
 	redrawScreen(FALSE);
 
 	while(1) {
-		int key = kyb_getKey();
+		int key = kyb_getNextTyped();
 		switch(key) {
 			case '1':
 				causeAbortExecute();

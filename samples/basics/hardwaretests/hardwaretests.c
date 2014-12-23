@@ -12,6 +12,7 @@
 #include "hardwaretest_cpu.h"
 #include "hardwaretest_clock.h"
 #include "hardwaretest_screen.h"
+#include "hardwaretest_keyboard.h"
 
 static Ctx appCtx;
 
@@ -21,7 +22,7 @@ Ctx* interruptedCtx;
 u32 interruptBus;
 u32 interruptReason;
 
-#define NUM_DRIVERS 3
+#define NUM_DRIVERS 4
 
 // Put all the the drivers together
 DeviceTest deviceTests[NUM_DRIVERS];
@@ -64,6 +65,7 @@ void hardwareTests(void)
 	hardwareTest_cpu_init(&deviceTests[HWBUS_CPU]);
 	hardwareTest_clock_init(&deviceTests[HWBUS_CLK]);
 	hardwareTest_screen_init(&deviceTests[HWBUS_SCR]);
+	hardwareTest_keyboard_init(&deviceTests[HWBUS_KYB]);
 	
 	for(int i=0; i<NUM_DRIVERS; i++) {
 		deviceTests[i].testFunc();

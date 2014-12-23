@@ -77,6 +77,14 @@
 			"bootfile": false
 		},
 		{
+			"path": ".\\hardwaretest_keyboard.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hardwaretest_keyboard.h",
+			"bootfile": false
+		},
+		{
 			"path": ".\\hardwaretest_screen.c",
 			"bootfile": false
 		},
