@@ -34,7 +34,7 @@ The computer's architecture is named APCPU-32, unless I come up with a better na
 	* Available CPU speed and amount of RAM per virtual computer not decided yet. Will depend on server hosting costs.
 * Instruction set loosely inspired by ARM, with some other sources of inspiration mixed in, trying to provide a balance between ease of use and efficiency on the hosting side
 * Allows connecting up to 128 devices to the computer. Default devices installed on every computer are:
-	* CPU  - The cpu itself is seen as a device)
+	* CPU  - The cpu itself is seen as a device
 	* Clock/Timers
 	* Screen - Text mode, 80x25, 16 colours. VGA style
 	* Keyboard
