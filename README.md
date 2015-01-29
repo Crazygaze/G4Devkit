@@ -24,7 +24,7 @@ The computer's architecture is named APCPU-32, unless I come up with a better na
 
 # Some quick links
 
-* [Short video of tje DevKit in action](https://www.youtube.com/watch?v=cIyHgQvfETE)
+* [Short video of the DevKit in action](https://www.youtube.com/watch?v=cIyHgQvfETE)
 * [TwitchTV Coding sessions](http://www.twitch.tv/myfumanchu)
 * [My humble website](http://www.crazygaze.com)
 
