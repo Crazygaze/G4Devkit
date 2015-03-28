@@ -173,12 +173,11 @@ They mostly emulate Visual Studio and/or Visual Assist shortcuts
 * **CTRL + F** - Find in current file
 * **CTRL + SHIFT + F** - Find in workspace
 * **SHIFT + ALT + O** - Go to file. Start typing and it will filter
-* **SHIFT + ALT + O** - Go to file. Start typing and it will filter
 * **SHIFT + ALT + S** - Find symbol. Start typing and it will filter
 * **F12** - Goto definition
 * **CTRL + ALT + F12** - Goto declaration
 * **ALT + O** - Switch between .H and .C file
-* **ALT + M** - Find symbol in file. Star typing and it will filter. Good for navigating within a single file
+* **ALT + M** - Find symbol in file. Start typing and it will filter. Good for navigating within a single file
 * **CTRL + SHIFT + G** - Goto the file in the #include statement under the cursor.
 * **CTRL + '-'** - Goto to previous cursor position. **WORK IN PROGRESS**
 * **CTRL + SHIFT +  '-'** - Goto to next cursor position. **WORK IN PROGRESS**
