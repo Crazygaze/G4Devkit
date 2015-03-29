@@ -1,0 +1,18 @@
+{
+	"format": "Workspace",
+	"version": 1,
+	"name": "apcpuos",
+	"projects": [
+		".\\os\\os.apcpuprj",
+		".\\appsdk\\appsdk.apcpuprj",
+		".\\stdcshared\\stdcshared.apcpuprj",
+		".\\testapp1\\testapp1.apcpuprj",
+		".\\testapp2\\testapp2.apcpuprj",
+		".\\utilshared\\utilshared.apcpuprj",
+		".\\sysstats\\sysstats.apcpuprj",
+		".\\filemanager\\filemanager.apcpuprj",
+		".\\filesystem\\filesystem.apcpuprj",
+		".\\texteditor\\texteditor.apcpuprj",
+		".\\graphsystem\\graphsystem.apcpuprj"
+	]
+}

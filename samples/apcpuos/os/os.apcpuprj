@@ -1,0 +1,227 @@
+{
+	"format": "Project",
+	"version": 1,
+	"name": "os",
+	"type": 1,
+	"globalconfiguration": {
+		"name": "Global",
+		"includePaths": [
+
+		],
+		"defines": [
+
+		],
+		"compilerOptions": "",
+		"linkerextralibs": ""
+	},
+	"configurations": [
+		{
+			"name": "Debug",
+			"includePaths": [
+				"$(ProjectDir)",
+				"$(SolutionDir)stdcshared",
+				"$(SolutionDir)"
+			],
+			"defines": [
+				"DEBUG"
+			],
+			"compilerOptions": "-c99 -O2 -g -size -unroll-size=0 -dontwarn=323 -dontwarn=208 -dontwarn=153",
+			"linkerextralibs": ""
+		},
+		{
+			"name": "Release",
+			"includePaths": [
+				"$(ProjectDir)",
+				"$(SolutionDir)stdcshared",
+				"$(SolutionDir)"
+			],
+			"defines": [
+				"NDEBUG"
+			],
+			"compilerOptions": "-c99 -O2 -k -size -unroll-size=0 -dontwarn=323 -dontwarn=208 -dontwarn=153",
+			"linkerextralibs": ""
+		}
+	],
+	"dependencies": [
+		"appsdk",
+		"stdcshared",
+		"testapp1",
+		"testapp2",
+		"utilshared",
+		"sysstats",
+		"filemanager",
+		"filesystem",
+		"texteditor",
+		"graphsystem"
+	],
+	"files": [
+		{
+			"path": ".\\README.txt",
+			"bootfile": false
+		},
+		{
+			"path": ".\\TODO.txt",
+			"bootfile": false
+		},
+		{
+			"path": ".\\appslist.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\appslist.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\boot\\boot.asm",
+			"bootfile": true
+		},
+		{
+			"path": ".\\boot\\boot.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\kernel\\handles.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\kernel\\handles.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hw\\hwclock.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hw\\hwclock.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hw\\hwcommon.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hw\\hwcommon.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hw\\hwcommon_aux.asm",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hw\\hwcpu.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hw\\hwcpu.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hw\\hwdisk.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hw\\hwdisk.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hw\\hwkeyboard.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hw\\hwkeyboard.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hw\\hwnic.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hw\\hwnic.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hw\\hwscreen.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hw\\hwscreen.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\kernel\\kernel.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\kernel\\kernel.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\kernel\\kernelTimedEvents.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\kernel\\kernelTimedEvents.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\kernel\\kerneldebug.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\kernel\\kerneldebug.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\kernel\\kerneldefs.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\kernel\\mmu.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\kernel\\mmu.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\kernel\\oslogo.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\kernel\\oslogo.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\multitasking\\process.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\multitasking\\process.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\multitasking\\syncprimitives.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\multitasking\\syncprimitives.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\multitasking\\syncprimitives_aux.asm",
+			"bootfile": false
+		},
+		{
+			"path": ".\\syscalls\\syscalls.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\syscalls\\syscalls.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\tests.c",
+			"bootfile": false
+		}
+	]
+}

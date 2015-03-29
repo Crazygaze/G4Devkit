@@ -1,0 +1,112 @@
+{
+	"format": "Project",
+	"version": 1,
+	"name": "hardwaretests",
+	"type": 1,
+	"globalconfiguration": {
+		"name": "Global",
+		"includePaths": [
+
+		],
+		"defines": [
+
+		],
+		"compilerOptions": "",
+		"linkerextralibs": ""
+	},
+	"configurations": [
+		{
+			"name": "Debug",
+			"includePaths": [
+				"$(SolutionDir)\/common",
+				"$(SolutionDir)\/cstdlib",
+				"$(SolutionDir)\/hardware"
+			],
+			"defines": [
+				"DEBUG"
+			],
+			"compilerOptions": "-c99 -O2 -g -size -unroll-size=0 -dontwarn=323 -dontwarn=208 -dontwarn=153",
+			"linkerextralibs": ""
+		},
+		{
+			"name": "Release",
+			"includePaths": [
+				"$(SolutionDir)\/common",
+				"$(SolutionDir)\/cstdlib",
+				"$(SolutionDir)\/hardware"
+			],
+			"defines": [
+				"NDEBUG"
+			],
+			"compilerOptions": "-c99 -O2 -k -size -unroll-size=0 -dontwarn=323 -dontwarn=208 -dontwarn=153",
+			"linkerextralibs": ""
+		}
+	],
+	"dependencies": [
+		"common",
+		"hardware",
+		"cstdlib"
+	],
+	"files": [
+		{
+			"path": ".\\README.txt",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hardwaretest_clock.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hardwaretest_clock.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hardwaretest_common.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hardwaretest_common.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hardwaretest_cpu.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hardwaretest_cpu.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hardwaretest_keyboard.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hardwaretest_keyboard.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hardwaretest_nic.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hardwaretest_nic.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hardwaretest_screen.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hardwaretest_screen.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hardwaretests.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hardwaretests_boot.asm",
+			"bootfile": true
+		}
+	]
+}
