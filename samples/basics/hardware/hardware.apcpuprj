@@ -83,6 +83,14 @@
 			"bootfile": false
 		},
 		{
+			"path": ".\\hwnic.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hwnic.h",
+			"bootfile": false
+		},
+		{
 			"path": ".\\hwscreen.c",
 			"bootfile": false
 		},

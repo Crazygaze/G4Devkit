@@ -13,6 +13,6 @@ void hw_nic_dtor(hw_Drv* drv);
 
 HWERROR hw_nic_sendDebug(const char* str);
 HWERROR hw_nic_sendDebugV(const char* fmt, ...);
-HWERROR hw_nic_sendDebugVA(const char* fmt,  int* valist);
+HWERROR hw_nic_sendDebugVA(const char* fmt, int* valist);
 
 #endif

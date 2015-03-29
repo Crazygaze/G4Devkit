@@ -151,7 +151,7 @@ Ctx* handleInterrupt(u32 data0, u32 data1, u32 data2, u32 data3)
 {
 	interruptsCount++;	
 	// We just forward the handling to the specific driver
-	drivers[interruptBus].handlers[interruptReason](data0, data1, data2, data3);	
+	drivers[interruptBus].handlers[interruptReason](data0, data1, data2, data3);
 	return &appCtx;
 }
 

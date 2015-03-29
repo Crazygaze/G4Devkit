@@ -85,6 +85,14 @@
 			"bootfile": false
 		},
 		{
+			"path": ".\\hardwaretest_nic.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hardwaretest_nic.h",
+			"bootfile": false
+		},
+		{
 			"path": ".\\hardwaretest_screen.c",
 			"bootfile": false
 		},

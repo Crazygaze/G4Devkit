@@ -136,7 +136,7 @@ void scr_printString(const char* str)
 			cursor--;
 			break;
 		default:
-				scr_printStringHelper(*str,1,end);
+			scr_printStringHelper(*str,1,end);
 		}
 
 		str++;

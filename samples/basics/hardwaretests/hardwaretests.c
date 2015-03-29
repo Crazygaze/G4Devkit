@@ -13,6 +13,7 @@
 #include "hardwaretest_clock.h"
 #include "hardwaretest_screen.h"
 #include "hardwaretest_keyboard.h"
+#include "hardwaretest_nic.h"
 
 static Ctx appCtx;
 
@@ -22,7 +23,7 @@ Ctx* interruptedCtx;
 u32 interruptBus;
 u32 interruptReason;
 
-#define NUM_DRIVERS 4
+#define NUM_DRIVERS 5
 
 // Put all the the drivers together
 DeviceTest deviceTests[NUM_DRIVERS];
@@ -66,11 +67,17 @@ void hardwareTests(void)
 	hardwareTest_clock_init(&deviceTests[HWBUS_CLK]);
 	hardwareTest_screen_init(&deviceTests[HWBUS_SCR]);
 	hardwareTest_keyboard_init(&deviceTests[HWBUS_KYB]);
+	hardwareTest_nic_init(&deviceTests[HWBUS_NIC]);
 	
+	/*
 	for(int i=0; i<NUM_DRIVERS; i++) {
 		deviceTests[i].testFunc();
 		doPause();
 	}
+	*/
+	deviceTests[HWBUS_NIC].testFunc();
+	doPause();
+
 	
 	// We should never return from this function
 	loopForever();
