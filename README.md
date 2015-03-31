@@ -24,7 +24,7 @@ The computer's architecture is named APCPU-32, unless I come up with a better na
 
 # Some quick links
 
-* [Short video of tje DevKit in action](https://www.youtube.com/watch?v=cIyHgQvfETE)
+* [Short video of the DevKit in action](https://www.youtube.com/watch?v=cIyHgQvfETE)
 * [TwitchTV Coding sessions](http://www.twitch.tv/myfumanchu)
 * [My humble website](http://www.crazygaze.com)
 
@@ -34,7 +34,7 @@ The computer's architecture is named APCPU-32, unless I come up with a better na
 	* Available CPU speed and amount of RAM per virtual computer not decided yet. Will depend on server hosting costs.
 * Instruction set loosely inspired by ARM, with some other sources of inspiration mixed in, trying to provide a balance between ease of use and efficiency on the hosting side
 * Allows connecting up to 128 devices to the computer. Default devices installed on every computer are:
-	* CPU  - The cpu itself is seen as a device)
+	* CPU  - The cpu itself is seen as a device
 	* Clock/Timers
 	* Screen - Text mode, 80x25, 16 colours. VGA style
 	* Keyboard
@@ -173,12 +173,11 @@ They mostly emulate Visual Studio and/or Visual Assist shortcuts
 * **CTRL + F** - Find in current file
 * **CTRL + SHIFT + F** - Find in workspace
 * **SHIFT + ALT + O** - Go to file. Start typing and it will filter
-* **SHIFT + ALT + O** - Go to file. Start typing and it will filter
 * **SHIFT + ALT + S** - Find symbol. Start typing and it will filter
 * **F12** - Goto definition
 * **CTRL + ALT + F12** - Goto declaration
 * **ALT + O** - Switch between .H and .C file
-* **ALT + M** - Find symbol in file. Star typing and it will filter. Good for navigating within a single file
+* **ALT + M** - Find symbol in file. Start typing and it will filter. Good for navigating within a single file
 * **CTRL + SHIFT + G** - Goto the file in the #include statement under the cursor.
 * **CTRL + '-'** - Goto to previous cursor position. **WORK IN PROGRESS**
 * **CTRL + SHIFT +  '-'** - Goto to next cursor position. **WORK IN PROGRESS**
