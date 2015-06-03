@@ -11,6 +11,8 @@ The OS is open source, providing an example of a complex application for the vir
 
 The computer's architecture is named APCPU-32, unless I come up with a better name later.
 
+**Note**: I can only work on this on my free time, so progress is slow, with occasional bursts.
+
 # IMPORTANT NOTES
 
 * I'm working on the documentation, and I'll make it available in the next few days.
