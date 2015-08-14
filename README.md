@@ -28,6 +28,7 @@ The computer's architecture is named APCPU-32, unless I come up with a better na
 
 * [Short video of the DevKit in action](https://www.youtube.com/watch?v=cIyHgQvfETE)
 * [An original Birthday card I was surprised with, running on the emulator](https://www.youtube.com/watch?v=mbefNs7u3zY) 
+* [LiveCoding streaming sessions](https://www.livecoding.tv/fumanchu)
 * [TwitchTV Coding sessions](http://www.twitch.tv/myfumanchu)
 * [My humble website](http://www.crazygaze.com)
 
