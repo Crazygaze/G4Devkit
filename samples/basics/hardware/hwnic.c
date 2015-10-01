@@ -1,13 +1,31 @@
 #include "hwnic.h"
 #include <assert.h>
 #include <string.h>
+#include <stdio.h>
 
 #define HWINICERR_GENERIC 0x1
 
-#define HWNICFUNC_SEND 0 // Send a packet
-#define HWNICFUNC_RECEIVE 1 // Retrieve a packet from the incoming buffer
-#define HWNICFUNC_QUERYBUFFERS 2 // Query the state of the buffers
-#define HWNICFUNC_QUERYGLOBAL 3 // Query some global stats
+#define HWNICFUNC_GETINFO 0 // Retrieves card information
+#define HWNICFUNC_SEND 1 // Send a packet
+#define HWNICFUNC_RECEIVE 2 // Retrieve a packet from the incoming buffer
+#define HWNICFUNC_QUERYBUFFERS 3 // Query the state of the buffers
+#define HWNICFUNC_QUERYGLOBAL 4 // Query some global stats
+
+const char* nic_getIDStr(u32 id)
+{
+	static char buf[17];
+	sprintf(buf, "%u.%u.%u.%u",
+		id>>24 & 0xFF, id>>16 & 0xFF, id>>8 & 0xFF, id & 0xFF);
+	return buf;
+}
+
+u32 nic_getID()
+{
+	HwiData data;
+	int res = hwiCall(HWBUS_NIC, HWNICFUNC_GETINFO, &data);
+	always_assert(res==HWIERR_SUCCESS);
+	return data.regs[0];
+}
 
 void nic_send(u32 dstID, const char* buf, int size)
 {
