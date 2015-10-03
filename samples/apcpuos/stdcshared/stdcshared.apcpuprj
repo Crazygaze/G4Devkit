@@ -1,0 +1,134 @@
+{
+	"format": "Project",
+	"version": 1,
+	"name": "stdcshared",
+	"type": 2,
+	"globalconfiguration": {
+		"name": "Global",
+		"includePaths": [
+
+		],
+		"defines": [
+
+		],
+		"compilerOptions": "",
+		"linkerextralibs": ""
+	},
+	"configurations": [
+		{
+			"name": "Debug",
+			"includePaths": [
+				"$(ProjectDir)"
+			],
+			"defines": [
+				"DEBUG"
+			],
+			"compilerOptions": "-shareddata -c99 -O2 -g -size -unroll-size=0 -dontwarn=323 -dontwarn=208 -dontwarn=153",
+			"linkerextralibs": ""
+		},
+		{
+			"name": "Release",
+			"includePaths": [
+				"$(ProjectDir)"
+			],
+			"defines": [
+				"NDEBUG"
+			],
+			"compilerOptions": "-shareddata -c99 -O2 -k -size -unroll-size=0 -dontwarn=323 -dontwarn=208 -dontwarn=153",
+			"linkerextralibs": ""
+		}
+	],
+	"dependencies": [
+
+	],
+	"files": [
+		{
+			"path": ".\\assert_shared.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\limits_shared.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\details\\memdetails.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\details\\memdetails.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\extern\\printf\\printf.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\extern\\printf\\printf.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\readme.txt",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stdarg_shared.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stdcshared_defs.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stdcshared_defs.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stddef_shared.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stdint_shared.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stdio_shared.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stdio_shared.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stdlib_shared.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stdlib_shared.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\string_shared.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\string_shared.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\string_shared_aux.asm",
+			"bootfile": false
+		},
+		{
+			"path": ".\\extern\\tlsf\\tlsf.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\extern\\tlsf\\tlsf.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\extern\\tlsf\\tlsfbits.h",
+			"bootfile": false
+		}
+	]
+}

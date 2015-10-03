@@ -1,0 +1,92 @@
+{
+	"format": "Project",
+	"version": 1,
+	"name": "filesystem",
+	"type": 2,
+	"globalconfiguration": {
+		"name": "Global",
+		"includePaths": [
+
+		],
+		"defines": [
+
+		],
+		"compilerOptions": "",
+		"linkerextralibs": ""
+	},
+	"configurations": [
+		{
+			"name": "Debug",
+			"includePaths": [
+				"$(SolutionDir)appsdk",
+				"$(SolutionDir)appsdk\/stdc",
+				"$(SolutionDir)stdcshared",
+				"$(ProjectDir)"
+			],
+			"defines": [
+				"DEBUG"
+			],
+			"compilerOptions": "-shareddata -c99 -O2 -g -size -unroll-size=0 -dontwarn=323 -dontwarn=208 -dontwarn=153",
+			"linkerextralibs": ""
+		},
+		{
+			"name": "Release",
+			"includePaths": [
+				"$(SolutionDir)appsdk",
+				"$(SolutionDir)appsdk\/stdc",
+				"$(SolutionDir)stdcshared",
+				"$(ProjectDir)"
+			],
+			"defines": [
+				"NDEBUG"
+			],
+			"compilerOptions": "-shareddata -c99 -O2 -k -size -unroll-size=0 -dontwarn=323 -dontwarn=208 -dontwarn=153",
+			"linkerextralibs": ""
+		}
+	],
+	"dependencies": [
+
+	],
+	"files": [
+		{
+			"path": ".\\extern\\fatfs\\src\\diskio.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\extern\\fatfs\\src\\diskio.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\extern\\fatfs\\src\\ff.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\extern\\fatfs\\src\\ff.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\extern\\fatfs\\src\\ffconf.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\file_system_provider.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\file_system_provider.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\extern\\fatfs\\src\\integer.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\logging\\logging.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\logging\\logging.h",
+			"bootfile": false
+		}
+	]
+}
