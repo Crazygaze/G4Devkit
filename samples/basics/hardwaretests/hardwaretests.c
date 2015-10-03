@@ -67,17 +67,15 @@ void hardwareTests(void)
 	hardwareTest_clock_init(&deviceTests[HWBUS_CLK]);
 	hardwareTest_screen_init(&deviceTests[HWBUS_SCR]);
 	hardwareTest_keyboard_init(&deviceTests[HWBUS_KYB]);
-	hardwareTest_nic_init(&deviceTests[HWBUS_NIC]);
+	//hardwareTest_nic_init(&deviceTests[HWBUS_NIC]);
 	
-	/*
 	for(int i=0; i<NUM_DRIVERS; i++) {
 		deviceTests[i].testFunc();
 		doPause();
 	}
-	*/
-	deviceTests[HWBUS_NIC].testFunc();
+	
+	//deviceTests[HWBUS_NIC].testFunc();
 	doPause();
-
 	
 	// We should never return from this function
 	loopForever();
