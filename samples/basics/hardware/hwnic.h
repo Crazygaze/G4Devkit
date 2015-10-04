@@ -8,6 +8,17 @@
 //
 #define HWNIC_INTERRUPT_GENERIC 0
 
+/**! Returns an IP style string of the specified network card address
+\param id
+	Id to convert
+\return
+	Pointer to a static buffer with the string.
+	Note that you should not keep this pointer, as every call thi this function
+	will overwrite it.
+*/
+const char* nic_getIDStr(u32 id);
+
+u32 nic_getID();
 void nic_send(u32 dstID, const char* buf, int size);
 void nic_sendString(int dstID, const char* str);
 int nic_receive(char* buf, int bufsize, u32* srcID);

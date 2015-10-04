@@ -47,6 +47,10 @@
 			"bootfile": false
 		},
 		{
+			"path": ".\\limits.h",
+			"bootfile": false
+		},
+		{
 			"path": ".\\extern\\printf\\printf.c",
 			"bootfile": false
 		},
@@ -92,6 +96,10 @@
 		},
 		{
 			"path": ".\\string_aux.asm",
+			"bootfile": false
+		},
+		{
+			"path": ".\\extern\\apple\\strol.c",
 			"bootfile": false
 		}
 	]
