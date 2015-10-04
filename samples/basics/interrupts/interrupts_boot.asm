@@ -95,13 +95,13 @@ _causeUndefinedInstruction:
 
 ; Utility function to cause a "Illegal Instruction" interrupt
 ; This is done by setting the application context to run in User Mode, then
-; call a previleged instruction
+; call a privileged instruction
 public _causeIllegalInstruction
 _causeIllegalInstruction:
 	mov r0,0
 	msr r0 ; Set the flags register 0, which disable the Supervisor Mode bit
 	; This should now cause a "Illegal instruction" interrupt, as 'hwi' is a
-	; previleged instruction
+	; privileged instruction
 	hwi
 
 public _causeSystemCall

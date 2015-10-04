@@ -86,7 +86,7 @@ static int peers[NUM_PEERS];
 int getPeerIndex(int id)
 {
 	for(int i=0; i<NUM_PEERS; i++) {
-		if (srcID==peers[i])
+		if (id==peers[i])
 			return i;
 	}
 	return -1;
@@ -135,8 +135,8 @@ static void hardwareTest_nic(void)
 		
 		// Check if the source ID is from any expected peer
 		int peerIndex = getPeerIndex(srcID);
-		checkf(peerIndex!=-1, "Message from unexpected peer\n");
-		checkf(rcvSize>=4 && rcv[0]=='N' && rcv[1]==':', "Unexpected message format\n");
+		checkf(peerIndex!=-1, "Message from unexpected peer\n","");
+		checkf(rcvSize>=4 && rcv[0]=='N' && rcv[1]==':', "Unexpected message format\n","");
 		
 		int expectedNum = -(rcvCount[peerIndex] + (peerIndex*NUM_MESSAGES));
 		int rcvNum = strtol(&rcv[2], NULL, 10);

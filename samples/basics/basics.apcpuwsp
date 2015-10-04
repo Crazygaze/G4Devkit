@@ -3,6 +3,14 @@
 	"version": 1,
 	"name": "basics",
 	"projects": [
-		".\\helloworld\\helloworld.apcpuprj"
+		".\\helloworld\\helloworld.apcpuprj",
+		".\\contextswitch\\contextswitch.apcpuprj",
+		".\\common\\common.apcpuprj",
+		".\\interrupts\\interrupts.apcpuprj",
+		".\\deviceenum\\deviceenum.apcpuprj",
+		".\\hardware\\hardware.apcpuprj",
+		".\\cstdlib\\cstdlib.apcpuprj",
+		".\\hardwaretests\\hardwaretests.apcpuprj",
+		".\\nicpeer\\nicpeer.apcpuprj"
 	]
 }
