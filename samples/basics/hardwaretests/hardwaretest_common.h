@@ -11,7 +11,6 @@ typedef struct DeviceTest
 	DeviceTestFunction testFunc;
 } DeviceTest;
 
-extern int 
 /*!
 */
 #define checkf(condition, fmt, ...) \
