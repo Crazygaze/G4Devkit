@@ -38,7 +38,7 @@ unsigned int log2(unsigned int v)
 	return r;
 }
 
-/*
+/*!
  * Copied from http://graphics.stanford.edu/~seander/bithacks.html#DetermineIfPowerOf2
  */
  bool isPowerOfTwo(unsigned int v)
