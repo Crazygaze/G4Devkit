@@ -15,3 +15,6 @@ changes I need to make, I need to change both functions
 
 
 - Change hw_HwiData to have only the required registers
+
+
+- Change all occurences of "hwi" in code or comments to hwf

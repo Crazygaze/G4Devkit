@@ -52,6 +52,7 @@ _intrHandlerAddr:
 public _intrCtxStart
 _intrCtxStart:
 	.zero 64 ; r0-r15
+	.zero 8 ; rim0, rim1
 	.word 0 ; flags register
 	.zero 128 ; floating point registers (16*8)
 	; Marker so we can check when booting if the interrupt context matches the
@@ -80,7 +81,7 @@ _intrHandler_Reset:
 	
 	; Check how much RAM we have
 	mov ip, (0<<24) | 0; Bus 0, function 0
-	hwi
+	hwf
 	str [_ramAmount] , r0
 	mov sp, r0 ; set stack to top address
 

@@ -16,7 +16,7 @@ _hw_hwiFull:
 	ldr r1, [r4 + 4*1]
 	ldr r2, [r4 + 4*2]
 	ldr r3, [r4 + 4*3]
-	hwi
+	hwf
 	; Save the results
 	str [r4 + 4*0], r0
 	str [r4 + 4*1], r1

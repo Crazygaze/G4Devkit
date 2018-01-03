@@ -39,7 +39,7 @@ typedef uint8_t hw_BusId;
 #define HWDEFAULT_FUNC_QUERYDESC 0x80000001
 
 /*
- * Struct used to make hwi calls
+ * Struct used to make hwf calls
  */
 typedef struct hw_HwiData {
 	uint32_t regs[4];
@@ -89,7 +89,7 @@ uint32_t hw_hwiSimple0(
 INLINEASM("\t\
 sll ip, r0, 24\n\t\
 or ip, ip, r1\n\t\
-hwi \n\t\
+hwf \n\t\
 ");
 
 // Same as the hw_hwiSimple0 above, but were we expect a double as a return (f0)
@@ -99,7 +99,7 @@ double hw_hwiSimple0_Double(
 INLINEASM("\t\
 sll ip, r0, 24\n\t\
 or ip, ip, r1\n\t\
-hwi");
+hwf");
 
 uint32_t hw_hwiSimple1(
 	__reg("r0") hw_BusId bus,
@@ -109,7 +109,7 @@ INLINEASM("\t\
 sll ip, r0, 24\n\t\
 or ip, ip, r1\n\t\
 mov r0, r2\n\t\
-hwi \n\t\
+hwf \n\t\
 ");
 
 uint32_t hw_hwiSimple2(
@@ -122,7 +122,7 @@ sll ip, r0, 24\n\t\
 or ip, ip, r1\n\t\
 mov r0, r2\n\t\
 mov r1, r3\n\t\
-hwi \n\t\
+hwf \n\t\
 ");
 
 extern hw_Drv* hw_drivers[HWBUS_DEFAULTDEVICES_MAX];
