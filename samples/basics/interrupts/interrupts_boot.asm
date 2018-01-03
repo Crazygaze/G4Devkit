@@ -102,7 +102,7 @@ _causeIllegalInstruction:
 	msr r0 ; Set the flags register 0, which disable the Supervisor Mode bit
 	; This should now cause a "Illegal instruction" interrupt, as 'hwi' is a
 	; privileged instruction
-	hwi
+	hwf
 
 public _causeSystemCall
 _causeSystemCall:
@@ -125,7 +125,7 @@ _causeIRQ:
 	mov ip, (0x1 << 24) | 2;	
 	mov r0, 0x40000007 ; Timer 7, IRQ mode, No auto reset
 	mov r1, 100 ; Trigger the timer in 1 ms.
-	hwi
+	hwf
 	pop {pc}
 
 ;*******************************************************************************

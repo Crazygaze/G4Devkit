@@ -32,7 +32,7 @@ _hwiCall:
 	fldrd f2, [r4 + 4*4 + 8*2]
 	fldrd f3, [r4 + 4*4 + 8*3]
 	
-	hwi
+	hwf
 	; Save outputs back to the struct
 	str [r4 + 4*0], r0
 	str [r4 + 4*1], r1

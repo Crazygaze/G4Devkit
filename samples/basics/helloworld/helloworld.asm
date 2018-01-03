@@ -14,7 +14,7 @@
 ;
 ; The default CPU context is fixed at address 8, and we need to reserve that
 ; space
-.zero 196 ; registers (r0..pc), flags register, and floating point registers
+.zero 204 ; registers (r0..pc), rim0,rim1, flags register, and floating point registers
 
 ;*******************************************************************************
 ; Our main function
@@ -30,7 +30,7 @@ _startup:
 	; Screen device is always on device bus 2
 	; Device function 0 gets the screen buffer address
 	mov ip, (0x2<<24) | 0 ;
-	hwi
+	hwf
 	; The screen buffer address is returned in r0
 	mov r9, r0 ; keep the screen address in r9
 
@@ -46,7 +46,7 @@ _startup:
 	printCharacter:
 		or r3, r2, 0x0F00 ; Add colour information
 		; print character as half word (1 byte for colour, 1 for the character)
-		struh [r9], r3
+		strb [r9], r3
 		add r9, r9, 2 ; move screen pointer to the next position
 		add r1, r1, 1 ; advance to the net character
 		ldrub r2, [r1] ; read character
