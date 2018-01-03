@@ -31,6 +31,7 @@ _startup:
 	; Device function 0 gets the screen buffer address
 	mov ip, (0x2<<24) | 0 ;
 	hwf
+	
 	; The screen buffer address is returned in r0
 	mov r9, r0 ; keep the screen address in r9
 
@@ -46,7 +47,7 @@ _startup:
 	printCharacter:
 		or r3, r2, 0x0F00 ; Add colour information
 		; print character as half word (1 byte for colour, 1 for the character)
-		strb [r9], r3
+		strh [r9], r3
 		add r9, r9, 2 ; move screen pointer to the next position
 		add r1, r1, 1 ; advance to the net character
 		ldrub r2, [r1] ; read character
