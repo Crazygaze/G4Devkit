@@ -3,7 +3,7 @@
 .word _interruptHandlerASM
 
 _interruptCtx:
-.zero 196
+.zero 204 ; Space for all the registers
 
 ; Variables in the C file
 extern _interruptedCtx

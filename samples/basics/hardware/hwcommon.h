@@ -13,6 +13,7 @@ typedef struct Ctx
 	// Fields that must match the architecture register set
 	int gregs[16];
 	int flags;
+	int rims[2];
 	double fregs[16];
 } Ctx;
 

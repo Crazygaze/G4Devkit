@@ -40,7 +40,7 @@
 ; context name. This is so that our interrupt context matches the Ctx struct
 ; defined in the C file
 _interruptCtx:
-.zero 196 ; registers (r0...pc), flags register, and floating point registers
+.zero 204 ; registers (r0...pc), flags register, rim0/rim1, and floating point registers
 
 ; Functions in the C file, which have the real interrupt handlers
 extern _handleReset

@@ -11,18 +11,20 @@ ctx2:
 public _startup
 _startup:
 
-	;dbgbrk
-	;nextirq r0
-	;rdtsc r9:r10
-	;hwf tested
+	fmsr f1, r2
+	fmrs r1,f2
+	fmdr f1, r2:r3
+	fmrd r1:r2, f3
 
-	;swi
-	;hlt tested
+	fdiv f0, f1, f2
+	ffix r0, f0
+	fflt f1, r0
+	fmvn f1,f2
 
+	lea sp, [_stackH]
+	fpush {f0-f15}
+	fpop {f0- f15}
 
-	cmpxchg [r10],r4,r5
-
-	
 	loop:
 	b loop
 
@@ -38,10 +40,15 @@ _other:
 	ctxswitch [r10]
 
 .data
+	_stackL:
+	.zero 1024
+	_stackH:
+
 	_hello:
 	.string "Hello World!"
 	_hello2:
 	.string "Hello World!"
 	_regs:
 	.zero 204
+
 

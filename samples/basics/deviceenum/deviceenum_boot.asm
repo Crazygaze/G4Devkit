@@ -11,7 +11,7 @@
 ;
 ; The default CPU context is fixed at address 8
 _mainCtx:
-.zero 196 ; registers (r0..pc), flags register, and floating point registers
+.zero 204 ; registers (r0..pc), flags register, rim0/rim1, and floating point registers
 
 
 ;
