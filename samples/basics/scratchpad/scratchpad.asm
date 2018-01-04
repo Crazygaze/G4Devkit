@@ -11,15 +11,8 @@ ctx2:
 public _startup
 _startup:
 
-	fmsr f1, r2
-	fmrs r1,f2
-	fmdr f1, r2:r3
-	fmrd r1:r2, f3
 
-	fdiv f0, f1, f2
-	ffix r0, f0
-	fflt f1, r0
-	fmvn f1,f2
+	mov r0, 1111111
 
 	lea sp, [_stackH]
 	fpush {f0-f15}
