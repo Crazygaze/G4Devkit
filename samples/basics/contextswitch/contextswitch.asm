@@ -39,13 +39,13 @@
 ;
 ; The default CPU context is fixed at address 8
 _mainCtx:
-.zero 196 ; registers (r0..pc), flags register, and floating point registers
+.zero 204 ; registers (r0..pc), movrim0,movrim1, flags register, and floating point registers
 
 ; The two contexts we will be running
 _ctx1:
-.zero 196
+.zero 204
 _ctx2:
-.zero 196
+.zero 204
 
 ;
 ; Things we need from the common static library
