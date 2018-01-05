@@ -11,6 +11,13 @@ void cpu_enableIRQ(void);
 void cpu_disableIRQ(void);
 void cpu_setMMUTableAddress(void* tbl, int size);
 
+/*
+ * Returns the lowest 32 bits of the cpu tick counter
+ */
+uint32_t cpu_getCycles32(void)
+INLINEASM("\t\
+rdtsc r0:r0");
+
 //! Struct used for manually retrieving IRQs from the IRQ queue.
 typedef struct IRQData
 {
