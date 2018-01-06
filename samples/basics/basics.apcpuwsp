@@ -11,6 +11,7 @@
 		".\\hardware\\hardware.apcpuprj",
 		".\\cstdlib\\cstdlib.apcpuprj",
 		".\\hardwaretests\\hardwaretests.apcpuprj",
-		".\\nicpeer\\nicpeer.apcpuprj"
+		".\\nicpeer\\nicpeer.apcpuprj",
+		".\\benchmark\\benchmark.apcpuprj"
 	]
 }

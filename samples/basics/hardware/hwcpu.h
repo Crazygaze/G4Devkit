@@ -11,6 +11,10 @@ void cpu_enableIRQ(void);
 void cpu_disableIRQ(void);
 void cpu_setMMUTableAddress(void* tbl, int size);
 
+uint32_t cpu_getCycles32(void)
+INLINEASM("\t\
+rdtsc r0:r0");
+
 //! Struct used for manually retrieving IRQs from the IRQ queue.
 typedef struct IRQData
 {
