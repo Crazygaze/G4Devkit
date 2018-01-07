@@ -52,8 +52,8 @@ _intrHandlerAddr:
 public _intrCtxStart
 _intrCtxStart:
 	.zero 64 ; r0-r15
-	.zero 8 ; rim0, rim1
 	.word 0 ; flags register
+	.zero 8 ; rim0, rim1
 	.zero 128 ; floating point registers (16*8)
 	; Marker so we can check when booting if the interrupt context matches the
 	; size of what we have in C source code

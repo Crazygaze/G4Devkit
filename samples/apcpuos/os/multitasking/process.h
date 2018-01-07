@@ -24,6 +24,7 @@ typedef struct CpuCtx
 {
 	uint32_t gregs[CPU_NUM_GREGS]; // general purpose registers
 	uint32_t flags; // flags register
+	uint32_t rims[2];
 	double fregs[CPU_NUM_FREGS]; // floating point registers
 } CpuCtx;
 
