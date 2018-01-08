@@ -1,0 +1,8 @@
+{
+	"format": "Workspace",
+	"version": 1,
+	"name": "scratch",
+	"projects": [
+		".\\scratchpad\\scratchpad.apcpuprj",
+	]
+}
