@@ -23,7 +23,7 @@
 			"defines": [
 				"DEBUG"
 			],
-			"compilerOptions": "-c99 -O2 -g -size -unroll-size=0 -dontwarn=323 -dontwarn=208 -dontwarn=153",
+			"compilerOptions": "-c99 -O2 -g -size -unroll-size=0",
 			"linkerextralibs": ""
 		},
 		{
@@ -43,11 +43,23 @@
 	],
 	"files": [
 		{
+			"path": ".\\misc.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\misc.h",
+			"bootfile": false
+		},
+		{
 			"path": ".\\scratchpad.asm",
 			"bootfile": true
 		},
 		{
 			"path": ".\\scratchtest.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\scratchtest.h",
 			"bootfile": false
 		}
 	]

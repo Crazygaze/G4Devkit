@@ -1,6 +1,7 @@
 #
 /samples/apcpuos/tmp/
 /samples/basics/tmp/
+/samples/scratch/tmp/
 /DevKit/bin/
 /DevKit/media/
 DevKitBinaries.zip
