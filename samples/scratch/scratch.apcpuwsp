@@ -3,6 +3,10 @@
 	"version": 1,
 	"name": "scratch",
 	"projects": [
-		".\\scratchpad\\scratchpad.apcpuprj"
-	]
+		".\\scratchpad\\scratchpad.apcpuprj",
+		".\\dummy\\dummy.apcpuprj",
+		".\\dummy2\\dummy2.apcpuprj"
+	],
+	"startup_project": "scratchpad",
+	"active_configuration": "Debug"
 }

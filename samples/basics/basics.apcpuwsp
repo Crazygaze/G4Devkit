@@ -14,5 +14,7 @@
 		".\\nicpeer\\nicpeer.apcpuprj",
 		".\\scratchpad\\scratchpad.apcpuprj",
 		".\\benchmark\\benchmark.apcpuprj"
-	]
+	],
+	"startup_project": "benchmark",
+	"active_configuration": "Debug"
 }
