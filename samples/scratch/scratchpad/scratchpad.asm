@@ -21,6 +21,10 @@ _startup:
 
 	bl _fooFunc
 	loop:
+	hlt
+	add r0,r0,r0
+	sub r0,r0,r0
+	sll r0,r0,r0
 	b loop
 	
 
