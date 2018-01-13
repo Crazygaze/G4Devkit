@@ -14,5 +14,7 @@
 		".\\filesystem\\filesystem.apcpuprj",
 		".\\texteditor\\texteditor.apcpuprj",
 		".\\graphsystem\\graphsystem.apcpuprj"
-	]
+	],
+	"startup_project": "os",
+	"active_configuration": "Release"
 }

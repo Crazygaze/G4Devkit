@@ -15,6 +15,6 @@
 		".\\scratchpad\\scratchpad.apcpuprj",
 		".\\benchmark\\benchmark.apcpuprj"
 	],
-	"startup_project": "benchmark",
+	"startup_project": "helloworld",
 	"active_configuration": "Debug"
 }

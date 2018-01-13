@@ -12,7 +12,7 @@ extern _fooFunc;
 
 public _startup
 _startup:
-
+ 
 	mov r0, 1111111
 
 	lea sp, [_stackH]
@@ -21,17 +21,18 @@ _startup:
 
 	bl _fooFunc
 	loop:
-	hlt
-	add r0,r0,r0
-	sub r0,r0,r0
-	sll r0,r0,r0
+	mov r0, 1
+	add r0,r0,3
+	add r0,r0,8
 	b loop
+	hlt
+	hlt
 	
 
 
 public _interruptH
 _interruptH:
-	mov r4,r4
+	mov r4,10
 	loop2:
 	b loop2
 
