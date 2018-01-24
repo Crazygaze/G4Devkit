@@ -53,6 +53,10 @@
 			"bootfile": false
 		},
 		{
+			"path": ".\\common_aux.asm",
+			"bootfile": false
+		},
+		{
 			"path": ".\\readme.txt",
 			"bootfile": false
 		}

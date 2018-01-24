@@ -1,0 +1,32 @@
+
+
+{
+	"format" : "apcpusetup",
+	"setups" : [
+		{
+			"name" : "setup1",
+			"description" : "Launches the current project on an existing VM with the debugger, and creates 2 other VMs with helloworld and deviceenum",
+			"vms" : [
+				{
+					"debug" : true,
+					"opensimulator" : true
+				},
+				{
+					"ramkb" : 256,
+					"speedhz" : 1000000,
+					"autodelete" : true,
+					"opensimulator" : true,
+					"rom" : "helloworld"
+				},
+				{
+					"ramkb" : 256,
+					"speedhz" : 1400000,
+					"autodelete" : true,
+					"opensimulator" : true,
+					"rom" : "deviceenum"
+				}
+			]
+		}
+	]
+}
+

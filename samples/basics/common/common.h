@@ -11,5 +11,17 @@ void loopForever(void);
 */
 void pause(int ms);
 
+/*!
+ */
+typedef struct ROMProcessInfo
+{
+	unsigned int readOnlyAddr; // address
+	unsigned int readOnlySize; // size in bytes
+	unsigned int readWriteAddr; // address
+	unsigned int readWriteSize; // size in bytes
+	unsigned int sharedReadWriteAddr;
+	unsigned int sharedReadWriteSize;
+} ROMProcessInfo;
+extern ROMProcessInfo processInfo;
 
 #endif
