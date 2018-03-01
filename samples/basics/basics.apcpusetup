@@ -9,7 +9,24 @@
 			"vms" : [
 				{
 					"debug" : true,
-					"opensimulator" : true
+					"opensimulator" : true,
+					"disks" : [
+						{
+							"slot" : 0,
+							"guid" : "E090E45641642942FC8B6EAEDB6B32ED",
+						},
+						{
+							"slot" : 1,
+							"numSectors" : 1024,
+							"sectorSize" : 512,
+							"persistence" : "temporary"
+						},
+						{
+							"slot" : 2,
+							"guid" : "E090E45641642942FC8B6EAEDB6B32ED",
+							"duplicate" : "temporary"
+						}
+					]
 				},
 				{
 					"ramkb" : 256,
