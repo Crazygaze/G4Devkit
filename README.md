@@ -201,7 +201,3 @@ are typing
 
 * **0x10c** is a registered trademark of Mojang AB
 
-# Credits (Patreon supporters) #
-
-* Glenn Fiedler ([GafferonGames](http://gafferongames.com/) / [THE NETWORK PROTOCOL COMPANY, INC.](http://thenetworkprotocolcompany.com/))
-* Vlad Shvets

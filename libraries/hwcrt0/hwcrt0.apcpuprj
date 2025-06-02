@@ -1,0 +1,48 @@
+{
+	"format": "Project",
+	"version": 1,
+	"type": 2,
+	"globalconfiguration": {
+		"name": "-Global-",
+		"interfaceIncludePaths": [
+			"$(ProjectDir)"
+		]
+	},
+	"configurations": [
+		{
+			"name": "Debug"
+		},
+		{
+			"name": "Release"
+		}
+	],
+	"dependencies": [
+
+	],
+	"files": [
+		{
+			"path": ".\\README.md",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hwcrt0.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hwcrt0.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hwcrt0_aux.asm",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hwcrt0_stdc.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hwcrt0_stdc.h",
+			"bootfile": false
+		}
+	]
+}

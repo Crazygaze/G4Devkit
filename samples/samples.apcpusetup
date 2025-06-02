@@ -1,0 +1,62 @@
+
+
+{
+	"format" : "apcpusetup",
+	"setups" : [
+		{
+			"name" : "helloworld",
+			"description" : "Launches 1 VM with the the helloworld sample",
+			"vms" : [
+				{
+					"opensimulator" : true,
+					"ramkb" : 256,
+					"speedhz" : 2000000,
+					"autodelete" : true,
+					"rom" : "helloworld"
+				}
+			]
+		},
+		{
+			"name" : "several coroutines_test",
+			"description" : "Launches 2 VMS with the coroutines_test",
+			"vms" : [
+				{
+					"debug" : true,
+					"opensimulator" : true,
+					"disks" : [
+						{
+							"slot" : 0,
+							"guid" : "90A4030C49E96596D7003B91A26685A0"
+						},
+						{
+							"slot" : 1,
+							"numSectors" : 1024,
+							"sectorSize" : 512,
+							"persistence" : "temporary"
+						},
+						{
+							"slot" : 2,
+							"guid" : "CF8D7500462033FA3C461EBF4BCF1378",
+							"duplicate" : "temporary"
+						}
+					]
+				},
+				{
+					"ramkb" : 256,
+					"speedhz" : 1000000,
+					"autodelete" : true,
+					"opensimulator" : true,
+					"rom" : "helloworld"
+				},
+				{
+					"ramkb" : 256,
+					"speedhz" : 1400000,
+					"autodelete" : true,
+					"opensimulator" : true,
+					"rom" : "deviceenum"
+				}
+			]
+		}
+	]
+}
+

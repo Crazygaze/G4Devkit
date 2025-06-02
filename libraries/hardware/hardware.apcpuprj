@@ -1,0 +1,65 @@
+{
+	"format": "Project",
+	"version": 1,
+	"type": 2,
+	"globalconfiguration": {
+		"name": "-Global-",
+		"privateIncludePaths": [
+			"$(ProjectDir)"
+		]
+	},
+	"configurations": [
+		{
+			"name": "Debug"
+		},
+		{
+			"name": "Release"
+		}
+	],
+	"dependencies": [
+		"stdc",
+		"utils"
+	],
+	"files": [
+		{
+			"path": ".\\detail\\hw_dummy.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\README.md",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hwclock.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hwclock.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hwmmu.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hwmmu.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hwnic.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hwnic.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hwscreen.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hwscreen.h",
+			"bootfile": false
+		}
+	]
+}

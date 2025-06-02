@@ -1,0 +1,122 @@
+{
+	"format": "Workspace",
+	"version": 1,
+	"globalconfiguration": {
+		"name": "-Global-",
+		"defines": [
+			"__STDC_HOSTED__=0",
+			"_STDC_SHARED_DATA=1",
+			"_COROUTINES_SHARED_DATA=1",
+			"_COROUTINES_FULLCTXSWITCH=0",
+			"_UTILS_SHARED_DATA=1"
+		],
+		"compilerOptions": "-use-longstr -use-longlea -c99 -merge-strings -function-sections -size -unroll-size=0 -warn=-1 -dontwarn=163 -dontwarn=166 -dontwarn=168 -dontwarn=307 -dontwarn=65 -dontwarn=171",
+		"linkerOptions": "-sectionalign 111"
+	},
+	"configurations": [
+		{
+			"name": "Debug",
+			"defines": [
+				"_DEBUG",
+				"DEBUG",
+				"_STDC_LOG_VERBOSITY=4"
+			],
+			"compilerOptions": "-O0 -g"
+		},
+		{
+			"name": "Release",
+			"defines": [
+				"NDEBUG",
+				"_STDC_LOG_VERBOSITY=4"
+			],
+			"compilerOptions": "-O3 -dontwarn=170"
+		}
+	],
+	"projects": [
+		{
+			"file": "..\\libraries\\coroutines\\coroutines_sample\\coroutines_sample.apcpuprj",
+			"virtualFolder": "libraries\/tests",
+			"enabled": true
+		},
+		{
+			"file": "..\\libraries\\stdc\\stdc_tests\\stdc_tests.apcpuprj",
+			"virtualFolder": "libraries\/tests",
+			"enabled": true
+		},
+		{
+			"file": "..\\libraries\\testframework\\testframework.apcpuprj",
+			"virtualFolder": "libraries\/tests",
+			"enabled": true
+		},
+		{
+			"file": "..\\libraries\\utils\\utils_tests\\utils_tests.apcpuprj",
+			"virtualFolder": "libraries\/tests",
+			"enabled": true
+		},
+		{
+			"file": "..\\libraries\\boot\\boot.apcpuprj",
+			"virtualFolder": "libraries",
+			"enabled": true
+		},
+		{
+			"file": "..\\libraries\\coroutines\\coroutines\\coroutines.apcpuprj",
+			"virtualFolder": "libraries",
+			"enabled": true
+		},
+		{
+			"file": "..\\libraries\\hardware\\hardware.apcpuprj",
+			"virtualFolder": "libraries",
+			"enabled": false
+		},
+		{
+			"file": "..\\libraries\\hwcrt0\\hwcrt0.apcpuprj",
+			"virtualFolder": "libraries",
+			"enabled": true
+		},
+		{
+			"file": "..\\libraries\\stdc\\stdc\\stdc.apcpuprj",
+			"virtualFolder": "libraries\\",
+			"enabled": true
+		},
+		{
+			"file": "..\\libraries\\utils\\utils\\utils.apcpuprj",
+			"virtualFolder": "libraries",
+			"enabled": true
+		},
+		{
+			"file": "..\\apcpuos\\appsdk\\appsdk.apcpuprj",
+			"virtualFolder": "os",
+			"enabled": true
+		},
+		{
+			"file": "..\\apcpuos\\os\\os.apcpuprj",
+			"virtualFolder": "os",
+			"enabled": true
+		},
+		{
+			"file": "..\\apcpuos\\osapps\\osapps.apcpuprj",
+			"virtualFolder": "os",
+			"enabled": true
+		},
+		{
+			"file": ".\\asmscratchpad\\asmscratchpad.apcpuprj",
+			"virtualFolder": "samples",
+			"enabled": true
+		},
+		{
+			"file": ".\\benchmark\\benchmark.apcpuprj",
+			"virtualFolder": "samples",
+			"enabled": false
+		},
+		{
+			"file": ".\\helloworld\\helloworld.apcpuprj",
+			"virtualFolder": "samples",
+			"enabled": true
+		},
+		{
+			"file": ".\\scratchpad\\scratchpad.apcpuprj",
+			"virtualFolder": "temp",
+			"enabled": false
+		}
+	]
+}

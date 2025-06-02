@@ -1,0 +1,52 @@
+{
+	"format": "Project",
+	"version": 1,
+	"type": 1,
+	"globalconfiguration": {
+		"name": "Global",
+		"includePaths": [
+
+		],
+		"defines": [
+
+		],
+		"compilerOptions": "",
+		"linkerOptions": "",
+		"linkerExtraLibs": ""
+	},
+	"configurations": [
+		{
+			"name": "Debug",
+			"includePaths": [
+
+			],
+			"defines": [
+
+			],
+			"compilerOptions": "",
+			"linkerOptions": "",
+			"linkerExtraLibs": ""
+		},
+		{
+			"name": "Release",
+			"includePaths": [
+
+			],
+			"defines": [
+
+			],
+			"compilerOptions": "",
+			"linkerOptions": "",
+			"linkerExtraLibs": ""
+		}
+	],
+	"dependencies": [
+
+	],
+	"files": [
+		{
+			"path": ".\\helloworld.asm",
+			"bootfile": true
+		}
+	]
+}

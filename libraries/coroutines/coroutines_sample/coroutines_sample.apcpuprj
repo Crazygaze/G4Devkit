@@ -1,0 +1,27 @@
+{
+	"format": "Project",
+	"version": 1,
+	"type": 1,
+	"globalconfiguration": {
+		"name": "Global"
+	},
+	"configurations": [
+		{
+			"name": "Debug"
+		},
+		{
+			"name": "Release"
+		}
+	],
+	"dependencies": [
+		"testframework",
+		"boot",
+		"coroutines"
+	],
+	"files": [
+		{
+			"path": ".\\coroutines_sample.c",
+			"bootfile": false
+		}
+	]
+}

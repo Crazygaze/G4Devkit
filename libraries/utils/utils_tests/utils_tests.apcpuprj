@@ -1,0 +1,63 @@
+{
+	"format": "Project",
+	"version": 1,
+	"type": 1,
+	"globalconfiguration": {
+		"name": "-Global-"
+	},
+	"configurations": [
+		{
+			"name": "Debug"
+		},
+		{
+			"name": "Release"
+		}
+	],
+	"dependencies": [
+		"testframework",
+		"boot",
+		"utils"
+	],
+	"files": [
+		{
+			"path": ".\\bitops_tests.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\bitset_tests.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\dynamicarray_tests.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hash_tests.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\linkedlist_tests.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\priorityqueue_tests.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\queue32_tests.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\queue_tests.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\utils_tests.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\utils_tests.h",
+			"bootfile": false
+		}
+	]
+}

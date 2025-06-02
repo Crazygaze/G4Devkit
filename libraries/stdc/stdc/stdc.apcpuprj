@@ -1,0 +1,156 @@
+{
+	"format": "Project",
+	"version": 1,
+	"type": 2,
+	"globalconfiguration": {
+		"name": "-Global-",
+		"publicIncludePaths": [
+			"$(ProjectDir)"
+		]
+	},
+	"configurations": [
+		{
+			"name": "Debug"
+		},
+		{
+			"name": "Release"
+		}
+	],
+	"dependencies": [
+		"hwcrt0"
+	],
+	"files": [
+		{
+			"path": ".\\detail\\memdetails.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\detail\\memdetails.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\detail\\stdc_dummy.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\detail\\stdc_internal.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\extern\\apple\\LICENSE.txt",
+			"bootfile": false
+		},
+		{
+			"path": ".\\extern\\apple\\qsort.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\extern\\apple\\strol.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\extern\\printf\\printf.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\extern\\printf\\printf.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\extern\\tlsf\\README.md",
+			"bootfile": false
+		},
+		{
+			"path": ".\\extern\\tlsf\\README.txt",
+			"bootfile": false
+		},
+		{
+			"path": ".\\extern\\tlsf\\tlsf.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\extern\\tlsf\\tlsf.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\README.md",
+			"bootfile": false
+		},
+		{
+			"path": ".\\assert.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\ctype.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\float.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\limits.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\math.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\math.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stdarg.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stdbool.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stdc_init.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stdc_init.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stddef.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stdint.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stdio.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stdio.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stdlib.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stdlib.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\string.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\string.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\string_aux.asm",
+			"bootfile": false
+		}
+	]
+}

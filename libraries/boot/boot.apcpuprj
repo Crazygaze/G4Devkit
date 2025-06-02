@@ -1,0 +1,37 @@
+{
+	"format": "Project",
+	"version": 1,
+	"type": 2,
+	"globalconfiguration": {
+		"name": "-Global-"
+	},
+	"configurations": [
+		{
+			"name": "Debug"
+		},
+		{
+			"name": "Release"
+		}
+	],
+	"dependencies": [
+		"stdc"
+	],
+	"files": [
+		{
+			"path": ".\\README.md",
+			"bootfile": false
+		},
+		{
+			"path": ".\\boot.asm",
+			"bootfile": true
+		},
+		{
+			"path": ".\\boot_startup.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\boot_startup.h",
+			"bootfile": false
+		}
+	]
+}

@@ -1,0 +1,36 @@
+{
+	"format": "Project",
+	"version": 1,
+	"type": 2,
+	"globalconfiguration": {
+		"name": "Global",
+		"interfaceIncludePaths": [
+			"$(ProjectDir).."
+		]
+	},
+	"configurations": [
+		{
+			"name": "Debug"
+		},
+		{
+			"name": "Release"
+		}
+	],
+	"dependencies": [
+		"stdc"
+	],
+	"files": [
+		{
+			"path": ".\\README.md",
+			"bootfile": false
+		},
+		{
+			"path": ".\\coroutine.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\coroutine.h",
+			"bootfile": false
+		}
+	]
+}

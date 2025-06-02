@@ -1,0 +1,42 @@
+{
+	"format": "Project",
+	"version": 1,
+	"type": 1,
+	"globalconfiguration": {
+		"name": "-Global-"
+	},
+	"configurations": [
+		{
+			"name": "Debug"
+		},
+		{
+			"name": "Release"
+		}
+	],
+	"dependencies": [
+		"testframework",
+		"boot"
+	],
+	"files": [
+		{
+			"path": ".\\ctype_tests.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\math_tests.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stdc_tests.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\stdlib_tests.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\string_tests.c",
+			"bootfile": false
+		}
+	]
+}

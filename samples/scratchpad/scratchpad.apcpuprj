@@ -1,0 +1,30 @@
+{
+	"format": "Project",
+	"version": 1,
+	"type": 1,
+	"globalconfiguration": {
+		"name": "-Global-",
+		"compilerOptions": "-shareddata"
+	},
+	"configurations": [
+		{
+			"name": "Debug"
+		},
+		{
+			"name": "Release"
+		}
+	],
+	"dependencies": [
+
+	],
+	"files": [
+		{
+			"path": ".\\scratchpad.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\scratchpad_boot_aux.asm",
+			"bootfile": true
+		}
+	]
+}

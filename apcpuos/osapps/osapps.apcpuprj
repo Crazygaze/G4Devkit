@@ -1,0 +1,42 @@
+{
+	"format": "Project",
+	"version": 1,
+	"type": 2,
+	"globalconfiguration": {
+		"name": "-Global-",
+		"interfaceIncludePaths": [
+			"$(ProjectDir)"
+		],
+		"compilerOptions": "-shareddata"
+	},
+	"configurations": [
+		{
+			"name": "Debug"
+		},
+		{
+			"name": "Release"
+		}
+	],
+	"dependencies": [
+		"stdc",
+		"appsdk"
+	],
+	"files": [
+		{
+			"path": ".\\osapps\\helloworld.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\osapps\\idle.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\osapps\\osapps.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\osapps\\osapps.h",
+			"bootfile": false
+		}
+	]
+}

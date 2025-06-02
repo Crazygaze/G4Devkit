@@ -1,0 +1,111 @@
+{
+	"format": "Project",
+	"version": 1,
+	"type": 1,
+	"globalconfiguration": {
+		"name": "-Global-",
+		"privateIncludePaths": [
+			"$(ProjectDir)"
+		]
+	},
+	"configurations": [
+		{
+			"name": "Debug"
+		},
+		{
+			"name": "Release"
+		}
+	],
+	"dependencies": [
+		"stdc",
+		"utils",
+		"appsdk",
+		"osapps"
+	],
+	"files": [
+		{
+			"path": ".\\boot\\boot.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\boot\\boot.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\boot\\boot_aux.asm",
+			"bootfile": true
+		},
+		{
+			"path": ".\\hw\\hwclk.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hw\\hwclk.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hw\\hwcommon.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hw\\hwcommon.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hw\\hwcpu.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hw\\hwcpu.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hw\\hwnic.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hw\\hwnic.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\kernel\\kernel.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\kernel\\kernel.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\kernel\\mmu.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\kernel\\mmu.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\process\\process.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\process\\process.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\syscalls\\syscalls.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\syscalls\\syscalls.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\README.md",
+			"bootfile": false
+		},
+		{
+			"path": ".\\os_config.h",
+			"bootfile": false
+		}
+	]
+}

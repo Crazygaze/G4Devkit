@@ -1,0 +1,109 @@
+#include "testframework/testframework.h"
+#include <string.h>
+
+TEST(strlen)
+{
+	CHECK(strlen("") == 0);
+	CHECK(strlen("H") == 1);
+	CHECK(strlen("Hello") == 5);
+}
+
+TEST(memset)
+{
+	char buf[4];
+	buf[3] = 126;
+	memset(buf, 127, sizeof(buf) - 1);
+	CHECK(buf[0] == 127);
+	CHECK(buf[1] == 127);
+	CHECK(buf[2] == 127);
+	// Last character shouldn't be touched, because we only asked to set 3
+	CHECK(buf[3] == 126);
+}
+
+// No need to test memmove. APCPU's memcpy and memove are the same instruction
+TEST(memcpy)
+{
+	char buf[4];
+	memset(buf, 'A', sizeof(buf));
+	memcpy(buf, "012", 3);
+	CHECK(buf[0] == '0');
+	CHECK(buf[1] == '1');
+	CHECK(buf[2] == '2');
+	// We are only writing 3 character, so last one should be untouched
+	CHECK(buf[3] == 'A');
+}
+
+TEST(strcpy)
+{
+	char buf[4];
+	char* res;
+
+	memset(buf, 'A', sizeof(buf));
+	res = strcpy(buf, "");
+	CHECK(res == buf);
+	CHECK(buf[0] == 0)
+	CHECK(buf[1] == 'A');
+
+	memset(buf, 'A', sizeof(buf));
+	res = strcpy(buf, "0");
+	CHECK(res == buf);
+	CHECK(buf[0] == '0');
+	CHECK(buf[1] == 0);
+	CHECK(buf[2] == 'A');
+
+	memset(buf, 'A', sizeof(buf));
+	res = strcpy(buf, "01");
+	CHECK(res == buf);
+	CHECK(buf[0] == '0');
+	CHECK(buf[1] == '1');
+	CHECK(buf[2] == 0);
+	CHECK(buf[3] == 'A'); // Last position should not be touched
+}
+
+TEST(strncpy)
+{
+	char buf[4];
+	char* res;
+
+	// Copy wihout the terminating null
+	memset(buf, 'A', sizeof(buf));
+	res = strncpy(buf, "01", 2);
+	CHECK(res == buf);
+	CHECK(buf[0] == '0');
+	CHECK(buf[1] == '1');
+	CHECK(buf[2] == 'A'); // Should not have the terminating null
+
+	// Copy with the terminating null
+	memset(buf, 'A', sizeof(buf));
+	res = strncpy(buf, "01", 3);
+	CHECK(res == buf);
+	CHECK(buf[0] == '0');
+	CHECK(buf[1] == '1');
+	CHECK(buf[2] == 0); // Should not have the terminating null
+	CHECK(buf[3] == 'A'); // Should not touch this
+}
+
+TEST(strcmp)
+{
+	// NOTE: Due to the -merge-strings optimization, we don't use string
+	// literals. Instead, we put at least one of them in a stack buffer, to
+	// force the underlying assembly to use different pointers (Better to catch
+	// bugs)
+	char buf[4];
+	strcpy(buf, "12");
+	CHECK(strcmp(buf, "12") == 0);
+	CHECK(strcmp("1", "12") < 0);
+	CHECK(strcmp("2", "12") > 0);
+	CHECK(strcmp("13", "12") > 0);
+	CHECK(strcmp("123", "12") > 0);
+}
+
+void string_tests(void)
+{
+	strlen_tests();
+	memset_tests();
+	memcpy_tests();
+	strcpy_tests();
+	strncpy_tests();
+	strcmp_tests();
+}

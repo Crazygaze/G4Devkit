@@ -1,0 +1,40 @@
+{
+	"format": "Project",
+	"version": 1,
+	"type": 2,
+	"globalconfiguration": {
+		"name": "-Global-",
+		"interfaceIncludePaths": [
+			"$(ProjectDir)"
+		]
+	},
+	"configurations": [
+		{
+			"name": "Debug"
+		},
+		{
+			"name": "Release"
+		}
+	],
+	"dependencies": [
+
+	],
+	"files": [
+		{
+			"path": ".\\README.md",
+			"bootfile": false
+		},
+		{
+			"path": ".\\testframework\\testframework.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\testframework\\testframework.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\testframework\\testframework_aux.asm",
+			"bootfile": false
+		}
+	]
+}

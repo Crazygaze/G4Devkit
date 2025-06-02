@@ -1,0 +1,62 @@
+{
+	"format": "Workspace",
+	"version": 1,
+	"globalconfiguration": {
+		"name": "-Global-",
+		"includePaths": [
+
+		],
+		"defines": [
+			"__STDC_HOSTED__=1",
+			"__STDC_SHARED_DATA__=1",
+			"__UTILS_SHARED_DATA_=1"
+		],
+		"compilerOptions": "",
+		"linkerOptions": "",
+		"linkerExtraLibs": ""
+	},
+	"configurations": [
+		{
+			"name": "Debug",
+			"includePaths": [
+			],
+			"defines": [
+			],
+			"compilerOptions": "",
+			"linkerOptions": "",
+			"linkerExtraLibs": ""
+		},
+		{
+			"name": "Release",
+			"includePaths": [
+			],
+			"defines": [
+			],
+			"compilerOptions": "",
+			"linkerOptions": "",
+			"linkerExtraLibs": ""
+		}
+	],
+	"projects": [
+		{
+			"file": ".\\os\\os.apcpuprj",
+			"virtualFolder": "os",
+			"enabled" : true
+		},
+		{
+			"file": "..\\libraries\\hardware\\hardware.apcpuprj",
+			"virtualFolder": "libs",
+			"enabled" : true
+		},
+		{
+			"file": "..\\libraries\\stdc\\stdc.apcpuprj",
+			"virtualFolder": "libs",
+			"enabled" : true
+		},
+		{
+			"file": "..\\libraries\\utils\\utils.apcpuprj",
+			"virtualFolder": "libs",
+			"enabled" : true
+		}
+	]
+}

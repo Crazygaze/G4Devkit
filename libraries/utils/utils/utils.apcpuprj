@@ -1,0 +1,104 @@
+{
+	"format": "Project",
+	"version": 1,
+	"type": 2,
+	"globalconfiguration": {
+		"name": "Global",
+		"interfaceIncludePaths": [
+			"$(ProjectDir).."
+		]
+	},
+	"configurations": [
+		{
+			"name": "Debug"
+		},
+		{
+			"name": "Release"
+		}
+	],
+	"dependencies": [
+		"stdc"
+	],
+	"files": [
+		{
+			"path": ".\\detail\\utils_common.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\detail\\utils_dummy.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\detail\\utils_internal.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\README.md",
+			"bootfile": false
+		},
+		{
+			"path": ".\\bitops.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\bitops.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\bitset.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\dynamicarray.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\dynamicarray.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hash.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hash.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\linkedlist.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\linkedlist.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\priorityqueue.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\priorityqueue.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\queue.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\queue.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\queue32.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\queue32.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\staticassert.h",
+			"bootfile": false
+		}
+	]
+}
