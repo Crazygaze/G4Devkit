@@ -4,6 +4,9 @@
 #include "hwcrt0.h"
 #include <stdc_init.h>
 
+// How many handles the OS can have at one time
+#define OS_MAXHANDLES 64
+
 // Time in milliseconds spent per thread.
 // The smaller it is, the more the OS will be doing context switches, which adds
 // overhead

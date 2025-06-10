@@ -12,14 +12,14 @@ void hwclk_dtor(hw_Drv* drv);
 
 /*!
  * Timer callback function.
- * \param userdata Data that was passed to hwclk_setTimer.
+ * \param cookie Data that was passed to hwclk_setTimer.
  * 
  * \return
  *	The callback should return true if it wishes to stay present and
  * active, or false it it wishes to be removed.
  * Returning false is useful to implement one-off timers.
  */
-typedef bool (*hwclk_TimerFunc)(void* userdata);
+typedef bool (*hwclk_TimerFunc)(void* cookie);
 
 /*!
  * Gets milliseconds elapsed since boot, as a 64 bits unsigned int number.
@@ -77,9 +77,9 @@ void hwclk_startTimer(u32 timerNumber, u32 ms, bool autoReset, bool irqMode);
  *	Function to call when the timer expires. This function should return true
  * to stay registered, or false to be removed (one-shot callback).
  *
- * \param userdata
+ * \param cookie
  *	Value to pass to the func.
  */
-void hwclk_addCallback(u32 timerNumber, hwclk_TimerFunc func, void* userdata);
+void hwclk_addCallback(u32 timerNumber, hwclk_TimerFunc func, void* cookie);
 
 #endif

@@ -56,6 +56,8 @@ void* _malloc_impl( size_t size
 #endif
 )
 {
+	// If this fails, then it's because _mem_init wasn't called
+	assert(_mem_tdata);
 
 	uint8_t* ptr = tlsf_malloc(_mem_tdata, SIZE_USER_TO_INTERNAL(size) );
 
@@ -77,6 +79,9 @@ void* _realloc_impl( void* oldptr, size_t size
 #endif
 )
 {
+	// If this fails, then it's because _mem_init wasn't called
+	assert(_mem_tdata);
+	
 	uint8_t* newptr = tlsf_realloc(
 				_mem_tdata,
 				USER_TO_INTERNAL(oldptr),
@@ -119,6 +124,9 @@ void _free_impl(void* ptr
 #endif
 )
 {
+	// If this fails, then it's because _mem_init wasn't called
+	assert(_mem_tdata);
+	
 	tlsf_free(_mem_tdata, USER_TO_INTERNAL(ptr));
 }
 
@@ -132,6 +140,9 @@ typedef struct MemStats
 
 static void _mem_stats_walker(void* ptr, size_t size, int used, void* cookie )
 {
+	// If this fails, then it's because _mem_init wasn't called
+	assert(_mem_tdata);
+
 	MemStats* stats = cookie;
 	
 	if (used) {
@@ -164,6 +175,9 @@ static void _mem_stats_walker(void* ptr, size_t size, int used, void* cookie )
 
 void _mem_debug(void)
 {
+	// If this fails, then it's because _mem_init wasn't called
+	assert(_mem_tdata);
+	
 	LOGMEM("MEMDEBUG START");
 	if (tlsf_check(_mem_tdata) != 0) {
 		LOGMEM("tls_check() failed!");
@@ -178,6 +192,9 @@ void _mem_debug(void)
 
 void _mem_getstats(size_t* totalUsed, size_t* totalFree, size_t* maxAlloc)
 {
+	// If this fails, then it's because _mem_init wasn't called
+	assert(_mem_tdata);
+
 	MemStats stats;
 	memset(&stats, 0, sizeof(stats));
 	

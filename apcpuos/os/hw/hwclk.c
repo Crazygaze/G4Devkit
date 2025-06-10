@@ -12,7 +12,7 @@
 
 typedef struct hwclk_TimerFuncData {
 	hwclk_TimerFunc func;
-	void* userdata;
+	void* cookie;
 } hwclk_TimerFuncData;
 
 ARRAY_TYPEDECLARE_SIMPLE(hwclk_TimerFuncData)
@@ -47,7 +47,7 @@ void hwclk_handler(void)
 		for(int f = 0; f != timer->funcs.size; ) {
 			hwclk_TimerFuncData* fdata = &timer->funcs.data[f];
 			// if the  callback returns true, we keep it, otherwise we remove it
-			if (fdata->func(fdata->userdata))
+			if (fdata->func(fdata->cookie))
 			{
 				f++;
 			}
@@ -109,12 +109,12 @@ void hwclk_startTimer(u32 timerNumber, u32 ms, bool autoReset, bool irqMode)
 	hw_hwf_2_0(HWBUS_CLK, HWCLK_FUNC_SET_TIMER, &data);
 }
 
-void hwclk_addCallback(u32 timerNumber, hwclk_TimerFunc func, void* userdata)
+void hwclk_addCallback(u32 timerNumber, hwclk_TimerFunc func, void* cookie)
 {
 	krnassert(timerNumber < HWCLK_NUMTIMERS);
 	hwclk_TimerFuncData f;
 	f.func = func;
-	f.userdata = userdata;
+	f.cookie = cookie;
 	array_hwclk_TimerFuncData_pushPtr(&clkDrv.timers[timerNumber].funcs, &f);
 	
 	f.func = NULL;

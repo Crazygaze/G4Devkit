@@ -1,6 +1,7 @@
 #ifndef _stdc_stdarg_h_
 #define _stdc_stdarg_h_
 
+#include "detail/config.h"
 #include <stddef.h>
 
 typedef struct

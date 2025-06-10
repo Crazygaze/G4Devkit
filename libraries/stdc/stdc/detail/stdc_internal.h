@@ -1,6 +1,8 @@
 #ifndef _stdc_internal_h
 #define _stdc_internal_h
 
+#include "config.h"
+
 #ifndef __STDC_HOSTED__
 	#define __STDC_HOSTED__ 0
 #endif

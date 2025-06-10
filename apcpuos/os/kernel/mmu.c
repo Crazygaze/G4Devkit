@@ -480,6 +480,8 @@ PageTable* mmu_createUsrPT(u32 stackSize, u32 heapSize)
 	pt->data[0] = MMU_PAGE_TO_ADDR(npages);
 	pt->usrDS = usr.sharedDataBegin;
 	pt->usrSP = usr.stackEnd;
+	pt->heapBegin = usr.heapBegin;
+	pt->heapEnd= usr.heapEnd;
 	
 	//
 	// Setup kernel space

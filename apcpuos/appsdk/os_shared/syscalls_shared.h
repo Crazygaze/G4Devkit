@@ -2,6 +2,7 @@
 #define _appsdk_syscalls_shared_h
 
 #include <stdint.h>
+#include "../app_config.h"
 
 typedef enum SysCallID {
 
@@ -9,10 +10,8 @@ typedef enum SysCallID {
 	// Process management
 	//
 
-	//
-	// Process control
-	//
 	kSysCall_Sleep,
+	kSysCall_CreateThread,
 	
 	//
 	// Debug
@@ -21,6 +20,18 @@ typedef enum SysCallID {
 
 	kSysCall_Max,
 } SysCallID;
+
+/*!
+ * Handle types available.
+ * Don't use this directly. This is just an internal detail for the OS
+ */
+typedef enum HandleType
+{
+	kHandleType_NONE,
+	kHandleType_Mutex,
+	kHandleType_Thread,
+	kHandleType_MAX
+} HandleType;
 
 #if 0
 
@@ -95,17 +106,6 @@ typedef enum SysCallID {
 	kSysCall_Max,
 } SysCallID;
 
-
-//
-// What handle types we have available
-// WARNING: If this changes, update the functions array in handles.c
-typedef enum HandleType
-{
-	kHandleType_NONE,
-	kHandleType_Mutex,
-	kHandleType_Thread,
-	kHandleType_MAX
-} HandleType;
 
 #endif
 

@@ -2,6 +2,7 @@
 #include "../kernel/kernel.h"
 #include "utils/linkedlist.h"
 #include "../kernel/mmu.h"
+#include "../kernel/handles.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -11,8 +12,8 @@ TCB* rootTCB;
 LINKEDLIST_VALIDATE_TYPE(PCB)
 LINKEDLIST_VALIDATE_TYPE(TCB)
 
-static void prc_setupTCB(
-	TCB* tcb, PCB* pcb, u32 stackTop, ThreadEntryFunc func, u32 crflags, u32 crirqmsk)
+static void prc_setupTCB(TCB* tcb, PCB* pcb, u32 stackTop, ThreadEntryFunc func,
+	u32 crflags, u32 crirqmsk, u32 cookie)
 {
 	krnassert(tcb && pcb && pcb->pt && stackTop);
 	
@@ -42,6 +43,8 @@ static void prc_setupTCB(
 	// r0,r1,r2,r3 get passed to app_startup as parameters
 	tcb->ctx.gregs[0] = (u32)func;
 	tcb->ctx.gregs[1] = (pcb->pt == mmu_getKrnOnlyPT()) ? true : false;
+	tcb->ctx.gregs[2] = cookie;
+	tcb->ctx.gregs[2] = cookie;
 	
 	tcb->ctx.crregs[CPU_CRREG_FLAGS] = crflags;
 	tcb->ctx.crregs[CPU_CRREG_IRQMSK] = crirqmsk;
@@ -51,7 +54,22 @@ static void prc_setupTCB(
 	tcb_enqueue(tcb, &krn.tcbReady);
 }
 
-PCB* prc_create(const char* name, PrcEntryFunc entryFunc, bool kernelMode,
+TCB* prc_createTCB(PCB* pcb, ThreadEntryFunc func, u32 stackTop, u32 crflags,
+	u32 crirqmsk, u32 cookie)
+{
+	TCB* tcb = calloc(sizeof(TCB));
+	if (!tcb) {
+		OS_ERR("%s: Out of memory", __func__);
+		return NULL;
+	}
+		
+	OS_LOG("%s: TCB %p for '%s'", __func__, tcb, pcb->info.name);
+	prc_setupTCB(tcb, pcb, stackTop, func, crflags, crirqmsk, cookie);
+	
+	return tcb;
+}
+
+PCB* prc_createPCB(const char* name, PrcEntryFunc entryFunc, bool kernelMode,
 	u32 stackSize, u32 heapSize)
 {
 	OS_LOG("prc_create('%s', %Xh, %u, %u, %u)", name, entryFunc, kernelMode,
@@ -67,19 +85,21 @@ PCB* prc_create(const char* name, PrcEntryFunc entryFunc, bool kernelMode,
 	// NOTE: We only increment `krn.pidCounter` itself once everything succeeds
 	pcb->info.pid = krn.pidCounter + 1;
 	
-	TCB* tcb = calloc(sizeof(TCB));
-	if (!tcb)
-		goto out2;
-	OS_VER("TCB for '%s': %Xh", name, tcb);
+	TCB* tcb;
 	
 	if (kernelMode) {
 		pcb->pt = mmu_getKrnOnlyPT();
 		u8* stackBottom = calloc(stackSize);
 		if (!stackBottom)
-			goto out3;
+			goto out2;
 		u8* stackTop = stackBottom + stackSize;
-		prc_setupTCB(tcb, pcb, (u32)stackTop, (ThreadEntryFunc)entryFunc,
-			CPU_CRREG_FLAGS_S | MMU_PTE_KEY_KRN, 0xFFFFFFFF);
+		tcb = prc_createTCB(pcb, (ThreadEntryFunc)entryFunc, (u32)stackTop,
+			CPU_CRREG_FLAGS_S | MMU_PTE_KEY_KRN, 0xFFFFFFFF, 0);
+		if (!tcb)
+		{
+			free(stackBottom);
+			goto out2;
+		}
 		tcb->state = TCB_STATE_KERNEL;
 		// For a kernel process, its threads don't participate in the scheduler,
 		// so remove it from the ready queue
@@ -87,10 +107,14 @@ PCB* prc_create(const char* name, PrcEntryFunc entryFunc, bool kernelMode,
 	} else {
 		pcb->pt = mmu_createUsrPT(stackSize, heapSize);
 		if (!pcb->pt)
-			goto out3;
+			goto out2;
 
-		prc_setupTCB(tcb, pcb, pcb->pt->usrSP, (ThreadEntryFunc)entryFunc,
-			0 | MMU_PTE_KEY_USR, 0xFFFFFFFF);
+		tcb = prc_createTCB(pcb, (ThreadEntryFunc)entryFunc, pcb->pt->usrSP,
+			0 | MMU_PTE_KEY_USR, 0xFFFFFFFF, 0);
+		if (!tcb) {
+			goto out2;
+			mmu_destroyPT(pcb->pt);
+		}
 	}
 	
 	krn.pidCounter++;
@@ -105,12 +129,45 @@ PCB* prc_create(const char* name, PrcEntryFunc entryFunc, bool kernelMode,
 	
 	return pcb;
 	
-	out3:
-		free(tcb);
 	out2:
 		free(pcb);
 	out1:
 		return NULL;
+}
+
+static void prc_destroyPCBImpl(PCB* pcb)
+{
+	// #TODO : Implement this
+	// Things to do:
+	// - Deallocate any memory
+	// - Free mmu pages
+}
+
+void prc_destroyTCB(TCB* tcb)
+{
+	// #TODO : Implement this
+	// Things to do:
+	// - Deallocate any memory
+}
+
+void prc_destroyPCB(PCB* pcb)
+{
+	krnassert(pcb != rootPCB);
+	// NOTE: This will end up calling handles_thread_dtr, which is how
+	// destruction is done.
+	handles_destroy(pcb->mainthread->handle, pcb->info.pid);
+}
+
+void handles_thread_dtr(void* data)
+{
+	if (!data)
+		return;
+	TCB* tcb = (TCB*)data;
+	// If it's the main thread, then destroy the process
+	if (tcb == tcb->pcb->mainthread)
+		prc_destroyPCBImpl(tcb->pcb);
+	else
+		prc_destroyTCB(tcb);
 }
 
 void timedEvent_wakeupThread(void* tcb_, void* data2, void* data3)
@@ -129,7 +186,7 @@ void prc_putThreadToSleep(TCB* tcb, u32 ms)
 	tcb->state = TCB_STATE_BLOCKED;
 	tcb->wait.type = TCB_WAIT_TYPE_SLEEP;
 	// Instead of saving the duration, we save the time we need to wake up.
-	tcb->wait.d.sleepEnd = krn.intrCurrSecs + (ms / 1000.0f);
+	tcb->wait.d.sleepEnd = krn.intrCurrSecs + ((s32)ms / 1000.0f);
 	
 	// Remove from the ready queue.
 	tcb_enqueue(tcb, NULL);

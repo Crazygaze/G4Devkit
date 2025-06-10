@@ -51,7 +51,7 @@ PCB* krn_launchKernelApp(KernelAppID id)
 {
 	const KernelAppInfo* info = &krnApps[id];
 
-	PCB* pcb = prc_create(info->name, info->startFunc, info->privileged,
+	PCB* pcb = prc_createPCB(info->name, info->startFunc, info->privileged,
 		info->stacksize, info->heapsize);
 	if (!pcb) {
 		OS_ERR("Failed to create app '%s'", info->name);
@@ -72,7 +72,7 @@ PCB* krn_launchKernelApp(KernelAppID id)
  */
 FullCpuCtx* krn_init()
 {
-	stdc_setLogFunc(hwnic_sendDebug);
+	stdc_setLogFunc((LibCDebugLogFunc)hwnic_sendDebug);
 	mmu_init();
 	
 	queue32_create(&krn.tcbReady, 32);

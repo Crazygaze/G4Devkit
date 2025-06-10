@@ -43,7 +43,7 @@ void boot_startup(uint32_t stackTop)
 	// wrong address, since the `ds` register has a value of `0` at boot.
 	hwcpu_set_ds(gROMInfo.dataSharedAddr);
 	
-	stdc_setLogFunc(hwnic_sendDebug);
+	stdc_setLogFunc((LibCDebugLogFunc)hwnic_sendDebug);
 
 	uint32_t imageSize = gROMInfo.dataSharedAddr + gROMInfo.dataSharedSize;
 	uint32_t imagePages = MMU_SIZE_TO_PAGES(imageSize);

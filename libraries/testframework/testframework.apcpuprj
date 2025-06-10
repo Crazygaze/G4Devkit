@@ -21,10 +21,6 @@
 	],
 	"files": [
 		{
-			"path": ".\\README.md",
-			"bootfile": false
-		},
-		{
 			"path": ".\\testframework\\testframework.c",
 			"bootfile": false
 		},
@@ -34,6 +30,10 @@
 		},
 		{
 			"path": ".\\testframework\\testframework_aux.asm",
+			"bootfile": false
+		},
+		{
+			"path": ".\\README.md",
 			"bootfile": false
 		}
 	]

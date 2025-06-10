@@ -26,6 +26,10 @@ typedef struct PageTable
 	
 	// What value to to set the main thread's `sp` register to.
 	u32 usrSP;
+
+	// #TODO : See if this is being used. If not, remove it.
+	u32 heapBegin;
+	u32 heapEnd;
 } PageTable;
 
 /*!

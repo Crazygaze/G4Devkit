@@ -2,7 +2,7 @@
 #include <stdc_init.h>
 #include "hwcrt0.h"
 
-int krn_idleTask(void* userdata)
+int krn_idleTask(void* cookie)
 {
 	LOG_LOG("Idle entry");
 	int tick = 0;

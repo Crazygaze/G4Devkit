@@ -17,9 +17,9 @@ int _stdc_log(const char* fmt, ...)
 {
 	if (stdc_debugLogFunc) {
 		va_list ap;
-		char buf[256];
+		char buf[_STDC_LOG_MAXSTRINGSIZE];
 		va_start(ap, fmt);
-		vsnprintf(buf, 256, fmt, ap);
+		vsnprintf(buf, _STDC_LOG_MAXSTRINGSIZE, fmt, ap);
 		(*stdc_debugLogFunc)(buf);
 	}
 

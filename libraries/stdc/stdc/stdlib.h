@@ -1,6 +1,7 @@
 #ifndef _stdc_stdlib_h_
 #define _stdc_stdlib_h_
 
+#include "detail/config.h"
 #include <stddef.h>
 #include "detail/memdetails.h"
 

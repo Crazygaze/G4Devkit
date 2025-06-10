@@ -3,6 +3,7 @@
 #ifndef _stdc_math_h_
 #define _stdc_math_h_
 
+#include "detail/config.h"
 #include <stddef.h>
 
 // Internal detail

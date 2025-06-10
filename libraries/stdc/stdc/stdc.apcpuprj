@@ -21,6 +21,10 @@
 	],
 	"files": [
 		{
+			"path": ".\\detail\\config.h",
+			"bootfile": false
+		},
+		{
 			"path": ".\\detail\\memdetails.c",
 			"bootfile": false
 		},

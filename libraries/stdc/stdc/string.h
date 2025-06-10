@@ -1,6 +1,7 @@
 #ifndef _stdc_string_h_
 #define _stdc_string_h_
 
+#include "detail/config.h"
 #include <hwcrt0_stdc.h>
 
 

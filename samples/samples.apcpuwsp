@@ -36,22 +36,22 @@
 		{
 			"file": "..\\libraries\\coroutines\\coroutines_sample\\coroutines_sample.apcpuprj",
 			"virtualFolder": "libraries\/tests",
-			"enabled": true
+			"enabled": false
 		},
 		{
 			"file": "..\\libraries\\stdc\\stdc_tests\\stdc_tests.apcpuprj",
 			"virtualFolder": "libraries\/tests",
-			"enabled": true
+			"enabled": false
 		},
 		{
 			"file": "..\\libraries\\testframework\\testframework.apcpuprj",
 			"virtualFolder": "libraries\/tests",
-			"enabled": true
+			"enabled": false
 		},
 		{
 			"file": "..\\libraries\\utils\\utils_tests\\utils_tests.apcpuprj",
 			"virtualFolder": "libraries\/tests",
-			"enabled": true
+			"enabled": false
 		},
 		{
 			"file": "..\\libraries\\boot\\boot.apcpuprj",

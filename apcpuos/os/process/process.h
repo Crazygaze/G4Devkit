@@ -91,6 +91,8 @@ typedef struct TCB
 	FullCpuCtx ctx;
 	struct PCB* pcb; // Process this thread belongs to
 	
+	// #TODO : Initialize this for the main thread too
+	// #TODO : This is not beging initialized at all
 	// Handle to be used by the application to refer to this thread
 	HANDLE handle;
 
@@ -141,15 +143,41 @@ void prc_setMMUKeys(PCB* pcb, u32 keys);
  * - If `kernelMode` is false, the process will have a memory range for the
  heap, but no pages are allocated until the heap is actually used.
  */
-PCB* prc_create(const char* name, PrcEntryFunc entryFunc, bool kernelMode,
+PCB* prc_createPCB(const char* name, PrcEntryFunc entryFunc, bool kernelMode,
 	u32 stackSize, u32 heapSize);
 	
-	
+/*!
+ * Creates a new thread.
+ *
+ * \param pcb Owning process
+ * \param stackTop value to set the `sp` register to.
+ * \param func Entry function for the thread.
+ * \param crflags Value to set the crflags register to.
+ * \param crirqmsk Value to set the crirqmsk register to.
+ *
+ * \return the TCB or NULL on error.
+ */
+TCB* prc_createTCB(PCB* pcb, ThreadEntryFunc func, u32 stackTop, u32 crflags,
+	u32 crirqmsk, u32 cookie);
+
+/*!
+ * Destroys the specified process
+ */
+void prc_destroyPCB(PCB* pcb);
+
+/*!
+ * Destroys the specified Thread
+ */
+void prc_destroyTCB(TCB* pcb);
+
 /*!
  * Puts the specified thread to sleep for the specified interval.
  */
 void prc_putThreadToSleep(TCB* tcb, u32 ms);
 
+
+//#TODO This can in theory fail, since it pushes stuff to a queue, which might
+// need to expand. Therefore, it should return false.
 /*!
  * Moves the thread between queuese.
  * A thread can only be in one queue at a time;

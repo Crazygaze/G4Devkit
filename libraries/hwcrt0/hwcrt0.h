@@ -28,6 +28,25 @@
 //                             Architecture Related
 ////////////////////////////////////////////////////////////////////////////////
 
+//
+// To make it clear what function parameters are physical addresses and avoid
+// bugs by simply passing e.g `void*` to some function, those parameters
+// are of type `phsy_addr`, which is implemented with a struct. 
+// This means that any function calling another function that takes a physical
+// address needs to be explicit about casts, therefore increasing type safety.
+struct phys_addr_t
+{
+	int dummy;
+};
+
+// Note that `phys_addr` is intentionally typedef to `phys_addr_t*` (a pointer),
+// because the compiler is not smart enough to realize a struct parameter is
+// actually only 1 word and can be passed in a register.
+// As-in, if it was typedef to a struct, the compiler would pass those on the
+// stack and generate silly memcpy instructions and such, instead of just
+// putting it in a register.
+typedef struct phys_addr_t* phys_addr;
+
 /*!
  * Process info that gets embedded in the ROM image
  * This lets an OS know some basic info about the code and data
@@ -576,7 +595,8 @@ void hwclk_spinMs(int ms);
 
 /*!
  * Sends a strings to the debug output
+ * \param str Physical address of the string to send.
  */
-int hwnic_sendDebug(const char* str);
+int hwnic_sendDebug(phys_addr str);
 
 #endif

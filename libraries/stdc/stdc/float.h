@@ -1,6 +1,8 @@
 #ifndef _stdc_float_h_
 #define _stdc_float_h_
 
+#include "detail/config.h"
+
 // See https://en.cppreference.com/w/c/types/limits
 
 #define DBL_DECIMAL_DIG  17

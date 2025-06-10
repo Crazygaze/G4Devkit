@@ -68,6 +68,14 @@
 			"bootfile": false
 		},
 		{
+			"path": ".\\kernel\\handles.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\kernel\\handles.h",
+			"bootfile": false
+		},
+		{
 			"path": ".\\kernel\\kernel.c",
 			"bootfile": false
 		},

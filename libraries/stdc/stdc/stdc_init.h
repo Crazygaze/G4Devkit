@@ -1,6 +1,8 @@
 #ifndef _stdc_init_h_
 #define _stdc_init_h_
 
+#include "detail/config.h"
+
 /*!
  * Sets the maximum verbosity.
  * It controls how much verbosity is compiled into the code.

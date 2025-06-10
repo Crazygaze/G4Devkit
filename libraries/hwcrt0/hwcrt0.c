@@ -50,11 +50,12 @@ void hwclk_spinMs(int ms)
 
 #define HWNICFUNC_SND 2
 
-int hwnic_sendDebug(const char* str)
+int hwnic_sendDebug(phys_addr str)
 {
 	HwfSmallData hwf;
 	hwf.regs[0] = 0; // Destination id (0 is the debug destination)
 	hwf.regs[1] = (int)str;
-	hwf.regs[2] = strlen(str) + 1;
+	hwf.regs[2] = strlen((const char*)str) + 1;
 	return hw_hwf_3_0(HWBUS_NIC, HWNICFUNC_SND, &hwf);
 }
+
