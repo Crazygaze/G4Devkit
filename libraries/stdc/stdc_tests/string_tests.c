@@ -98,6 +98,41 @@ TEST(strcmp)
 	CHECK(strcmp("123", "12") > 0);
 }
 
+TEST(strchr)
+{
+	// Putting the string in the stack, because of the merge-strings
+	// optimization
+	char str[4];
+	strcpy(str, "Hi!");
+
+	// According to https://en.cppreference.com/w/c/string/byte/strchr,
+	// searching for '\0' is a valid thing, and should return its position
+	// instead of NULL
+	CHECK(strchr(str, '\0') == &str[3]);
+	
+	CHECK(strchr(str, '!') == &str[2]);
+	CHECK(strchr(str, 'i') == &str[1]);
+	CHECK(strchr(str, 'H') == &str[0]);
+	CHECK(strchr(str, '_') == NULL);
+}
+
+TEST(strrchr)
+{
+	// Putting the string in the stack, because of the merge-strings
+	// optimization
+	char str[4];
+	strcpy(str, "Hi!");
+
+	// According to https://en.cppreference.com/w/c/string/byte/strrchr,
+	// searching for '\0' is a valid thing, and should return its position
+	// instead of NULL
+	CHECK(strrchr(str, '\0') == &str[3]);
+	CHECK(strrchr(str, '!') == &str[2]);
+	CHECK(strrchr(str, 'i') == &str[1]);
+	CHECK(strrchr(str, 'H') == &str[0]);
+	CHECK(strrchr(str, '_') == NULL);
+}
+
 void string_tests(void)
 {
 	strlen_tests();
@@ -106,4 +141,6 @@ void string_tests(void)
 	strcpy_tests();
 	strncpy_tests();
 	strcmp_tests();
+	strchr_tests();
+	strrchr_tests();
 }

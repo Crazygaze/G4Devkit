@@ -37,3 +37,27 @@ int strcmp(const char* str1, const char* str2)
 	}
 	return *(const unsigned char*)str1 - *(const unsigned char*)str2;
 }
+
+char* strchr(const char* str, int ch)
+{
+	for(; *str != '\0' && *str != ch; ++str)
+	{
+	}
+
+	// NOTE: This correctly handles the edge case where ch is `\0`
+	return *str == ch ? (char*)str : NULL;
+}
+
+// See https://en.cppreference.com/w/c/string/byte/strrchr
+// The implementation is simple. It just iterates the string and remembers
+// the last position the character was found.
+char* strrchr(const char* str, int ch)
+{
+	const char* pos = NULL;
+	do {
+		if (*str == (char)ch)
+			pos = str;
+	} while(*str++);
+
+	return (char*)pos;
+}
