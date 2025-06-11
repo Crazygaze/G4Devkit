@@ -61,3 +61,23 @@ char* strrchr(const char* str, int ch)
 
 	return (char*)pos;
 }
+
+char* strcat(char* dest, const char* src)
+{
+	// Save `dest` since that's what we need to return.
+	char* ret = dest;
+	
+	// Move to the end of `dest`
+	while(*dest != 0)
+		dest++;
+		
+	// Append `src` to `dest`
+	while(*src)
+		*dest++ = *src++;
+		
+	*dest = 0;
+	
+	return ret;
+}
+
+

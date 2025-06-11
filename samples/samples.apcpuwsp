@@ -41,12 +41,12 @@
 		{
 			"file": "..\\libraries\\stdc\\stdc_tests\\stdc_tests.apcpuprj",
 			"virtualFolder": "libraries\/tests",
-			"enabled": false
+			"enabled": true
 		},
 		{
 			"file": "..\\libraries\\testframework\\testframework.apcpuprj",
 			"virtualFolder": "libraries\/tests",
-			"enabled": false
+			"enabled": true
 		},
 		{
 			"file": "..\\libraries\\utils\\utils_tests\\utils_tests.apcpuprj",

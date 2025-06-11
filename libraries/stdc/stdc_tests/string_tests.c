@@ -133,6 +133,32 @@ TEST(strrchr)
 	CHECK(strrchr(str, '_') == NULL);
 }
 
+TEST(strcat)
+{
+	// Putting the string in the stack, because of the merge-strings
+	// optimization
+	char str1[3];
+	strcpy(str1, "Hi");
+	char str2[2];
+	strcpy(str2, " ");
+	char str3[7];
+	strcpy(str3, "there!");
+	char str4[1] = {0};
+	
+	char buf[12];
+	// Fill with garbage, so we can detect that the null terminator was added
+	// correctly
+	memset(buf, 255, sizeof(buf));
+	buf[0] = 0;
+	strcat(buf, str1);
+	strcat(buf, str2);
+	strcat(buf, str3);
+	strcat(buf, str4);
+	CHECK(strcmp(buf, "Hi there!") == 0);
+
+	buf[0] = 0;
+}
+
 void string_tests(void)
 {
 	strlen_tests();
@@ -143,4 +169,5 @@ void string_tests(void)
 	strcmp_tests();
 	strchr_tests();
 	strrchr_tests();
+	strcat_tests();
 }
