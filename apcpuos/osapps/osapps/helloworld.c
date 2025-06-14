@@ -7,7 +7,7 @@
 void anotherThread(void* cookie)
 {
 	LOG_LOG("Hello from another %s!", (const char*)cookie);
-	static int count = 0;
+	int count = 0;
 	while(true)
 	{
 		LOG_LOG("Another world: %u!", count++);
@@ -21,10 +21,9 @@ int helloworld_main(void *)
 	
 	CreateThreadParams params = { 0 };
 	params.entryFunc = anotherThread;
-	params.stackSize = 512;
+	params.stackSize = 1024;
 	params.cookie = "world";
-	//HANDLE h = app_createThread(&params);
-	
+	HANDLE h = app_createThread(&params);
 	
 	static int count = 0;
 	while(true)

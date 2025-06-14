@@ -67,13 +67,14 @@ bool syscall_createThread(void)
 	u32 pid = krn.currTcb->pcb->info.pid;
 	
 	const CreateThreadParams* inParams= (const CreateThreadParams*)regs[0];
+	u32 stackTop = regs[1];
+
 	CHECK_USER_PTR(MMU_PTE_R, inParams, sizeof(*inParams));
 	ADD_USR_KEY;
 	ThreadEntryFunc entryFunc = inParams->entryFunc;
 	u32 cookie = (u32)inParams->cookie;
 	REMOVE_USER_KEY;
 	
-	u32 stackTop = regs[2];
 	
 	TCB* tcb = prc_createTCB(
 		krn.currTcb->pcb,
