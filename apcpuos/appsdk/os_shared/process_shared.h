@@ -41,14 +41,21 @@ typedef void (*ThreadEntryFuncWrapper)(ThreadEntryFunc func, void* cookie);
 /*!
  * Called by the OS as the entry point to a process.
  * You should not call this directly.
+ *
+ * \param func Actual app entry function
+ * \param cookie Passed to the entry function
+ * \param heapStart Pointer to the where the heap starts
+ * \param initialHeapStart How much heap to start with. If 0, then no heap is
+ * givin the process at all
  */
-void app_startup(PrcEntryFunc func, bool isKernelApp, void* cookie);
+void app_startup(
+	PrcEntryFunc func, void* cookie, void* heapStart, u32 initialHeapSize);
 
 /*!
  * Called by the OS as the entry point for new threads.
  * You should not call this directly.
  */
-void app_threadEntry(ThreadEntryFunc func, bool isKernelApp, void* cookie);
+void app_threadEntry(ThreadEntryFunc func, void* cookie);
 
 /*!
  * A process's maximum name size, including the null terminator

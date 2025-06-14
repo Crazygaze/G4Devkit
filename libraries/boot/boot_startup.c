@@ -80,7 +80,7 @@ void boot_startup(uint32_t stackTop)
 	}
 
 	initialSP = stackTop;
-	stdc_init((void*)imageSize, heapSize);
+	stdc_init((void*)imageSize, heapSize, NULL);
 
 	main();
 }

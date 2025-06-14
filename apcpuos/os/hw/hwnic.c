@@ -10,9 +10,10 @@ static hwnic_Drv nicDrv;
 //#define HWNICFUNC_SND 2
 #define HWNICFUNC_RCV 3
 #define HWNICFUNC_QUERY_BUFFERS 4
-#define HWNICFUNC_QUERY_STATS 5
-#define HWNICFUNC_SETMODE 6
-#define HWNICFUNC_GETMODE 7
+#define HWNICFUNC_QUERY_OUTSTATS 5
+#define HWNICFUNC_QUERY_INSTATS 6
+#define HWNICFUNC_SETMODE 7
+#define HWNICFUNC_GETMODE 8
 
 void hwnic_handler(void)
 {

@@ -4,16 +4,24 @@
 #include <stdlib.h>
 #include <stdc_init.h>
 #include "utils/bitops.h"
+#include "hwcrt0.h"
+
+void app_setupDS(void);
 
 // Entry point for a new process
-void app_startup(PrcEntryFunc func, bool isKernelApp, void* cookie,
-	void* heapStart, u32 heapSize)
+void app_startup(
+	PrcEntryFunc func, void* cookie, void* heapStart, u32 initialHeapSize)
 {
-	if (!isKernelApp) {
+	if (!(hwcpu_get_crflags() & CPU_CRREG_FLAGS_S)) {
+		app_setupDS();
+		
+		// Only set the logging function if running in user space mode.
+		// This is because if in kernel mode, we already have the right thing
+		// set by the kernel.
 		stdc_setLogFunc(app_outputDebugString);
 	}
-	
-	stdc_init(heapStart, heapSize);
+
+	stdc_init(heapStart, initialHeapSize, &app_setBrk);
 	
 	// #TODO : Implement TLS
 	
@@ -22,7 +30,7 @@ void app_startup(PrcEntryFunc func, bool isKernelApp, void* cookie,
 }
 
 // Entry point for extra threads the process creates
-void app_threadEntry(ThreadEntryFunc func, bool isKernelApp, void* cookie)
+void app_threadEntry(ThreadEntryFunc func, void* cookie)
 {
 	// #TODO : Implement TLS
 
@@ -32,6 +40,10 @@ void app_threadEntry(ThreadEntryFunc func, bool isKernelApp, void* cookie)
 //
 //
 //
+static u32 app_syscall0(
+	__reg("r4") u32)
+INLINEASM("\t\
+swi r4");
 
 static u32 app_syscall1(
 	__reg("r4") u32,
@@ -62,6 +74,11 @@ static u32 app_syscall4(
 	__reg("r3") u32)
 INLINEASM("\t\
 swi r4");
+
+void app_setupDS(void)
+{
+	app_syscall0(kSysCall_SetupDS);
+}
 
 void app_sleep(u32 ms)
 {
@@ -104,4 +121,9 @@ HANDLE app_createThread(const CreateThreadParams* params)
 		kSysCall_CreateThread, (u32)params, (u32)stackTop);
 		
 	return res;
+}
+
+bool app_setBrk(void* brk)
+{
+	return app_syscall1(kSysCall_SetBrk, (u32)brk);
 }

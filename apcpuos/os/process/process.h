@@ -117,7 +117,6 @@ PCB* prc_initRoobPCB(void);
  */
 void prc_setMMUKeys(PCB* pcb, u32 keys);
 
-
 /*!
  * Creates a process.
  *
@@ -138,13 +137,16 @@ void prc_setMMUKeys(PCB* pcb, u32 keys);
  * page is allocated from the start. It then grows dynamically as required, up
  * this specified value.
  *
- * \param heapSize Heap size required by the process.
- * - If `kernelMode` is true, this needs to be 0.
- * - If `kernelMode` is false, the process will have a memory range for the
- heap, but no pages are allocated until the heap is actually used.
+ * \param heapNPages Number of heap pages that should be set in the page table.
+ *	This is only used if `kernelMode` is false.
+ *	A value of 0 means the process doesn't need heap, and thus no space for heap
+ *	will exist in the page table.
+ *	If >0, then the page table will be set to support that heap size, BUT only 1
+ *	page will be preallocated to begin with. Additional pages can then be
+ *	requested by the application
  */
 PCB* prc_createPCB(const char* name, PrcEntryFunc entryFunc, bool kernelMode,
-	u32 stackSize, u32 heapSize);
+	u32 stackSize, u32 heapNPages);
 	
 /*!
  * Creates a new thread.
@@ -187,6 +189,12 @@ void prc_putThreadToSleep(TCB* tcb, u32 ms);
  * current queue and not put into any queue.
  */
 void tcb_enqueue(TCB* tcb, Queue32* to);
+
+
+/*!
+ * Changes the program break for the specified process
+ */
+bool prc_setBrk(PCB* pcb, u32 newbrk);
 	
 
 #endif

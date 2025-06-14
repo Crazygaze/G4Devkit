@@ -16,7 +16,7 @@
 // Kernel's stack size in bytes
 // This is specified in bytes instead of pages, so we can potentially save some
 // space because of the way the page tables are arranged.
-#define KERNEL_STACK_SIZE 2048
+#define KERNEL_STACK_SIZE 4096
 
 // How many pages to use for the kernel heap
 #define KERNEL_HEAP_NUMPAGES 4
@@ -27,9 +27,6 @@
 // Specifying an higher value than what's required for the devices attached at
 // boot allows new devices to be plugged at runtime.
 #define KERNEL_IO_PAGES 2
-
-// Stack size (in bytes) for the page fault handler
-#define PFHANDLER_STACK_SIZE 1024
 
 #define krnassert assert
 

@@ -57,7 +57,7 @@ void hw_initAll(void)
 			continue;
 		}
 		
-		hwclk_spinMs(250);
+		//hwclk_spinMs(250);
 		u32 id = data.regs[0];
 		char idStr[4+1] = { 0 };
 		memcpy(idStr, &id, 4);

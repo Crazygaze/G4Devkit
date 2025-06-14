@@ -16,7 +16,6 @@
 	#define _STDC_MEMDEBUG 0
 #endif
 
-
 /*!
 * Initializes the heap
 */

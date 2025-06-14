@@ -155,8 +155,6 @@ TEST(strcat)
 	strcat(buf, str3);
 	strcat(buf, str4);
 	CHECK(strcmp(buf, "Hi there!") == 0);
-
-	buf[0] = 0;
 }
 
 void string_tests(void)

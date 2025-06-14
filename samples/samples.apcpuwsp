@@ -36,7 +36,7 @@
 		{
 			"file": "..\\libraries\\coroutines\\coroutines_sample\\coroutines_sample.apcpuprj",
 			"virtualFolder": "libraries\/tests",
-			"enabled": false
+			"enabled": true
 		},
 		{
 			"file": "..\\libraries\\stdc\\stdc_tests\\stdc_tests.apcpuprj",
@@ -51,7 +51,7 @@
 		{
 			"file": "..\\libraries\\utils\\utils_tests\\utils_tests.apcpuprj",
 			"virtualFolder": "libraries\/tests",
-			"enabled": false
+			"enabled": true
 		},
 		{
 			"file": "..\\libraries\\boot\\boot.apcpuprj",

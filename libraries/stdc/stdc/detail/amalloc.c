@@ -491,22 +491,18 @@ void* ama_calloc(
 	return ptr;
 }
 
-void* ama_realloc(
-	void* ptr, u32 newSize
-#if AMA_TRACK
-	, const char* file, int line
-#endif
-)
+static AMANode* ama_reallocImpl(void* ptr, u32 newSize)
 {
 	ama_assert(ama.heapStart);
 
 	if (ptr == NULL) {
-		return ama_malloc(
+		ptr = ama_malloc(
 				newSize
 				#if AMA_TRACK
-				, file, line
+				, "a.b", 0
 				#endif
 			);
+		return ptr ? ama_ptrToNode(ptr) : NULL;
 	}
 
 	if (newSize == 0)
@@ -523,11 +519,7 @@ void* ama_realloc(
 	// If the node has enough capacity, then just reuse it
 	if (newCapacity <= currCapacity) {
 		ama_resizeAsUsed(node, newSize, newCapacity);
-#if AMA_TRACK
-		node->file = file;
-		node->line = line;
-#endif
-		return ptr;
+		return node;
 	}
 
 	// CASE 2
@@ -545,11 +537,7 @@ void* ama_realloc(
 		if (currCapacity + NODE_SIZE + nextCapacity >= newCapacity) {
 			ama_removeNode(node->next);
 			ama_resizeAsUsed(node, newSize, newCapacity);
-#if AMA_TRACK
-			node->file = file;
-			node->line = line;
-#endif
-			return ptr;
+			return node;
 		}
 	}
 
@@ -579,11 +567,7 @@ void* ama_realloc(
 			memmove(ama_nodeToPtr(newNode), ptr, currSize);
 
 			ama_resizeAsUsed(newNode, newSize, newCapacity);
-#if AMA_TRACK
-			newNode->file = file;
-			newNode->line = line;
-#endif
-			return ama_nodeToPtr(newNode);
+			return newNode;
 		}
 	}
 
@@ -593,7 +577,7 @@ void* ama_realloc(
 	void* newPtr = ama_malloc(
 			newSize
 			#if AMA_TRACK
-			, file, line
+			, "a.b", 0
 			#endif
 		);
 	if (newPtr) {
@@ -604,10 +588,30 @@ void* ama_realloc(
 		ama_freeImpl(node, false);
 
 		memmove(newPtr, ptr, currSize);
-		return newPtr;
+		return ama_ptrToNode(newPtr);
 	}
 
 	return NULL;
+}
+
+void* ama_realloc(
+	void* ptr, u32 newSize
+#if AMA_TRACK
+	, const char* file, int line
+#endif
+)
+{
+	AMANode* node = ama_reallocImpl(ptr, newSize);
+	if (!node)
+		return NULL;
+	
+#if AMA_TRACK
+	node->file = file;
+	node->line = line;
+#endif
+
+	ama.cursor_ = node->next;
+	return ama_nodeToPtr(node); 
 }
 
 // Used internally only

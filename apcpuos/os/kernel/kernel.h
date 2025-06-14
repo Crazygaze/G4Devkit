@@ -8,16 +8,18 @@ typedef void (*KrnTimedEventFunc)(void* data1, void* data2, void* data3);
 typedef struct KrnTimedEvent {
 	double execTime; // Time at which to execute the function
 	KrnTimedEventFunc func;
+	void* data0;
 	void* data1;
 	void* data2;
-	void* data3;
 } KrnTimedEvent;
+		
 
 PQUEUE_TYPEDECLARE(KrnTimedEvent)
 
 typedef struct Kernel  {
 
 	// The currently running thread. This is set by the task scheduler.
+	
 	TCB* currTcb;
 	
 	// Thread to switch to when there is no work

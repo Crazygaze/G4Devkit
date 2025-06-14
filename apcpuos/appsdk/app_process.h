@@ -4,7 +4,6 @@
 #include "app_config.h"
 #include "os_shared/process_shared.h"
 
-
 /*!
  * Causes the current thread to sleep for the specifed milliseconds.
  * Sleep duration isn't necessarily accurate, as it depends on Kernel's quantum,
@@ -48,5 +47,16 @@ int app_outputDebugString(const char* fmt);
  *
  */
 HANDLE app_createThread(const CreateThreadParams* params);
+
+
+/*!
+ * Changes the program break.
+ * See https://en.wikipedia.org/wiki/Sbrk
+ * Intentionally using a different name and signature.
+ *
+ * There is no need to use this directly. This is used internally by the memory
+ * allocator to request more pages from the OS.
+ */
+bool app_setBrk(void* brk);
 
 #endif

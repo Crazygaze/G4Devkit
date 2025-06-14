@@ -28,8 +28,10 @@ void krn_pickNextTcb(void)
 		queue32_push(&krn.tcbReady, (u32)krn.currTcb);
 	} else {
 		// No tcb was ready to run, so we select the idle tcb
-		OS_VER("No threads ready to run. Switching to idle task");
-		krn.currTcb = krn.idleTcb;
+		if (krn.currTcb != krn.idleTcb) {
+			OS_VER("No threads ready to run. Switching to idle task");
+			krn.currTcb = krn.idleTcb;
+		}
 	}
 	
 	// #TODO : Setup TLS
@@ -52,19 +54,20 @@ PCB* krn_launchKernelApp(KernelAppID id)
 	const KernelAppInfo* info = &krnApps[id];
 
 	PCB* pcb = prc_createPCB(info->name, info->startFunc, info->privileged,
-		info->stacksize, info->heapsize);
+		info->stacksize, info->heapNPages);
 	if (!pcb) {
 		OS_ERR("Failed to create app '%s'", info->name);
 		return NULL;
 	}
 	
-	// #TODO : Remove this. Is just temporary while I don't have system calls
-	//pcb->mainthread->ctx.crregs[CPU_CRREG_FLAGS] |= CPU_CRREG_FLAGS_S;
-	//pcb->mainthread->ctx.crregs[CPU_CRREG_IRQMSK] = 0x00000002; // Enable Clock only
-	//pcb->mainthread->ctx.crregs[CPU_CRREG_IRQMSK] = 0x00000012; // Enable Clock only
-	
 	pcb->info.flags = info->flags;
 	return pcb;
+}
+
+static void krn_logStackUse(void* data0, void* data1, void *data2)
+{
+	OS_LOG("Kernel stack: %u/%u", mmu_calcKrnUsedStack(), mmu_getKrnStackSize());
+	krn_addTimedEvent(krn.intrCurrSecs + 10.0f, krn_logStackUse, NULL, NULL, NULL);
 }
 
 /*
@@ -85,6 +88,10 @@ FullCpuCtx* krn_init()
 	
 	hwclk_addCallback(0, krn_taskScheduler, NULL);
 	hwclk_startTimer(0, KERNEL_QUANTUM, true, true);
+
+	krn.intrCurrSecs = hwclk_getSecsSinceBoot();
+	// Kick start the timed event to log the stack usage.
+	krn_logStackUse(NULL, NULL, NULL);
 	
 	// Disable IRQ generation on send (when the outgoing buffer is empty)
 	hwnic_setIRQMode(false, true);
@@ -166,7 +173,7 @@ FullCpuCtx* krn_irqHandler(u32 reason, FullCpuCtx* interruptedCtx, u32 data1, u3
 		OS_LOG("Switching to process '%p:%s', TCB %p", krn.currTcb->pcb,
 			krn.currTcb->pcb->info.name, krn.currTcb);
 	}
-
+	
 	// Right before return, we set the irq ctx to be the kernel itself
 	hwcpu_set_crirqtsk(&krn.krnCtx);
 
@@ -200,15 +207,15 @@ static void krn_initTimedEvents(void)
 	pqueue_KrnTimedEvent_create(&krn.timedEvents, 4, timedEventCmp);
 }
 
-void krn_addTimedEvent(double execTime, KrnTimedEventFunc func, void* data1,
-	void* data2, void* data3)
+void krn_addTimedEvent(double execTime, KrnTimedEventFunc func, void* data0,
+	void* data1, void* data2)
 {
 	KrnTimedEvent evt;
 	evt.execTime = execTime;
 	evt.func = func;
+	evt.data0 = data0;
 	evt.data1 = data1;
 	evt.data2 = data2;
-	evt.data3 = data3;
 	
 	bool res = pqueue_KrnTimedEvent_push(&krn.timedEvents, &evt);
 	krnassert(res);
@@ -220,11 +227,16 @@ void krn_addTimedEvent(double execTime, KrnTimedEventFunc func, void* data1,
  */
 static void krn_checkTimedEvents(void)
 {
-	const KrnTimedEvent* evt;
-	while ((evt = pqueue_KrnTimedEvent_peek(&krn.timedEvents)) &&
-		   (evt->execTime <= krn.intrCurrSecs)) {
-		pqueue_KrnTimedEvent_pop(&krn.timedEvents, NULL);
-		evt->func(evt->data1, evt->data2, evt->data3);
+	const KrnTimedEvent* evtPtr;
+	while ((evtPtr = pqueue_KrnTimedEvent_peek(&krn.timedEvents)) &&
+		   (evtPtr->execTime <= krn.intrCurrSecs)) {
+		   
+		// Copy the data to the local variable BEFORE calling the function,
+		// because the function itselt might want to add more events to the
+		// queue
+		KrnTimedEvent evt;
+		pqueue_KrnTimedEvent_pop(&krn.timedEvents, &evt);
+		evt.func(evt.data0, evt.data1, evt.data2);
 	}
 }
 #pragma popwarn

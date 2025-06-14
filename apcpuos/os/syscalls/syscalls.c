@@ -37,6 +37,20 @@ static bool checkUserPtrAndLog(struct PCB* pcb, u32 access, void* addr, u32 size
 #define ADD_USR_KEY hwcpu_addMMUKeys(MMU_PTE_KEY_USR)
 #define REMOVE_USER_KEY hwcpu_removeMMUKeys(MMU_PTE_KEY_USR)
 
+bool syscall_setupDS(void)
+{
+	const PTKrnLayout* layout = mmu_getKrnPTLayout();
+	u32 size = layout->oriSharedDataEnd - layout->oriSharedDataBegin;
+	
+	ADD_USR_KEY;
+	hwcpu_addMMUKeys(MMU_PTE_KEY_ORIGINAL_SHARED);
+	memcpy((u8*)krn.currTcb->pcb->pt->usrDS, (u8*)layout->oriSharedDataBegin, size);
+	hwcpu_removeMMUKeys(MMU_PTE_KEY_ORIGINAL_SHARED);
+	REMOVE_USER_KEY;
+	
+	return true;
+}
+
 bool syscall_sleep(void)
 {
 	u32 ms = krn.currTcb->ctx.gregs[0];
@@ -77,6 +91,22 @@ bool syscall_createThread(void)
 	}
 }
 
+bool syscall_setBrk()
+{
+	int* regs = krn.currTcb->ctx.gregs;
+	u32 newbrk = regs[0];
+	
+	//OS_ERR("********** BEFORE syscall_setBrk(%p) ************", (void*)newbrk);
+	//mmu_debugdumpPT(krn.currTcb->pcb->pt);
+	
+	regs[0] = prc_setBrk(krn.currTcb->pcb, newbrk);
+	
+	//OS_ERR("********** AFTER syscall_setBrk ************");
+	//mmu_debugdumpPT(krn.currTcb->pcb->pt);
+
+	return true;
+}
+
 bool syscall_outputDebugString(void)
 {
 	ADD_USR_KEY;
@@ -106,9 +136,10 @@ const krn_syscallFunc krn_syscalls[kSysCall_Max] =
 	// 
 	// Process Management
 	//
-	
+	syscall_setupDS,
 	syscall_sleep,
 	syscall_createThread,
+	syscall_setBrk,
 	
 	//
 	// System information
