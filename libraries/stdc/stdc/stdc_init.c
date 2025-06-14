@@ -31,6 +31,5 @@ void stdc_init(void* heapStart, unsigned heapSize, bool (*brkFunc)(void*))
 	if (heapSize) {
 		memset(heapStart, 0, heapSize);
 		_mem_init(heapStart, heapSize, brkFunc);
-		_mem_debug();
 	}
 }

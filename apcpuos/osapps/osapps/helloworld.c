@@ -17,20 +17,20 @@ void anotherThread(void* cookie)
 
 int helloworld_main(void *)
 {
-	int a[2] = {1, 2};
 	LOG_LOG("Hello World!");
 	
 	CreateThreadParams params = { 0 };
 	params.entryFunc = anotherThread;
 	params.stackSize = 512;
 	params.cookie = "world";
-	HANDLE h = app_createThread(&params);
-
+	//HANDLE h = app_createThread(&params);
+	
+	
 	static int count = 0;
 	while(true)
 	{
 		LOG_LOG("Helloworld: %u!", count++);
-		app_sleep(3000);
+		app_sleep(5000);
 	}
 	
 	return EXIT_SUCCESS;
