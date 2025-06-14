@@ -84,8 +84,12 @@ void stdc_setLogFunc(LibCDebugLogFunc logFunc);
 
 /*!
  * This needs to be called before using anything else in the library, other than
- * stdc_setLogFunc
+ * stdc_setLogFunc.
+ *
+ * \param heapStart Where the heap starts
+ * \param heapSize Heap size. If 0, then no heap is used and the other arguments are ignored.
+ * \param brkFunc Function to call to ask for more pages from the OS.
  */
-void stdc_init(void* heapStart, unsigned heapSize);
+void stdc_init(void* heapStart, unsigned heapSize, bool (*brkFunc)(void*));
 
 #endif

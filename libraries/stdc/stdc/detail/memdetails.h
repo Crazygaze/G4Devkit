@@ -20,7 +20,7 @@
 /*!
 * Initializes the heap
 */
-void _mem_init(void* start, size_t size);
+void _mem_init(void* start, size_t size, bool (*brkFunc)(void*));
 
 /*!
 * Performs memory allocator integrity checks and logs information

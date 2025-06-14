@@ -26,11 +26,11 @@ int _stdc_log(const char* fmt, ...)
 	return 0;
 }
 
-void stdc_init(void* heapStart, unsigned heapSize)
+void stdc_init(void* heapStart, unsigned heapSize, bool (*brkFunc)(void*))
 {
 	if (heapSize) {
 		memset(heapStart, 0, heapSize);
-		_mem_init(heapStart, heapSize);
+		_mem_init(heapStart, heapSize, brkFunc);
 		_mem_debug();
 	}
 }

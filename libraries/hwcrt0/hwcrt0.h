@@ -228,6 +228,12 @@ uint32_t MMU_SIZE_TO_PAGES(uint32_t size);
 #define MMU_ADDR(page, offset) (((page)<<MMU_PAGE_OFFSET_BITS) | (offset))
 
 /*!
+ * Returns true if the two addresses are in the same page
+ */
+#define MMU_SAME_PAGE(addr1, addr2) \
+	(MMU_ADDR_TO_PAGE(addr1) == MMU_ADDR_TO_PAGE(addr2))
+
+/*!
  * Bit mask for a PTE's access keys (7 bits). 
  */
 #define MMU_PTE_KEYS_MASK 0x7f
@@ -597,6 +603,6 @@ void hwclk_spinMs(int ms);
  * Sends a strings to the debug output
  * \param str Physical address of the string to send.
  */
-int hwnic_sendDebug(phys_addr str);
+bool hwnic_sendDebug(phys_addr str);
 
 #endif

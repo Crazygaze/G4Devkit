@@ -21,6 +21,14 @@
 	],
 	"files": [
 		{
+			"path": ".\\detail\\amalloc.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\detail\\amalloc.h",
+			"bootfile": false
+		},
+		{
 			"path": ".\\detail\\config.h",
 			"bootfile": false
 		},
@@ -58,22 +66,6 @@
 		},
 		{
 			"path": ".\\extern\\printf\\printf.h",
-			"bootfile": false
-		},
-		{
-			"path": ".\\extern\\tlsf\\README.md",
-			"bootfile": false
-		},
-		{
-			"path": ".\\extern\\tlsf\\README.txt",
-			"bootfile": false
-		},
-		{
-			"path": ".\\extern\\tlsf\\tlsf.c",
-			"bootfile": false
-		},
-		{
-			"path": ".\\extern\\tlsf\\tlsf.h",
 			"bootfile": false
 		},
 		{
