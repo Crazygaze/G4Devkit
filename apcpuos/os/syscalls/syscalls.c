@@ -3,32 +3,8 @@
 #include "../kernel/mmu.h"
 #include <stdlib.h>
 
-/*!
- * Checks if the specified PCB can access the specified memory block.
- */
-static bool checkUserPtr(struct PCB* pcb, u32 access, void* addr, u32 size)
-{
-	// #TODO : implements this
-	// Things to do:
-	// - Even if size is 0, addr needs to be checked. This avoid exploits such
-	// as when the user code passes a const char* pointer to kernel space, and
-	// specifies that it's size is 0, which then can end up with the kernel
-	// copying private data to somewhere the user asked.
-	return true;
-}
-
-static bool checkUserPtrAndLog(struct PCB* pcb, u32 access, void* addr, u32 size)
-{
-	if (checkUserPtr(pcb, access, addr, size))
-		return true;
-
-	OS_ERR("checkUserPtr failed: PCB=%p, access=%u, addr=%p, size=%u", pcb,
-		access, addr, size);
-	return false;
-}
-
-#define CHECK_USER_PTR(access, addr, size) \
-	if (!checkUserPtrAndLog(krn.currTcb->pcb, access, addr, size)) return false;
+#define CHECK_USER_PTR(needsWrite, addr, size) \
+	if (!mmu_checkUserPtr(krn.currTcb->pcb, needsWrite, addr, size)) return false;
 
 // By default the kernel doesn't have access to user space, to help catch
 // bugs in the kernel.
@@ -66,30 +42,36 @@ bool syscall_createThread(void)
 	int* regs = krn.currTcb->ctx.gregs;
 	u32 pid = krn.currTcb->pcb->info.pid;
 	
-	const CreateThreadParams* inParams= (const CreateThreadParams*)regs[0];
-	u32 stackTop = regs[1];
-
-	CHECK_USER_PTR(MMU_PTE_R, inParams, sizeof(*inParams));
-	ADD_USR_KEY;
-	ThreadEntryFunc entryFunc = inParams->entryFunc;
-	u32 cookie = (u32)inParams->cookie;
-	REMOVE_USER_KEY;
+	const CreateThreadParams_* in = (const CreateThreadParams_*)regs[0];
+	u32* out= (u32*)regs[1];
 	
+	CHECK_USER_PTR(true, out, sizeof(u32)*4);
+	
+	CHECK_USER_PTR(false, in, sizeof(*in));
+	ADD_USR_KEY;
+	CreateThreadParams_ p = *in;
+	REMOVE_USER_KEY;
 	
 	TCB* tcb = prc_createTCB(
 		krn.currTcb->pcb,
-		entryFunc,
-		stackTop,
+		p.entryFunc,
+		(u32)p.stackEnd,
 		0 | MMU_PTE_KEY_USR, 0xFFFFFFFF,
-		cookie);
+		(u32)p.cookie);
 		
+	
+	ADD_USR_KEY;
+	bool res;
 	if (tcb) {
-		regs[0] = (u32)tcb->handle;
-		return true;
+		regs[0] = out[0] = (u32)tcb->handle;
+		tcb->stackBegin = (void*)p.stackBegin;
+		res = true;
 	} else {
-		regs[0] = INVALID_HANDLE;
-		return false;
+		regs[0] = out[0] = INVALID_HANDLE;
+		res = false;
 	}
+	REMOVE_USER_KEY;
+	return res;
 }
 
 bool syscall_setBrk()
@@ -118,7 +100,7 @@ bool syscall_outputDebugString(void)
 	// #TODO : Make use of size, or think hard if we can safely ignore it.
 	u32 size = krn.currTcb->ctx.gregs[1];
 	size = min(size, _STDC_LOG_MAXSTRINGSIZE - 1);
-	CHECK_USER_PTR(MMU_PTE_R, usrStr, size); 
+	CHECK_USER_PTR(false, usrStr, size); 
 	
 	// Copy the string to kernel pages, since hardware functions expect physical
 	// addresses and kernel pages are not setup with translation.

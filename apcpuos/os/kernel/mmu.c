@@ -660,6 +660,38 @@ static u32 calcSharedBoundary(u32 begin, u32 end)
 		return MMU_PAGE_TO_ADDR(MMU_ADDR_TO_PAGE(end-1));
 }
 
+/*!
+ * Where the user address space begins
+ */
+inline const u8* mmu_userSpaceBeginAddr(void)
+{
+	return (const u8*)mmu.krn.ioEnd;
+}
+
+// To make this check as fast as possible, we only validate that the memory
+// falls in the expected range(s) of the page table, instead of checking the pte
+// contents. This is because this function is executed on behalf of the user
+// process and thus we only care to make sure it is not allowed read/write
+// kernel only data.
+// If the process passes something that is outside the kernel address space but
+// still invalid, it will crash since even though system calls are in supervisor
+// mode, they run on behalf of the user process with it's page table.
+bool mmu_checkUserPtr(struct PCB* pcb, bool needsWrite, void* addr, u32 size)
+{
+	const u8* begin = (const u8*)addr;
+	const u8* end = begin + size;
+
+	if (begin >= mmu_userSpaceBeginAddr() ||
+		(needsWrite == false &&
+			begin >= (u8*)mmu.krn.rodataBegin && end <= (u8*)mmu.krn.rodataEnd)) {
+		return true;
+	} else {
+		OS_ERR("checkUserPtr failed: PCB=%p, access=%s, addr=%p, size=%u", pcb,
+			needsWrite ? "RW" : "R", addr, size);
+		return false;
+	}
+}
+
 void mmu_debugdumpPT(const PageTable* pt)
 {
 	OS_LOG("-- Page table for %s --", pt->owner->info.name);

@@ -44,6 +44,10 @@
 		{
 			"path": ".\\app_process.h",
 			"bootfile": false
+		},
+		{
+			"path": ".\\app_process_aux.asm",
+			"bootfile": false
 		}
 	]
 }

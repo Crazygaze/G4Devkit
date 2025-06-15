@@ -146,6 +146,15 @@ typedef struct CreateThreadParams {
 	
 } CreateThreadParams;
 
+// For internal use
+// Applications don't need to use this directly
+typedef struct CreateThreadParams_ {
+	ThreadEntryFunc entryFunc;
+	void* stackBegin;
+	void* stackEnd;
+	void* cookie;
+} CreateThreadParams_;
+
 typedef struct HeapInfo {
 	// Where the heap starts
 	void* begin;

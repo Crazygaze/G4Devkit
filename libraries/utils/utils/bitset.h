@@ -26,7 +26,7 @@
 #include "detail/utils_common.h"
 #include <limits.h>
 
-// NOTE: In all of the macros, bitN is the the bit number within the array
+// NOTE: In all of the macros, bitN is the bit number within the array
 
 /*!
  * Returns how many bytes are required for an array of numBits bits.

@@ -237,4 +237,15 @@ u32 mmu_getKrnStackSize(void);
  */
 u32 mmu_calcKrnUsedStack(void);
 
+/*!
+ * Checks if a user supplied address range is valid.
+ * This is used extensively by system calls to make sure the user process is not
+ * passing malicious pointers
+ *
+ * \param pcb The Process that gave us the address range
+ * \param needsWrite If true, it's checked for Read/Write. If false, only Read.
+ * \param addr,size Memory range to check
+ */
+bool mmu_checkUserPtr(struct PCB* pcb, bool needsWrite, void* addr, u32 size);
+
 #endif

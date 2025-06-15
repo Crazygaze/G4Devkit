@@ -91,6 +91,11 @@ typedef struct TCB
 	FullCpuCtx ctx;
 	struct PCB* pcb; // Process this thread belongs to
 	
+	// Where the stack starts.
+	// This is only set for secondary threads, so we can calculate how much
+	// stack is being used.
+	void* stackBegin;
+	
 	// #TODO : Initialize this for the main thread too
 	// #TODO : This is not beging initialized at all
 	// Handle to be used by the application to refer to this thread

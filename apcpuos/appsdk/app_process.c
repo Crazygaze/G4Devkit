@@ -75,6 +75,13 @@ static u32 app_syscall4(
 INLINEASM("\t\
 swi r4");
 
+/*!
+ * \param num Syscall id
+ * \param in Input : Pointer to whatever struct we need to pass to the kernel
+ * \param out Output (array of 4 words)
+ */
+u32 app_syscallGeneric(u32 num, void* in, u32* out);
+
 void app_setupDS(void)
 {
 	app_syscall0(kSysCall_SetupDS);
@@ -109,20 +116,28 @@ HANDLE app_createThread(const CreateThreadParams* params)
 		return INVALID_HANDLE;
 	}
 	
+	CreateThreadParams_ p;
+	p.entryFunc = params->entryFunc;
 	u32 stackSize = ALIGN(params->stackSize, 4);
-	u8* stackBottom = malloc(stackSize);
-	if (!stackBottom) {
+	p.stackBegin = malloc(stackSize);
+	if (!p.stackBegin) {
 		LOG_ERR("Out of memory");
 		return INVALID_HANDLE;
 	}
-	u8* stackTop = stackBottom + stackSize;
+	p.stackEnd = (u8*)p.stackBegin + stackSize;
+	p.cookie = params->cookie;
+	
+	
+	// #TODO : Implement a function to calculate's a thread's stack use
+	
 	// set to a magic number we can look for to calculate how
 	// much stack is being used. It's not 100% accurate, but it gives us an
 	// idea.
-	memset((void*)stackBottom, 0xCC, stackSize);
+	memset(p.stackBegin, 0xCC, stackSize);
 
-	HANDLE res = (HANDLE) app_syscall2(
-		kSysCall_CreateThread, (u32)params, (u32)stackTop);
+	u32 out[4] = { 0};
+	
+	HANDLE res = (HANDLE) app_syscallGeneric(kSysCall_CreateThread, &p, out);
 		
 	return res;
 }
