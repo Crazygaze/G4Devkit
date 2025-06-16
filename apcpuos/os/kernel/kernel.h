@@ -60,6 +60,11 @@ extern Kernel krn;
 
 
 /*!
+ * Sets the tls pointer for the current thread
+ */
+void krn_setCurrTCBTlsSlots(void);
+
+/*!
  * Picks the next thread to run
  */
 void krn_pickNextTcb(void);

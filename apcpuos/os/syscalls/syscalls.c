@@ -27,6 +27,17 @@ bool syscall_setupDS(void)
 	return true;
 }
 
+bool syscall_setTlsPtr(void)
+{
+	// There is no need for any checks, since the kernel itself doesn't try to
+	// use the pointer. If the process passed an invalid pointer, it doesn't
+	// affect the kernel whatsoever, since apart from setting the pointer,
+	// TLS management is done entirely in user space.
+	krn.currTcb->tlsSlotsPtr = (u32*)krn.currTcb->ctx.gregs[0];
+	krn_setCurrTCBTlsSlots();
+	return true;
+}
+
 bool syscall_sleep(void)
 {
 	u32 ms = krn.currTcb->ctx.gregs[0];
@@ -80,12 +91,12 @@ bool syscall_setBrk()
 	u32 newbrk = regs[0];
 	
 	//OS_ERR("********** BEFORE syscall_setBrk(%p) ************", (void*)newbrk);
-	//mmu_debugdumpPT(krn.currTcb->pcb->pt);
+	// mmu_debugdumpPT(krn.currTcb->pcb->pt);
 	
 	regs[0] = prc_setBrk(krn.currTcb->pcb, newbrk);
 	
 	//OS_ERR("********** AFTER syscall_setBrk ************");
-	//mmu_debugdumpPT(krn.currTcb->pcb->pt);
+	// mmu_debugdumpPT(krn.currTcb->pcb->pt);
 
 	return true;
 }
@@ -120,6 +131,7 @@ const krn_syscallFunc krn_syscalls[kSysCall_Max] =
 	// Process Management
 	//
 	syscall_setupDS,
+	syscall_setTlsPtr,
 	syscall_sleep,
 	syscall_createThread,
 	syscall_setBrk,

@@ -96,6 +96,11 @@ typedef struct TCB
 	// stack is being used.
 	void* stackBegin;
 	
+	// Pointer to the tls array.
+	// This points to where in the thread's stack the tls array is.
+	// When the kernel switches threads, it sets a global pointer to this
+	u32* tlsSlotsPtr;
+	
 	// #TODO : Initialize this for the main thread too
 	// #TODO : This is not beging initialized at all
 	// Handle to be used by the application to refer to this thread

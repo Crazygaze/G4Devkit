@@ -2,7 +2,7 @@
 #define _appsdk_process_shared_h
 
 #include "syscalls_shared.h"
-
+#include "utils/bitset.h"
 
 // #TODO : Implement the app_closeHandle function
 
@@ -14,7 +14,17 @@
  */
 struct HANDLE_t { u32 unused; };
 typedef struct HANDLE_t* HANDLE;
-	
+
+/*!
+ * How many tls slots are available
+ */
+#define TLS_MAXSLOTS 8
+
+/*!
+ * Value returns by `app_tlsAlloc` when there aren't any tls slots availble
+ */
+#define TLS_INVALID -1
+
 
 /*!
  * An invalid handle.
@@ -155,11 +165,5 @@ typedef struct CreateThreadParams_ {
 	void* cookie;
 } CreateThreadParams_;
 
-typedef struct HeapInfo {
-	// Where the heap starts
-	void* begin;
-	// Size of the heap in pages.
-	u32 numPages;
-} HeapInfo;
 
 #endif

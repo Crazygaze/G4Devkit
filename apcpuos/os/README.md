@@ -77,3 +77,47 @@ memory
 ---------------------------------------------------------------- <- Address 0
 
 ```
+
+
+# TLS (Thread Local Storage)
+
+Thread Local storage is implemented with minimal help from the kernel :
+
+* There is a single pointer (`u32* appTlsSlots;`) in the .rodata section, defined
+  in the boot assembly, so we can make sure it's in the first .rodata page.
+	* The reason it is in the .rodata section is because the page tables don't
+	  use address translation for .rodata, so the address is fixed for every
+	  process, and therefore easiser for the kernel to udpate that when
+	  switching threads.
+* The TCB struct has a `u32* tlsSlotsPtr;` pointer.
+* When a thread starts, pushes an `u32` array to its stack. This array is the
+  tls slots. It then passes that array's pointer to the `app_setTlsPtr system
+  call. This system calls sets the TCB's `tlsSlotsPtr` to that pointer.
+* When the kernel switches threads, it sets the global `appTlsSlots` pointer
+  to the TCB's own pointer.
+* Any manipulation of the TLS slots is then done completely in user space
+
+# Pitfalls when working in the kernel
+
+When dealing with kernel code, especially when the code needs to temporarily
+enable/disable something, execute some code, then revert the temporary change,
+care must be taken so that the compiler doesn't optimize away the temporary
+change.
+E.g, this code that given a PTE pointer, addes temporary Write access, makes
+the desired change, then removes the temporary Write access:
+```
+	int page = MMU_ADDR_TO_PAGE((u32)&appTlsSlots);
+	u32* pte = &((u32*)hwcpu_get_crpt())[1+page];
+	u32 original = *pte;
+	*pte |= MMU_PTE_W; // 1. Give temporary Write permissions
+	appTlsSlots = krn.currTcb->tlsSlotsPtr; // Do the desired change
+	*pte = original; // 2. Restore the original PTE value
+```
+
+Line (1.) can be optimized out by the compiler, since it seems that the value
+will be overwritten by (2.)
+
+Possible solutions are marking using `volatile u32* pte`, or inserting
+some inlined assembly after (1.), so the compiler can't optimize it away since
+it won't be able to prove it doesn't change the behaviour.
+

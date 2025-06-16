@@ -6,7 +6,31 @@
 #include "utils/bitops.h"
 #include "hwcrt0.h"
 
+// Bitset to tel which slots are in use or not.
+// There is only of these per process, since the purpose is to control across
+// the process what TLS slots are in use or not.
+static u8 appTlsStatus[BS_NUMSLOTS(TLS_MAXSLOTS)];
+
+// This is intentionally in the .bss section (not .bss_shared), so that the
+// kernel can easily set it when switching threads, since setting data
+// for one process while running in the context of another its harder.
+extern u32* const appTlsSlots;
+
 void app_setupDS(void);
+void app_setTlsPtr(u32* tlsSlots);
+
+// Entry point for extra threads the process creates
+void app_threadEntry(ThreadEntryFunc func, void* cookie)
+{
+	// The thread's own stack is a nice place to store the TLS slots.
+	// All we need is to tell the kernel where that is, and when the kernel
+	// switches to a thread, it sets the right pointer
+	u32 ownTlsSlots[TLS_MAXSLOTS];
+	memset(ownTlsSlots, 0, sizeof(ownTlsSlots));
+	app_setTlsPtr(ownTlsSlots);
+	
+	func(cookie);
+}
 
 // Entry point for a new process
 void app_startup(
@@ -23,18 +47,7 @@ void app_startup(
 
 	stdc_init(heapStart, initialHeapSize, &app_setBrk);
 	
-	// #TODO : Implement TLS
-	
-	// #TODO : Decide what parameters we need to pass to the application.
-	func(cookie);
-}
-
-// Entry point for extra threads the process creates
-void app_threadEntry(ThreadEntryFunc func, void* cookie)
-{
-	// #TODO : Implement TLS
-
-	func(cookie);
+	app_threadEntry((ThreadEntryFunc)func, cookie);
 }
 
 //
@@ -85,6 +98,15 @@ u32 app_syscallGeneric(u32 num, void* in, u32* out);
 void app_setupDS(void)
 {
 	app_syscall0(kSysCall_SetupDS);
+}
+
+/*!
+ * This needs to be called after setting up the .data_shared/.bss_shared
+ * sections
+ */
+void app_setTlsPtr(u32* tlsSlots)
+{
+	app_syscall1(kSysCall_SetTlsPtr, (u32)tlsSlots);
 }
 
 void app_sleep(u32 ms)
@@ -146,3 +168,63 @@ bool app_setBrk(void* brk)
 {
 	return app_syscall1(kSysCall_SetBrk, (u32)brk);
 }
+
+
+int app_tlsAlloc(void)
+{
+	for (int i = 0; i < TLS_MAXSLOTS; i++) {
+		if (!BS_ISBITSET(appTlsStatus, i))
+		{
+			BS_SETBIT(appTlsStatus, i);
+			return i;
+		}
+	}
+	
+	return TLS_INVALID;
+}
+
+bool app_tlsFree(int index)
+{
+	if (index >=0 && index < TLS_MAXSLOTS && BS_ISBITSET(appTlsStatus, index)) {
+		BS_CLEARBIT(appTlsStatus, index);
+		return true;
+	} else {
+		return false;
+	}
+}
+
+
+// Dummy struct, so we can see the Tls slots content in the debugger
+typedef struct TlsSlots {
+	u32 a[TLS_MAXSLOTS];
+} TlsSlots;
+
+bool app_tlsSet(int index, u32 value)
+{
+	// Put it in a local variable, so we can look at it in the debugger, since
+	// the variable is only defined in one of the asm files and thus it doesn't
+	// have debug symbols
+	TlsSlots* slots = (TlsSlots*)appTlsSlots;
+	
+	if (index >=0 && index < TLS_MAXSLOTS && BS_ISBITSET(appTlsStatus, index)) {
+		slots->a[index] = value;
+		return true;
+	} else {
+		return false;
+	}
+}
+
+u32 app_tlsGet(int index)
+{
+	// Put it in a local variable, so we can look at it in the debugger, since
+	// the variable is only defined in one of the asm files and thus it doesn't
+	// have debug symbols
+	TlsSlots* slots = (TlsSlots*)appTlsSlots;
+	
+	if (index >=0 && index < TLS_MAXSLOTS && BS_ISBITSET(appTlsStatus, index)) {
+		return slots->a[index];
+	} else {
+		return 0;
+	}
+}
+

@@ -59,4 +59,46 @@ HANDLE app_createThread(const CreateThreadParams* params);
  */
 bool app_setBrk(void* brk);
 
+/*!
+ * Allocates a thread local storage (TLS) index.
+ * Any thread of the process can subsequently use this index to store and
+ * retrieve values that are local to the thread.
+ *
+ * There are a total of TLS_MAXSLOTS slots available per process. Once the
+ * has no need for a slot, it can free it with `app_tlsFree`
+ *
+ * The TLS api is implemented with minimal error checking. The purpose of the
+ * `app_tlsAlloc` and `app_tlsFree` functions is just for the process's several
+ * systems to be able to independently use TLS without stomping on on some TLS
+ * slot that is already in use by another syste.
+ *
+ * \return The slot index or TLS_INVALID if no slots are free
+ *
+ */
+int app_tlsAlloc(void);
+
+/*!
+ * Frees a TLS slot that was allocated with `app_tlsAlloc`
+ *
+ * \return True if the the function succeeded, false otherwise.
+ */
+bool app_tlsFree(int index);
+
+/*!
+ * Stores  a value in the specified TLS slot.
+ * Each thread of the process has it's own slot for each TLS index.
+ */
+bool app_tlsSet(int index, u32 value);
+
+/*!
+ * Retrieves the value in the calling thread's local storage (TLS) slot for the
+ * specified TLS index.
+ *
+ * Note that the only error checking done is if index is out of bounds, in which
+ * case it returns 0.
+ *
+ */
+u32 app_tlsGet(int index);
+
+
 #endif

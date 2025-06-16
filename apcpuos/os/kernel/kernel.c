@@ -14,12 +14,25 @@
 
 Kernel krn;
 
+// This is defined in assembly, in the .rodata
+extern u32* appTlsSlots;
+
+void krn_setCurrTCBTlsSlots(void)
+{
+	int page = MMU_ADDR_TO_PAGE((u32)&appTlsSlots);
+	volatile u32* pte = &((u32*)hwcpu_get_crpt())[1+page];
+	u32 original = *pte;
+	// Give temporary write access, because it is in the .rodata section
+	*pte |= MMU_PTE_W;
+	appTlsSlots = krn.currTcb->tlsSlotsPtr;
+	*pte = original;
+}
+
 /*
  * TODO
  * - When entering the kernel, set irqtsk to a context that will handle double
  *   fault (kernel crash)
  */
-
 void krn_pickNextTcb(void)
 {
 	// Get the next tcb to run, if any is available
@@ -34,7 +47,7 @@ void krn_pickNextTcb(void)
 		}
 	}
 	
-	// #TODO : Setup TLS
+	krn_setCurrTCBTlsSlots();
 }
 
 static void krn_initTimedEvents(void);

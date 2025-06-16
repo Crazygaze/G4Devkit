@@ -129,11 +129,10 @@ inline u32 mmu_getPTECount(const PageTable* pt)
 /*!
  * Returns the specified PTE's information
  */
-inline u32 mmu_getPTE(const PageTable* pt, u32 index)
+inline u32* mmu_getPTE(const PageTable* pt, u32 index)
 {
-	return pt->data[index+1]; // +1 because we want to skip the header
+	return &pt->data[index+1]; // +1 because we want to skip the header
 }
-
 
 /*!
  * Initializes the mmu.

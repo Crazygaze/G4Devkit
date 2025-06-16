@@ -721,7 +721,7 @@ void mmu_debugdumpPT(const PageTable* pt)
 		if (i == firstUserPage - 1)
 			OS_LOG("    - KERNEL SPACE -");
 			
-		u32 pte = mmu_getPTE(pt, i);
+		u32 pte = *mmu_getPTE(pt, i);
 		u32 vaddr = i * MMU_PAGE_SIZE;
 		const char* use = "";
 		if (vaddr < mmu.krn.textEnd)

@@ -10,6 +10,7 @@ typedef enum SysCallID {
 	// Process management
 	//
 	kSysCall_SetupDS,
+	kSysCall_SetTlsPtr,
 	kSysCall_Sleep,
 	kSysCall_CreateThread,
 	kSysCall_SetBrk,

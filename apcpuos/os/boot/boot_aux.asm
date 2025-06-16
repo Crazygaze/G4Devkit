@@ -89,9 +89,17 @@ extern _krn_irqHandler
 ;	4 bytes - rodataAddr ( where .rodata starts)
 ;	4 bytes - rodataSize (size of .rodata)
 ;	4 bytes - dataAddr (where .data starts)
-;	4 bytes - dataSize (size of .data + .bss
+;	4 bytes - dataSize (size of .data + .bss)
 ;	4 bytes - dataSharedAddr (where .data_shared starts)
 ;	4 bytes - dataSharedSize (size of .data_shared + .bss_shared)
 public _gROMInfo
 _gROMInfo:
 .zero 32
+
+; Intentionally putting this in the .rodata section because it's easier
+; for the kernel to set when switching threads, since .rodata is shared between
+; all processes and it doesn't required address translation
+public _appTlsSlots
+_appTlsSlots:
+.word 0
+
