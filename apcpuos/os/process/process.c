@@ -13,10 +13,18 @@ TCB* rootTCB;
 LINKEDLIST_VALIDATE_TYPE(PCB)
 LINKEDLIST_VALIDATE_TYPE(TCB)
 
-static void prc_setupTCB(TCB* tcb, PCB* pcb, u32 stackTop, ThreadEntryFunc func,
-	u32 crflags, u32 crirqmsk, u32 cookie)
+TCB* prc_createTCB(PCB* pcb, ThreadEntryFunc func, u32 stackTop, u32 crflags,
+	u32 crirqmsk, u32 cookie)
 {
-	krnassert(tcb && pcb && pcb->pt && stackTop);
+	krnassert(pcb && pcb->pt && stackTop);
+
+	TCB* tcb = calloc(sizeof(TCB));
+	if (!tcb) {
+		OS_ERR("%s: Out of memory", __func__);
+		return NULL;
+	}
+		
+	OS_LOG("%s: TCB %p for '%s'", __func__, tcb, pcb->info.name);
 	
 	tcb->pcb = pcb;
 	tcb->state = TCB_STATE_READY;
@@ -51,19 +59,6 @@ static void prc_setupTCB(TCB* tcb, PCB* pcb, u32 stackTop, ThreadEntryFunc func,
 	
 	queue_ThreadMsg_create(&tcb->msgqueue, 0);
 	tcb_enqueue(tcb, &krn.tcbReady);
-}
-
-TCB* prc_createTCB(PCB* pcb, ThreadEntryFunc func, u32 stackTop, u32 crflags,
-	u32 crirqmsk, u32 cookie)
-{
-	TCB* tcb = calloc(sizeof(TCB));
-	if (!tcb) {
-		OS_ERR("%s: Out of memory", __func__);
-		return NULL;
-	}
-		
-	OS_LOG("%s: TCB %p for '%s'", __func__, tcb, pcb->info.name);
-	prc_setupTCB(tcb, pcb, stackTop, func, crflags, crirqmsk, cookie);
 	
 	return tcb;
 }
