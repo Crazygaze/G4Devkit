@@ -1,6 +1,7 @@
 #include "syscalls.h"
 #include "../kernel/kernel.h"
 #include "../kernel/mmu.h"
+#include "../kernel/handles.h"
 #include <stdlib.h>
 
 #define CHECK_USER_PTR(needsWrite, addr, size) \
@@ -85,7 +86,7 @@ bool syscall_createThread(void)
 	return res;
 }
 
-bool syscall_setBrk()
+bool syscall_setBrk(void)
 {
 	int* regs = krn.currTcb->ctx.gregs;
 	u32 newbrk = regs[0];
@@ -98,6 +99,31 @@ bool syscall_setBrk()
 	//OS_ERR("********** AFTER syscall_setBrk ************");
 	// mmu_debugdumpPT(krn.currTcb->pcb->pt);
 
+	return true;
+}
+
+bool syscall_getCurrentThread(void)
+{
+	int* regs = krn.currTcb->ctx.gregs;
+	regs[0] = (u32)krn.currTcb->handle;
+	return true;
+}
+
+bool syscall_closeHandle(void)
+{
+	TCB* tmp = krn.currTcb;
+	int* regs = krn.currTcb->ctx.gregs;
+	HANDLE h = (HANDLE)regs[0];
+	
+	bool res = handles_destroy(h, krn.currTcb->pcb);
+	
+	// Only set the result if the thread to resume is the same one.
+	// This is because if we are closing a thread handle, pointers to anything
+	// in the TCB are now invalid, and some other thread was picked to run.
+	if (krn.currTcb == tmp) {
+		regs[0] = res;
+	}
+	
 	return true;
 }
 
@@ -135,6 +161,8 @@ const krn_syscallFunc krn_syscalls[kSysCall_Max] =
 	syscall_sleep,
 	syscall_createThread,
 	syscall_setBrk,
+	syscall_getCurrentThread,
+	syscall_closeHandle,
 	
 	//
 	// System information

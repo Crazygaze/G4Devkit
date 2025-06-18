@@ -21,10 +21,15 @@ TCB* prc_createTCB(PCB* pcb, ThreadEntryFunc func, u32 stackTop, u32 crflags,
 	TCB* tcb = calloc(sizeof(TCB));
 	if (!tcb) {
 		OS_ERR("%s: Out of memory", __func__);
-		return NULL;
+		goto out1;
 	}
 		
 	OS_LOG("%s: TCB %p for '%s'", __func__, tcb, pcb->info.name);
+	
+	// Allocate handle for the main thread
+	tcb->handle = handles_create(pcb, kHandleType_Thread, tcb);
+	if (tcb->handle == INVALID_HANDLE)
+		goto out2;
 	
 	tcb->pcb = pcb;
 	tcb->state = TCB_STATE_READY;
@@ -61,6 +66,55 @@ TCB* prc_createTCB(PCB* pcb, ThreadEntryFunc func, u32 stackTop, u32 crflags,
 	tcb_enqueue(tcb, &krn.tcbReady);
 	
 	return tcb;
+	
+	out2:
+		free(tcb);
+	out1:
+		return NULL;
+}
+
+static bool timedEvent_removeThreads(const KrnTimedEvent* evt, u32 cookie)
+{
+	if ((u32)evt->data0 == cookie)
+		return true;
+	else
+		return false;
+} 
+
+/*!
+ * Destroys a TCB
+ * Don't call this directly.
+ * Call `handles_destroy` with the tcb handle
+ */
+void prc_destroyTCBImpl(TCB* tcb)
+{
+	krnassert(tcb);
+	
+	OS_LOG("Destroying thread %p (process %s)", tcb, tcb->pcb->info.name);
+	
+	// Remove from all queues
+	tcb_enqueue(tcb, NULL);
+	
+	// If the thread is currently sleeping, we need to remove it from the
+	// timed events queue
+	if (tcb->state == TCB_STATE_BLOCKED) {
+		if (tcb->wait.type == TCB_WAIT_TYPE_SLEEP) {
+			pqueue_KrnTimedEvent_remove(
+				&krn.timedEvents,
+				timedEvent_removeThreads,
+				(u32)tcb);
+		}
+	}
+	
+	tcb->state = TCB_STATE_DONE;
+	linkedlist_remove(tcb);
+
+	queue_ThreadMsg_destroy(&tcb->msgqueue);
+	
+	if (krn.currTcb==tcb)
+		krn_pickNextTcb();
+	
+	free(tcb);
 }
 
 PCB* prc_createPCB(const char* name, PrcEntryFunc entryFunc, bool kernelMode,
@@ -106,8 +160,8 @@ PCB* prc_createPCB(const char* name, PrcEntryFunc entryFunc, bool kernelMode,
 		tcb = prc_createTCB(pcb, (ThreadEntryFunc)entryFunc, pcb->pt->stackEnd,
 			0 | MMU_PTE_KEY_USR, 0xFFFFFFFF, 0);
 		if (!tcb) {
-			goto out2;
 			mmu_destroyPT(pcb->pt);
+			goto out2;
 		}
 		
 		tcb->ctx.gregs[2] = pcb->pt->heapBegin;
@@ -136,27 +190,38 @@ PCB* prc_createPCB(const char* name, PrcEntryFunc entryFunc, bool kernelMode,
 		return NULL;
 }
 
+/*!
+ * Destroys a PCB
+ * Don't call this directly.
+ * Call `handles_destroy` with the process's main thread handle
+ */
 static void prc_destroyPCBImpl(PCB* pcb)
 {
-	// #TODO : Implement this
-	// Things to do:
-	// - Deallocate any memory
-	// - Free mmu pages
-}
-
-void prc_destroyTCB(TCB* tcb)
-{
-	// #TODO : Implement this
-	// Things to do:
-	// - Deallocate any memory
+	krnassert(pcb);
+	OS_LOG("Destroying process %p (%s)", pcb, pcb->info.name);
+	
+	linkedlist_remove(pcb);
+	mmu_destroyPT(pcb->pt);
+	
+	// We need to destroy the main TCB right here, because the handle
+	// is already gone by now, and therefore handles_destroyPrcHandles doesn't
+	// see the mainthread
+	prc_destroyTCBImpl(pcb->mainthread);
+	
+	handles_destroyPrcHandles(pcb);
+	free(pcb);
 }
 
 void prc_destroyPCB(PCB* pcb)
 {
 	krnassert(pcb != rootPCB);
-	// NOTE: This will end up calling handles_thread_dtr, which is how
-	// destruction is done.
-	handles_destroy(pcb->mainthread->handle, pcb->info.pid);
+	handles_destroy(pcb->mainthread->handle, pcb);
+}
+
+void prc_destroyTCB(TCB* tcb)
+{
+	krnassert(tcb);
+	handles_destroy(tcb->handle, tcb->pcb);
 }
 
 void handles_thread_dtr(void* data)
@@ -168,7 +233,7 @@ void handles_thread_dtr(void* data)
 	if (tcb == tcb->pcb->mainthread)
 		prc_destroyPCBImpl(tcb->pcb);
 	else
-		prc_destroyTCB(tcb);
+		prc_destroyTCBImpl(tcb);
 }
 
 void timedEvent_wakeupThread(void* tcb_, void* data2, void* data3)

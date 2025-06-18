@@ -8,6 +8,7 @@
 #include "hw/hwnic.h"
 #include "utils/bitops.h"
 #include "osapps/osapps.h"
+#include "handles.h"
 
 #include <stdc_init.h>
 #include <stdlib.h>
@@ -90,6 +91,7 @@ FullCpuCtx* krn_init()
 {
 	stdc_setLogFunc((LibCDebugLogFunc)hwnic_sendDebug);
 	mmu_init();
+	handles_init();
 	
 	queue32_create(&krn.tcbReady, 32);
 	krn_initTimedEvents();

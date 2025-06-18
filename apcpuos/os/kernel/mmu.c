@@ -630,7 +630,11 @@ void mmu_destroyPT(PageTable* pt)
 	// We are not allowed to destroy the kernel's main page table
 	krnassert( pt != mmu.krnOnlyPT);
 	
+	mmu_debugdumpState();
+	
 	mmu_freePages(pt);
+	
+	mmu_debugdumpState();
 	free(pt);
 }
 

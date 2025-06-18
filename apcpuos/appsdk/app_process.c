@@ -228,3 +228,13 @@ u32 app_tlsGet(int index)
 	}
 }
 
+HANDLE app_getCurrentThread(void)
+{
+	return (HANDLE)app_syscall0(kSysCall_GetCurrentThread);
+}
+
+bool app_closeHandle(HANDLE h)
+{
+	return app_syscall1(kSysCall_CloseHandle, (u32)h);
+}
+

@@ -100,5 +100,25 @@ bool app_tlsSet(int index, u32 value);
  */
 u32 app_tlsGet(int index);
 
+/*!
+ * Gets the handle to the current thread
+ */
+HANDLE app_getCurrentThread(void);
+
+/*!
+ * Closes the specified handle, freeing any resources.
+ *
+ * If the handle is a thread handle and it's the current thread, the thread will
+ * be destroyed and the the function doesn't return.
+ * In addition, if it's the main thread of the process, the process will be
+ * terminated.
+ *
+ * \param h
+ *	Handle to close
+ *
+ * \return true if the handle was closed, false otherwise.
+ *
+ */
+bool app_closeHandle(HANDLE h);
 
 #endif

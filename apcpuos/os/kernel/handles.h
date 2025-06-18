@@ -26,13 +26,15 @@ typedef struct Handle {
 	union HandleHelperUnion id;
 	
 	// Process that owns this handle
-	// 0 - Any process can use this handle
-	// 0xFFFFFFFF - Handle invalid/doesn't exit/not used
-	u32 pid;
+	// 0 means that any process can use this handle
+	struct PCB* owner;
+	
+	void* data;
 	
 	// Type of handle (e.g THREAD, MUTEX, etc)
+	// This also tells if the slot is in use. If this is "NONE", then it's not
+	// in use
 	u8 type;
-	void* data;
 } Handle;
 
 /*!
@@ -43,11 +45,11 @@ void handles_init(void);
 /*!
  * Create a new handle of the specified type
  * 
- * \param pid
- *	Process that will own this handle
+ * \param owner
+ *	Process that will own this handle, or NULL for no specific owner
  *
  * \param type
- *	Handle type
+ *	Handle type to create
  *
  * \param data
  *	Data what will be connected with the handle.
@@ -55,7 +57,7 @@ void handles_init(void);
  *
  * \return Returns INVALID_HANDLE if it couldn't create the new handle
  */
-HANDLE handles_create(u32 pid, int type, void* data);
+HANDLE handles_create(struct PCB* owner, HandleType type, void* data);
 
 /*!
  * Destroys the specified handle
@@ -63,46 +65,51 @@ HANDLE handles_create(u32 pid, int type, void* data);
  * \param h
  *		Handle to destroy
  *
- * \param pid
- *		If not 0, the handle will only be destroyed if the owner pid matches,
- * 		otherwise nothing happens.
+ * \param owner
+ *	If NULL, the handle will be destroyed regardless of the owner.
+ *	If not NULL, then the handle will only be destroyed if the owner matches.
  *
  * \return true if the handle was destroyed, false otherwise
  */
-bool handles_destroy(HANDLE h, u32 pid);
+bool handles_destroy(HANDLE h, struct PCB* owner);
 
 /*!
  * Destroys all handles that belong to the specified process
+ *
+ * \param owner
+ *	If NULL, it will destroy all handles. If specified, it will destroy only
+ *	the handles owned this this process.
  */
-void handles_destroyPrcHandles(u32 pid);
+void handles_destroyPrcHandles(struct PCB* owner);
 
 /*!
  * Gets the handle data, validating the handle with the parameters passed
  *
  * \param HANDLE
- *		Handle to use
+ *	Handle to use
  *
- * \param pid
- *		If not 0, the handle must belong to this process, otherwise it fails
- *		the tests.
+ * \param owner
+ *	If NULL, then no check is done for the owner. 
+ *	If not NULL, then the handle must belong to this process, otherwise it fails
+ *	the tests.
  *
  * \param type
- *		The type the handle should be. If it doesn't match, it fails the test.
- *		If 0, no type check is made
+ *	The type the handle should be. If it doesn't match, it fails the test.
+ *	If 0, no type check is made
  *
  * \return
- * 	The data associated with the handle, or NULL on error.
+ *	The data associated with the handle, or NULL on error.
  *	Note that if the associated data itself is NULL, then there is no way to 
- * distinguish between success or failure.
+ *	distinguish between success or failure.
  */
-void* handles_getData(HANDLE h, u32 pid, int type);
+void* handles_getData(HANDLE h, struct PCB* owner, HandleType type);
 
 /*!
  * Sets the data associated with the handle.
  * This is the same as specifying it in the handles_create.
- * It is also provided as seperate function, since depending on the calling
- * code, sometimes is more convenient to associate the data after everything
- * else is setup.
+ * It is also provided as seperate function since depending on the calling code,
+ * sometimes is more convenient to associate the data after everything else is
+ * setup.
  */
 void handles_setData(HANDLE h, void* data);
 

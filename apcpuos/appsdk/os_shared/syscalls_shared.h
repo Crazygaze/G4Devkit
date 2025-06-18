@@ -14,6 +14,8 @@ typedef enum SysCallID {
 	kSysCall_Sleep,
 	kSysCall_CreateThread,
 	kSysCall_SetBrk,
+	kSysCall_GetCurrentThread,
+	kSysCall_CloseHandle,
 	
 	//
 	// Debug
@@ -29,8 +31,8 @@ typedef enum SysCallID {
  */
 typedef enum HandleType
 {
-	kHandleType_NONE,
-	kHandleType_Mutex,
+	 // Starting at one, since 0 has a special meaning
+	kHandleType_Mutex = 1,
 	kHandleType_Thread,
 	kHandleType_MAX
 } HandleType;

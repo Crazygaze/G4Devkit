@@ -4,6 +4,7 @@
 
 #include "hwcrt0.h"
 
+int anotherThreadCounter = 0;
 void anotherThread(void* cookie)
 {
 	LOG_LOG("Hello from another %s!", (const char*)cookie);
@@ -11,7 +12,8 @@ void anotherThread(void* cookie)
 	while(true)
 	{
 		LOG_LOG("Another world: %u!", count++);
-		app_sleep(5000);
+		app_sleep(1000);
+		anotherThreadCounter++;
 	}
 }
 
@@ -29,7 +31,10 @@ int helloworld_main(void *)
 	while(true)
 	{
 		LOG_LOG("Helloworld: %u!", count++);
-		app_sleep(5000);
+		app_sleep(1000);
+		if (anotherThreadCounter == 1) {
+			bool res = app_closeHandle(app_getCurrentThread());
+		}
 	}
 	
 	return EXIT_SUCCESS;
