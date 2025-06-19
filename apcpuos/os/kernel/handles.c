@@ -122,8 +122,8 @@ static void handles_destroyImpl(Handle* ptr)
 bool handles_destroy(HANDLE h, struct PCB* owner)
 {
 	Handle* ptr = getHandle(h);
-	if (!owner|| (owner && ptr->owner != owner)) {
-		OS_WRN("Handles: Tried to destroy invalid handle %p", h);
+	if (!ptr || !owner|| (owner && ptr->owner != owner)) {
+		OS_ERR("Handles: Tried to destroy invalid handle %p", h);
 		return false;
 	}
 
