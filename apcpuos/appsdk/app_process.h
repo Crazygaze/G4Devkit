@@ -46,6 +46,29 @@ int app_outputDebugString(const char* fmt);
  */
 HANDLE app_createThread(const CreateThreadParams* params, void** outStack);
 
+/*!
+ * Calculates how much stack is being used by a process's secondary thread.
+ * This should NOT be called for the process's main thread. Doing so is
+ * undefined behaviour.
+ *
+ * The reason why it should not be called for the main thread is because a
+ * process's main thread stack does not have a fixed size. It does have a
+ * specified maximum size, but the kernel initially allocated only 1 page.
+ * Further pages are allocated as the stack grows.
+ * Calling this on a main-thread can cause the kernel to attempt to allocate
+ * the maximum stack size for the process.
+ *
+ * Also, this is not an 100% accurate method of calculating the used stack.
+ * It works by filling the stack with a magic value and then checking how much
+ * of the stack space still has that magic value.
+ *
+ * \param thread One of the process's secondary threads
+ *
+ * \return 0 on error, or the used stack size on success.
+ * 
+ */
+u32 app_calcUsedStack(HANDLE thread);
+
 
 /*!
  * Changes the program break.

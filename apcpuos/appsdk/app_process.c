@@ -164,6 +164,21 @@ HANDLE app_createThread(const CreateThreadParams* params, void** outStack)
 	return res;
 }
 
+u32 app_calcUsedStack(HANDLE thread)
+{
+	ThreadInfo tinfo;
+	tinfo.thread = thread;
+	if (!app_getThreadInfo(&tinfo))
+		return 0;
+	
+	u32* ptr = (u32*)tinfo.stackBegin;
+	u32* end = (u32*)tinfo.stackEnd;
+	while(*ptr == 0xCCCCCCCC && ptr < end)
+		ptr++;
+	u32 used = (u32)end - (u32)ptr;
+	return used;
+}
+
 bool app_setBrk(void* brk)
 {
 	return app_syscall1(kSysCall_SetBrk, (u32)brk);

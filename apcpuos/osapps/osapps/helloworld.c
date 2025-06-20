@@ -14,7 +14,7 @@ void anotherThread(void* cookie)
 	while(true)
 	{
 		LOG_LOG("Another world: %u!", count++);
-		app_sleep(5000);
+		app_sleep(1000);
 		anotherThreadCounter++;
 	}
 }
@@ -37,11 +37,14 @@ int helloworld_main(void *)
 	while(true)
 	{
 		LOG_LOG("Helloworld: %u!", count++);
-		app_sleep(2000);
+		app_sleep(1000);
 		if (anotherThreadCounter >= 1) {
 			//bool res = app_closeHandle(app_getCurrentThread());
+			u32 usedStack = app_calcUsedStack(tinfo.thread);
 			res = app_closeHandle(tinfo.thread);
-			LOG_LOG("Res: %d!", res);
+			LOG_LOG("Closed thread. Used stack = %u/%u. res: %d!",
+				usedStack, (u8*)tinfo.stackEnd - (u8*)tinfo.stackBegin, res);
+				
 			if (res) {
 				free(anotherThreadStack);
 			}
