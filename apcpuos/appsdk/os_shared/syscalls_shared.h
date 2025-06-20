@@ -15,6 +15,7 @@ typedef enum SysCallID {
 	kSysCall_CreateThread,
 	kSysCall_SetBrk,
 	kSysCall_GetCurrentThread,
+	kSysCall_GetThreadInfo,
 	kSysCall_CloseHandle,
 	
 	//

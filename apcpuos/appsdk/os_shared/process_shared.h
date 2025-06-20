@@ -156,6 +156,13 @@ typedef struct CreateThreadParams {
 	
 } CreateThreadParams;
 
+typedef struct ThreadInfo {
+	HANDLE thread;
+	void* stackBegin;
+	void* stackEnd;
+} ThreadInfo;
+
+
 // For internal use
 // Applications don't need to use this directly
 typedef struct CreateThreadParams_ {
@@ -164,6 +171,5 @@ typedef struct CreateThreadParams_ {
 	void* stackEnd;
 	void* cookie;
 } CreateThreadParams_;
-
 
 #endif

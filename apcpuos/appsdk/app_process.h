@@ -24,17 +24,15 @@ int app_outputDebugString(const char* fmt);
 /*!
  * Creates a new thread.
  *
- * \param entryFunc
- * Thread entry function
+ * \param params
+ * Parameters for the thread creation
  *
- * \param stackSize
- * Thread's stack size, in bytes. Make sure this is big enough for the thread's
- * needs.
- * This will be adjusted to be a multiple of 4.
- *
- * \param cookie
- * Data to pass as a parameter to the thread entry function.
- * This provides context to the thread, if required
+ * \param outStack
+ * If the call succeeds, on exit this will contain the pointer to the stack,
+ * which was allocated on the heap.
+ * Once the thread exits, the process should call `free` to release this.
+ * This is necessary at the moment, because the thread's stack is allocated by 
+ * the process and not the kernel itself.
  *
  * \return HANDLE to the thread
  *	The thread can be explicitly destroyed with app_closeHandle
@@ -46,7 +44,7 @@ int app_outputDebugString(const char* fmt);
  * simply allocated from process's heap.
  *
  */
-HANDLE app_createThread(const CreateThreadParams* params);
+HANDLE app_createThread(const CreateThreadParams* params, void** outStack);
 
 
 /*!
@@ -104,6 +102,16 @@ u32 app_tlsGet(int index);
  * Gets the handle to the current thread
  */
 HANDLE app_getCurrentThread(void);
+
+/*!
+ * Gets the the information of the specified thread
+ *
+ * \param info
+ *	On entry, the `thread` field must be set to the thread handle.
+ *	On exit, it will contain the thread information, if the return value was
+ *	true.
+ */
+bool app_getThreadInfo(ThreadInfo* info);
 
 /*!
  * Closes the specified handle, freeing any resources.

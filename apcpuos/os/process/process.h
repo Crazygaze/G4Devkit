@@ -91,10 +91,11 @@ typedef struct TCB
 	FullCpuCtx ctx;
 	struct PCB* pcb; // Process this thread belongs to
 	
-	// Where the stack starts.
-	// This is only set for secondary threads, so we can calculate how much
-	// stack is being used.
-	void* stackBegin;
+	// Where the stack starts and ends.
+	// Intentionally an u32 so the kernel doesn't try to touch this memory by
+	// mistake
+	u32 stackEnd;
+	u32 stackBegin;
 	
 	// Pointer to the tls array.
 	// This points to where in the thread's stack the tls array is.
@@ -162,15 +163,16 @@ PCB* prc_createPCB(const char* name, PrcEntryFunc entryFunc, bool kernelMode,
  * Creates a new thread.
  *
  * \param pcb Owning process
- * \param stackTop value to set the `sp` register to.
+ * \param stackBegin Where the stack starts.
+ * \param stackEnd value to set the `sp` register to.
  * \param func Entry function for the thread.
  * \param crflags Value to set the crflags register to.
  * \param crirqmsk Value to set the crirqmsk register to.
  *
  * \return the TCB or NULL on error.
  */
-TCB* prc_createTCB(PCB* pcb, ThreadEntryFunc func, u32 stackTop, u32 crflags,
-	u32 crirqmsk, u32 cookie);
+TCB* prc_createTCB(PCB* pcb, ThreadEntryFunc func, u32 stackBegin, u32 stackEnd,
+	u32 crflags, u32 crirqmsk, u32 cookie);
 
 /*!
  * Destroys the specified process

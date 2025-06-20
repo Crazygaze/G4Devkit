@@ -60,13 +60,18 @@ bool syscall_createThread(void)
 	CHECK_USER_PTR(true, out, sizeof(u32)*4);
 	
 	CHECK_USER_PTR(false, in, sizeof(*in));
+		
 	ADD_USR_KEY;
 	CreateThreadParams_ p = *in;
 	REMOVE_USER_KEY;
-	
+
+	CHECK_USER_PTR(true, p.stackBegin, (u8*)p.stackEnd - (u8*)p.stackBegin);
+
+	// Intentionally NOT checking if the stack pointers are valid
 	TCB* tcb = prc_createTCB(
 		krn.currTcb->pcb,
 		p.entryFunc,
+		(u32)p.stackBegin,
 		(u32)p.stackEnd,
 		0 | MMU_PTE_KEY_USR, 0xFFFFFFFF,
 		(u32)p.cookie);
@@ -76,7 +81,6 @@ bool syscall_createThread(void)
 	bool res;
 	if (tcb) {
 		regs[0] = out[0] = (u32)tcb->handle;
-		tcb->stackBegin = (void*)p.stackBegin;
 		res = true;
 	} else {
 		regs[0] = out[0] = INVALID_HANDLE;
@@ -106,6 +110,29 @@ bool syscall_getCurrentThread(void)
 {
 	int* regs = krn.currTcb->ctx.gregs;
 	regs[0] = (u32)krn.currTcb->handle;
+	return true;
+}
+
+bool syscall_getThreadInfo(void)
+{
+	int* regs = krn.currTcb->ctx.gregs;
+	ThreadInfo* inout = (ThreadInfo*)regs[0];
+	
+	CHECK_USER_PTR(true, inout, sizeof(ThreadInfo));
+
+	ADD_USR_KEY;
+	TCB* targetTcb =
+		handles_getData(inout->thread, krn.currTcb->pcb, kHandleType_Thread);
+		
+	if (targetTcb) {
+		inout->stackBegin = (void*)targetTcb->stackBegin;
+		inout->stackEnd = (void*)targetTcb->stackEnd;
+		regs[0] = true;
+	} else {
+		regs[0] = false;
+	}
+	REMOVE_USER_KEY;
+	
 	return true;
 }
 
@@ -162,6 +189,7 @@ const krn_syscallFunc krn_syscalls[kSysCall_Max] =
 	syscall_createThread,
 	syscall_setBrk,
 	syscall_getCurrentThread,
+	syscall_getThreadInfo,
 	syscall_closeHandle,
 	
 	//

@@ -13,10 +13,10 @@ TCB* rootTCB;
 LINKEDLIST_VALIDATE_TYPE(PCB)
 LINKEDLIST_VALIDATE_TYPE(TCB)
 
-TCB* prc_createTCB(PCB* pcb, ThreadEntryFunc func, u32 stackTop, u32 crflags,
-	u32 crirqmsk, u32 cookie)
+TCB* prc_createTCB(PCB* pcb, ThreadEntryFunc func, u32 stackBegin, u32 stackEnd,
+	u32 crflags, u32 crirqmsk, u32 cookie)
 {
-	krnassert(pcb && pcb->pt && stackTop);
+	krnassert(pcb && pcb->pt && stackBegin && stackEnd);
 
 	TCB* tcb = calloc(sizeof(TCB));
 	if (!tcb) {
@@ -33,6 +33,8 @@ TCB* prc_createTCB(PCB* pcb, ThreadEntryFunc func, u32 stackTop, u32 crflags,
 	
 	tcb->pcb = pcb;
 	tcb->state = TCB_STATE_READY;
+	tcb->stackBegin = stackBegin;
+	tcb->stackEnd = stackEnd;
 	
 	// If the idle process is not created yet, then
 	if (rootTCB == NULL) {
@@ -50,7 +52,7 @@ TCB* prc_createTCB(PCB* pcb, ThreadEntryFunc func, u32 stackTop, u32 crflags,
 	}
 
 	tcb->ctx.gregs[CPU_REG_DS] = pcb->pt->usrDS;
-	tcb->ctx.gregs[CPU_REG_SP] = stackTop;
+	tcb->ctx.gregs[CPU_REG_SP] = stackEnd;
 	tcb->ctx.gregs[CPU_REG_PC] = isMainThread ? (u32)app_startup : (u32)app_threadEntry;
 	tcb->ctx.crregs[CPU_CRREG_PT] = (u32)pcb->pt->data;
 	
@@ -137,15 +139,15 @@ PCB* prc_createPCB(const char* name, PrcEntryFunc entryFunc, bool kernelMode,
 	
 	if (kernelMode) {
 		pcb->pt = mmu_getKrnOnlyPT();
-		u8* stackBottom = calloc(stackSize);
-		if (!stackBottom)
+		u8* stackBegin= calloc(stackSize);
+		if (!stackBegin)
 			goto out2;
-		u8* stackTop = stackBottom + stackSize;
-		tcb = prc_createTCB(pcb, (ThreadEntryFunc)entryFunc, (u32)stackTop,
-			CPU_CRREG_FLAGS_S | MMU_PTE_KEY_KRN, 0xFFFFFFFF, 0);
+		u8* stackEnd = stackBegin + stackSize;
+		tcb = prc_createTCB(pcb, (ThreadEntryFunc)entryFunc, (u32)stackBegin,
+			(u32)stackEnd, CPU_CRREG_FLAGS_S | MMU_PTE_KEY_KRN, 0xFFFFFFFF, 0);
 		if (!tcb)
 		{
-			free(stackBottom);
+			free(stackBegin);
 			goto out2;
 		}
 		tcb->state = TCB_STATE_KERNEL;
@@ -157,8 +159,9 @@ PCB* prc_createPCB(const char* name, PrcEntryFunc entryFunc, bool kernelMode,
 		if (!pcb->pt)
 			goto out2;
 
-		tcb = prc_createTCB(pcb, (ThreadEntryFunc)entryFunc, pcb->pt->stackEnd,
-			0 | MMU_PTE_KEY_USR, 0xFFFFFFFF, 0);
+		tcb = prc_createTCB(pcb, (ThreadEntryFunc)entryFunc,
+			pcb->pt->stackBegin, pcb->pt->stackEnd, 0 | MMU_PTE_KEY_USR,
+			0xFFFFFFFF, 0);
 		if (!tcb) {
 			mmu_destroyPT(pcb->pt);
 			goto out2;

@@ -8,6 +8,8 @@
 #include "hwnic.h"
 //#include "hwdisk.h"
 
+#include <string.h>
+
 static hw_Drv* drivers[HWBUS_COUNT];
 
 typedef struct {
@@ -52,21 +54,22 @@ static hw_DrvCreator* getCreator(u32 hwid)
 void hw_initAll(void)
 {
 	for(int bus = 0; bus < 26; bus++) {
-		HwfSmallData data = { 0 };
+		defineZeroed(HwfSmallData, data);
 		if (hw_hwf_0_3(bus, HWFUNC_ID, &data) == HWERR_NODEVICE) {
 			continue;
 		}
 		
 		//hwclk_spinMs(250);
 		u32 id = data.regs[0];
-		char idStr[4+1] = { 0 };
+		defineZeroedArray(char, idStr, 4+1);
+		
 		memcpy(idStr, &id, 4);
 		u32 version = data.regs[1];
 		u32 manuId = data.regs[2];
-		char manuIdStr[4+1] = { 0 };
+		defineZeroedArray(char, manuIdStr, 4+1);
 		memcpy(manuIdStr, &manuId, 4);
 
-		char desc[4*4+1] = { 0 };
+		defineZeroedArray(char, desc, 4*4+1);
 		memset(&data, 0, sizeof(data));
 		hw_hwf_0_4(bus, HWFUNC_DESCRIPTION, &data);
 		memcpy(desc, &data.regs[0], 4*4);

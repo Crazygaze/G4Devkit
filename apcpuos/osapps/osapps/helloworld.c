@@ -1,9 +1,11 @@
 #include <stdlib.h>
 #include <appsdk/app_process.h>
 #include <stdc_init.h>
+#include <string.h>
 
 #include "hwcrt0.h"
 
+void* anotherThreadStack;
 volatile int anotherThreadCounter = 0;
 void anotherThread(void* cookie)
 {
@@ -12,7 +14,7 @@ void anotherThread(void* cookie)
 	while(true)
 	{
 		LOG_LOG("Another world: %u!", count++);
-		app_sleep(1000);
+		app_sleep(5000);
 		anotherThreadCounter++;
 	}
 }
@@ -21,21 +23,28 @@ int helloworld_main(void *)
 {
 	LOG_LOG("Hello World!");
 	
-	CreateThreadParams params = { 0 };
+	defineZeroed(CreateThreadParams, params);
+	
 	params.entryFunc = anotherThread;
 	params.stackSize = 1024;
 	params.cookie = "world";
-	HANDLE h = app_createThread(&params);
+	
+	defineZeroed(ThreadInfo, tinfo);
+	tinfo.thread = app_createThread(&params, &anotherThreadStack);
+	bool res = app_getThreadInfo(&tinfo);
 	
 	static int count = 0;
 	while(true)
 	{
 		LOG_LOG("Helloworld: %u!", count++);
-		app_sleep(1000);
+		app_sleep(2000);
 		if (anotherThreadCounter >= 1) {
 			//bool res = app_closeHandle(app_getCurrentThread());
-			bool res = app_closeHandle(h);
+			res = app_closeHandle(tinfo.thread);
 			LOG_LOG("Res: %d!", res);
+			if (res) {
+				free(anotherThreadStack);
+			}
 		}
 	}
 	

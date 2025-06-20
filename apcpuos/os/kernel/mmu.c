@@ -549,7 +549,7 @@ PageTable* mmu_createUsrPT(u32 stackSize, u32 heapNPages)
 {
 	krnassert(stackSize);
 	
-	PTUsrLayout usr = { 0 };
+	defineZeroed(PTUsrLayout, usr);
 	
 	u32 npages = mmu_calcPTLayout(stackSize, heapNPages * MMU_PAGE_SIZE, &usr);
 	if (npages == 0)

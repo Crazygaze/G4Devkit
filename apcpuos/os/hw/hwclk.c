@@ -1,6 +1,7 @@
 #include "hwclk.h"
 #include "utils/dynamicarray.h"
 #include "utils/bitops.h"
+#include <string.h>
 
 #define TIMERMASK 0x7
 
@@ -97,7 +98,8 @@ void hwclk_startTimer(u32 timerNumber, u32 ms, bool autoReset, bool irqMode)
 {
 	krnassert(timerNumber < HWCLK_NUMTIMERS);
 
-	HwfSmallData data = { 0 };
+	defineZeroed(HwfSmallData, data);
+	
 	data.regs[0] =  (timerNumber & TIMERMASK);
 	if (autoReset)
 		data.regs[0] |= 1 << 31;
@@ -122,7 +124,7 @@ void hwclk_addCallback(u32 timerNumber, hwclk_TimerFunc func, void* cookie)
 
 void hwclk_getSystemTime(DateTime* outDT)
 {
-	HwfSmallData data = { 0 };
+	defineZeroed(HwfSmallData, data);
 	hw_hwf_0_4(HWBUS_CLK, HWCLK_FUNC_GET_SYSTEMTIME, &data);
 	memcpy(outDT, &data.regs, sizeof(*outDT));
 }

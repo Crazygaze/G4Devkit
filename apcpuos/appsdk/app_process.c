@@ -131,9 +131,9 @@ int app_outputDebugString(const char* str)
 	return 0;
 }
 
-HANDLE app_createThread(const CreateThreadParams* params)
+HANDLE app_createThread(const CreateThreadParams* params, void** outStack)
 {
-	if (params->entryFunc == NULL || params->stackSize==0) {
+	if (params->entryFunc == NULL || params->stackSize==0 || outStack==NULL) {
 		LOG_ERR("Invalid parameters");
 		return INVALID_HANDLE;
 	}
@@ -148,7 +148,7 @@ HANDLE app_createThread(const CreateThreadParams* params)
 	}
 	p.stackEnd = (u8*)p.stackBegin + stackSize;
 	p.cookie = params->cookie;
-	
+	*outStack = p.stackBegin;
 	
 	// #TODO : Implement a function to calculate's a thread's stack use
 	
@@ -231,6 +231,12 @@ u32 app_tlsGet(int index)
 HANDLE app_getCurrentThread(void)
 {
 	return (HANDLE)app_syscall0(kSysCall_GetCurrentThread);
+}
+
+bool app_getThreadInfo(ThreadInfo* inout)
+{
+	u32 out[4] = { 0};
+	return app_syscallGeneric(kSysCall_GetThreadInfo, inout, out);
 }
 
 bool app_closeHandle(HANDLE h)

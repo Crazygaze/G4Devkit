@@ -3,6 +3,7 @@
 #include "hwcrt0.h"
 #include <stdarg.h>
 #include <stdio.h>
+#include <string.h>
 #include "../kernel/mmu.h"
 
 /*!
@@ -31,7 +32,7 @@ static u16* boot_ui_getXYPtr(int x, int y)
 
 void boot_ui_init(void)
 {
-	HwfSmallData data = { 0 };
+	defineZeroed(HwfSmallData, data);
 	
 	hw_hwf_0_4(HWBUS_SCR, 1, &data);	
 	uiInfo.width= data.regs[1];

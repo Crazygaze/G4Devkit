@@ -146,10 +146,12 @@ void* handles_getData(HANDLE h, struct PCB* owner, HandleType type)
 	Handle* ptr = getHandle(h);
 	if (ptr &&
 			(owner == NULL || (ptr->owner == owner) &&
-			(type == 0 || ptr->type == type)))
+			(type == 0 || ptr->type == type))) {
 		return ptr->data;
-	else
+	} else {
+		OS_ERR("Handles: Failed to get data for handle %p", h);
 		return NULL;
+	}
 }
 
 void handles_setData(HANDLE h, void* data)

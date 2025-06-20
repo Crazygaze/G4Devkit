@@ -1,4 +1,5 @@
 #include "hwnic.h"
+#include <string.h>
 
 typedef struct {
 	hw_Drv base;
@@ -36,7 +37,7 @@ void hwnic_dtor(hw_Drv* drv)
 
 void hwnic_setIRQMode(bool irqOnSend, bool irqOnReceive)
 {
-	HwfSmallData data = { 0 };
+	defineZeroed(HwfSmallData, data);
 	if (irqOnSend)
 		data.regs[0]  = 2;
 	if (irqOnReceive)
