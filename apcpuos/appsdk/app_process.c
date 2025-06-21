@@ -11,6 +11,11 @@
 // the process what TLS slots are in use or not.
 static u8 appTlsStatus[BS_NUMSLOTS(TLS_MAXSLOTS)];
 
+// TLS slot reserved to save the current thread handle.
+// This makes it possible to implement a mutex that doesn't need to make
+// a system call when there is no contention.
+#define TLS_IDX_CURRENTTHREAD 0
+
 // This is intentionally in the .bss section (not .bss_shared), so that the
 // kernel can easily set it when switching threads, since setting data
 // for one process while running in the context of another its harder.
@@ -19,40 +24,7 @@ extern u32* const appTlsSlots;
 void app_setupDS(void);
 void app_setTlsPtr(u32* tlsSlots);
 
-// Entry point for extra threads the process creates
-void app_threadEntry(ThreadEntryFunc func, void* cookie)
-{
-	// The thread's own stack is a nice place to store the TLS slots.
-	// All we need is to tell the kernel where that is, and when the kernel
-	// switches to a thread, it sets the right pointer
-	u32 ownTlsSlots[TLS_MAXSLOTS];
-	memset(ownTlsSlots, 0, sizeof(ownTlsSlots));
-	app_setTlsPtr(ownTlsSlots);
-	
-	func(cookie);
-}
 
-// Entry point for a new process
-void app_startup(
-	PrcEntryFunc func, void* cookie, void* heapStart, u32 initialHeapSize)
-{
-	if (!(hwcpu_get_crflags() & CPU_CRREG_FLAGS_S)) {
-		app_setupDS();
-		
-		// Only set the logging function if running in user space mode.
-		// This is because if in kernel mode, we already have the right thing
-		// set by the kernel.
-		stdc_setLogFunc(app_outputDebugString);
-	}
-
-	stdc_init(heapStart, initialHeapSize, &app_setBrk);
-	
-	app_threadEntry((ThreadEntryFunc)func, cookie);
-}
-
-//
-//
-//
 static u32 app_syscall0(
 	__reg("r4") u32)
 INLINEASM("\t\
@@ -88,6 +60,46 @@ static u32 app_syscall4(
 INLINEASM("\t\
 swi r4");
 
+
+// Entry point for extra threads the process creates
+void app_threadEntry(ThreadEntryFunc func, void* cookie)
+{
+	// The thread's own stack is a nice place to store the TLS slots.
+	// All we need is to tell the kernel where that is, and when the kernel
+	// switches to a thread, it sets the right pointer
+	u32 ownTlsSlots[TLS_MAXSLOTS];
+	memset(ownTlsSlots, 0, sizeof(ownTlsSlots));
+	app_setTlsPtr(ownTlsSlots);
+	
+	// Cache the thread HANDLE in a TLS slot
+	HANDLE h = (HANDLE)app_syscall0(kSysCall_GetCurrentThread);
+	app_tlsSet(TLS_IDX_CURRENTTHREAD, (u32)h);
+	
+	func(cookie);
+}
+
+// Entry point for a new process
+void app_startup(
+	PrcEntryFunc func, void* cookie, void* heapStart, u32 initialHeapSize)
+{
+	if (!(hwcpu_get_crflags() & CPU_CRREG_FLAGS_S)) {
+		app_setupDS();
+		
+		// Only set the logging function if running in user space mode.
+		// This is because if in kernel mode, we already have the right thing
+		// set by the kernel.
+		stdc_setLogFunc(app_outputDebugString);
+	}
+
+	stdc_init(heapStart, initialHeapSize, &app_setBrk);
+	
+	verify(app_tlsAlloc() == TLS_IDX_CURRENTTHREAD);
+	app_threadEntry((ThreadEntryFunc)func, cookie);
+}
+
+//
+//
+//
 /*!
  * \param num Syscall id
  * \param in Input : Pointer to whatever struct we need to pass to the kernel
@@ -245,7 +257,7 @@ u32 app_tlsGet(int index)
 
 HANDLE app_getCurrentThread(void)
 {
-	return (HANDLE)app_syscall0(kSysCall_GetCurrentThread);
+	return (HANDLE)app_tlsGet(TLS_IDX_CURRENTTHREAD);
 }
 
 bool app_getThreadInfo(ThreadInfo* inout)
