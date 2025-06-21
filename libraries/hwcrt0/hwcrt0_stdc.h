@@ -100,9 +100,13 @@ dbgbrk 0");
 #ifdef NDEBUG
 	// For Release build, asserts don't do anything
 	#define assert(condition)
+	#define verify(condition) if (condition) {}
 #else
 	#define assert(condition) if (!(condition)) { _assert_impl(); }
+	#define verify(condition) if (!(condition)) { _assert_impl(); }
 #endif
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 //                   Bare minimum C runtime functions
