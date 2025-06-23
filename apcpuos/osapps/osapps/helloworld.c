@@ -5,6 +5,15 @@
 
 #include "hwcrt0.h"
 
+typedef struct Foo {
+	int a;
+	int b;
+	int c;
+	Mutex mtx;
+} Foo;
+
+Foo gFoo;
+
 void* anotherThreadStack;
 volatile int anotherThreadCounter = 0;
 void anotherThread(void* cookie)
@@ -16,6 +25,12 @@ void anotherThread(void* cookie)
 		LOG_LOG("Another world: %u!", count++);
 		app_sleep(1000);
 		anotherThreadCounter++;
+		
+		app_lockMutex(&gFoo.mtx);
+		gFoo.c = 1;
+		gFoo.a++;
+		gFoo.b++;
+		app_unlockMutex(&gFoo.mtx);
 	}
 }
 
@@ -29,6 +44,8 @@ int helloworld_main(void *)
 	params.stackSize = 1024;
 	params.cookie = "world";
 	
+	app_createMutex(&gFoo.mtx);
+	
 	defineZeroed(ThreadInfo, tinfo);
 	tinfo.thread = app_createThread(&params, &anotherThreadStack);
 	bool res = app_getThreadInfo(&tinfo);
@@ -39,17 +56,19 @@ int helloworld_main(void *)
 		LOG_LOG("Helloworld: %u!", count++);
 		app_sleep(1000);
 		if (anotherThreadCounter >= 1) {
-			//bool res = app_closeHandle(app_getCurrentThread());
-			u32 usedStack = app_calcUsedStack(tinfo.thread);
-			res = app_closeHandle(tinfo.thread);
-			LOG_LOG("Closed thread. Used stack = %u/%u. res: %d!",
-				usedStack, (u8*)tinfo.stackEnd - (u8*)tinfo.stackBegin, res);
-				
-			if (res) {
-				free(anotherThreadStack);
-			}
 		}
+		
+		app_lockMutex(&gFoo.mtx);
+		gFoo.c = 2;
+		gFoo.a++;
+		gFoo.b++;
+		app_sleep(100);
+		app_unlockMutex(&gFoo.mtx);
 	}
 	
+	app_destroyMutex(&gFoo.mtx);
+	app_closeHandle(tinfo.thread);
+	free(anotherThreadStack);
+
 	return EXIT_SUCCESS;
 }

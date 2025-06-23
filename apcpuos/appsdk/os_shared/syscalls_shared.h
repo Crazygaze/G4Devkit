@@ -17,6 +17,9 @@ typedef enum SysCallID {
 	kSysCall_GetCurrentThread,
 	kSysCall_GetThreadInfo,
 	kSysCall_CloseHandle,
+	kSysCall_CreateMutex,
+	kSysCall_WaitForMutex,
+	kSysCall_MutexUnlocked,
 	
 	//
 	// Debug
@@ -61,13 +64,9 @@ typedef enum SysCallID {
 	// Process control
 	//
 	kSysCall_Yield,
-	kSysCall_Sleep,
 	kSysCall_GetStackSize,
 	kSysCall_GetUsedStackSize,
 	kSysCall_GetThreadHandle,
-	kSysCall_CreateThread,
-	kSysCall_SetThreadTLS,
-	kSysCall_CloseHandle,
 	kSysCall_GetMessage,
 	kSysCall_PostMessage,
 	kSysCall_SetTimer,
@@ -102,11 +101,6 @@ typedef enum SysCallID {
 	kSysCall_SetCanvas,
 	kSysCall_SetStatusBar,
 	kSysCall_ProcessScreenshot,
-	
-	//
-	// Debug
-	//
-	kSysCall_OutputDebugString,
 	
 	kSysCall_Max,
 } SysCallID;

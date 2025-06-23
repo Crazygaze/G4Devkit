@@ -460,6 +460,39 @@ INLINEASM("\t\
 hlt");
 
 /*!
+ * Implement the cmpxchg in a way suitable for our needs.
+ * It returns the old value that was stored at *addr.
+ *
+ * The cmpxchg instruction itself has the following parameters:
+ * cmpxchg [raddr], rexpected, rnewval
+ *
+ * .. and has the following logic:
+ *
+ *	if (*raddr== rexpected) {
+ *		*raddr = rnewval;
+ *		flag_Zbit = 1;
+ *	} else {
+ *		rexpected = *r_addr;
+ *		flag_Zbit = 0;
+ *	}
+ *
+ * This means that rexpected works as both an input and output register.
+ * After the instruction executes, rexpected contains the old value of *raddr,
+ * regardless if the exchange succeeded or not.
+ * Therefore, we don't need to do any branching. We just need to move rexpected
+ * to r0.
+ *
+ */
+u32 hwcpu_cmpxchg(
+	__reg("r0") u32* addr, // addr
+	__reg("r1") u32 expected,  // expected
+	__reg("r2") u32 newval)  // new value
+INLINEASM("\t\
+cmpxchg [r0], r1, r2\n\t\
+mov r0, r1\n\
+");
+
+/*!
  * Clears a device's IRQ pin
  *
  * This can also be used to check if a device exists at the specified bus, if

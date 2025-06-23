@@ -247,6 +247,7 @@ void timedEvent_wakeupThread(void* tcb_, void* data2, void* data3)
 	// Mark the thread as ready again
 	tcb_enqueue(tcb, &krn.tcbReady);
 	tcb->state = TCB_STATE_READY;
+	tcb->wait.type = TCB_WAIT_TYPE_NONE;
 }
 
 void prc_putThreadToSleep(TCB* tcb, u32 ms)
@@ -263,6 +264,28 @@ void prc_putThreadToSleep(TCB* tcb, u32 ms)
 	// Queue up the event
 	krn_addTimedEvent(
 		tcb->wait.d.sleepEnd, timedEvent_wakeupThread, tcb, NULL, NULL);
+}
+
+void prc_putThreadToWait(TCB* tcb, HANDLE mtx)
+{
+	OS_LOG("prc_putThreadToWait: %p, %Xh", tcb, mtx);
+	tcb->state = TCB_STATE_BLOCKED;
+	tcb->wait.type = TCB_WAIT_TYPE_WAIT;
+	tcb->wait.d.mtx = mtx;
+	
+	// Remove from the ready queue.
+	tcb_enqueue(tcb, NULL);
+}
+
+void prc_wakeOneWaitingThread(HANDLE mtx)
+{
+	TCB* start = krn.idleTcb;
+	LINKEDLIST_FOREACH(start, TCB*, it) {
+		if (it->state == TCB_STATE_BLOCKED && it->wait.d.mtx == mtx) {
+			timedEvent_wakeupThread(it, NULL, NULL);
+			return;
+		}
+	}
 }
 
 bool prc_setBrk(PCB* pcb, u32 newbrk)

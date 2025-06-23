@@ -271,3 +271,71 @@ bool app_closeHandle(HANDLE h)
 	return app_syscall1(kSysCall_CloseHandle, (u32)h);
 }
 
+bool app_createMutex(Mutex* mtx)
+{
+	mtx->counter = 0;
+	mtx->owner = 0;
+	mtx->h = (HANDLE)app_syscall0(kSysCall_CreateMutex);
+	return true;
+}
+
+void app_destroyMutex(Mutex* mtx)
+{
+	assert(mtx->owner == 0);
+	mtx->counter = 0;
+	mtx->owner = 0;
+	app_closeHandle(mtx->h);
+}
+
+void app_lockMutex(Mutex* mtx)
+{
+	const HANDLE cth = app_getCurrentThread();
+	
+	HANDLE previousOwner = (HANDLE)hwcpu_cmpxchg((u32*)&mtx->owner, 0, (u32)cth);
+
+	if (previousOwner == 0 || // If it was unlocked and we locked it
+		previousOwner == cth) { // If we were already the owner
+		// Just increment the counter and nothing else to do, since we acquired
+		// the mutex
+		++mtx->counter;
+		return;
+	}
+
+	//
+	// We failed to acquire the mutex
+	//
+	for(;;) {
+		// Since the architecture is single CPU only, we go to sleep. There is
+		// no point in spinning
+		app_syscall1(kSysCall_WaitForMutex, (u32)mtx->h);
+		
+		// We got woken. Lets try again
+		// This time the return value needs to be 0, which means that it was
+		// unlocked and we just locked it.
+		if (hwcpu_cmpxchg((u32*)&mtx->owner, 0, (u32)cth) == 0) {
+			++mtx->counter;
+			return;
+		}
+		
+		// If we were spuriosly woken or another thread won the race, just
+		// loop back and sleep again
+	}
+}
+
+void app_unlockMutex(Mutex* mtx)
+{
+	const HANDLE cth = app_getCurrentThread();
+	
+	// We can only unlock it if we own it
+	if (mtx->owner != cth)
+		return;
+	
+	if (--mtx->counter != 0)
+		return; // Still held recursively
+		
+	// Set as unlocked (no owner)
+	mtx->owner = 0;
+	
+	// Wait a thread that might be waiting for the mutex
+	app_syscall1(kSysCall_MutexUnlocked, (u32)mtx->h);
+}

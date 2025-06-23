@@ -152,4 +152,43 @@ bool app_getThreadInfo(ThreadInfo* info);
  */
 bool app_closeHandle(HANDLE h);
 
+/*!
+ * Mutex data.
+ * Don't change this data directly.
+ * Mutex manipulation should be done with the provided api.
+ */
+typedef struct Mutex {
+	// Handle to the thread that owns the mutex or 0 if unlocked
+	HANDLE owner;
+	// Recursion depth for owner
+	u32 counter;
+	// OS handle to be used to communicate with the kernel
+	HANDLE h;
+} Mutex;
+
+/*!
+ * Creates a mutex.
+ */
+bool app_createMutex(Mutex* mtx);
+
+/*!
+ * Destroys the specified mutex.
+ * This should not be called while the mutex is locked. Doing so is undefined
+ * behaviour.
+ */
+void app_destroyMutex(Mutex* mtx);
+
+/*!
+ * Locks the specified mutex.
+ * Recursive is allowed. As-in, a thread is allowed to lock a mutex multiple
+ * times, but for each lock, there must be an unlock
+ */
+void app_lockMutex(Mutex* mtx);
+
+/*!
+ * Unlocks the specified mutex
+ */
+void app_unlockMutex(Mutex* mtx);
+
+
 #endif

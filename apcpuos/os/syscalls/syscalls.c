@@ -154,6 +154,46 @@ bool syscall_closeHandle(void)
 	return true;
 }
 
+bool syscall_createMutex(void)
+{
+	int* regs = krn.currTcb->ctx.gregs;
+	
+	// For the mutex data, we are using anything that is not a 0.
+	// That's because we only need it to distinguish the handles_getData return
+	// values. As-in, we use handles_getData to validate the handle in a few
+	// places, and we only care if handles_getData returns NULL or not NULL.
+	regs[0] = (u32)handles_create(krn.currTcb->pcb, kHandleType_Mutex, krn.currTcb);
+	return true;
+}
+
+bool syscall_waitForMutex(void)
+{
+	int* regs = krn.currTcb->ctx.gregs;
+	HANDLE h = (HANDLE)regs[0];
+	
+	if (handles_getData(h, krn.currTcb->pcb, kHandleType_Mutex)) {
+		prc_putThreadToWait(krn.currTcb, h);
+		// Since the current thread was put to sleep, we need to pick another
+		// one to run
+		krn_pickNextTcb();
+	}
+	
+	return true;
+}
+
+// #TODO Implement this
+bool syscall_mutexUnlocked(void)
+{
+	int* regs = krn.currTcb->ctx.gregs;
+	HANDLE h = (HANDLE)regs[0];
+	
+	if (handles_getData(h, krn.currTcb->pcb, kHandleType_Mutex)) {
+		prc_wakeOneWaitingThread(h);
+	}
+	
+	return true;
+}
+
 bool syscall_outputDebugString(void)
 {
 	ADD_USR_KEY;
@@ -191,6 +231,9 @@ const krn_syscallFunc krn_syscalls[kSysCall_Max] =
 	syscall_getCurrentThread,
 	syscall_getThreadInfo,
 	syscall_closeHandle,
+	syscall_createMutex,
+	syscall_waitForMutex,
+	syscall_mutexUnlocked,
 	
 	//
 	// System information

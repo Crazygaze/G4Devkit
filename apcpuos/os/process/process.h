@@ -56,19 +56,31 @@ typedef struct PCB
 QUEUE_TYPEDECLARE(ThreadMsg)
 
 /*!
+ * The thread is NOT waiting for anything
+ */
+#define TCB_WAIT_TYPE_NONE 0
+
+/*!
  * The thread is currently sleeping
  */
-#define TCB_WAIT_TYPE_SLEEP 0
+#define TCB_WAIT_TYPE_SLEEP 1
+
+/*!
+ * The thread is blocked waiting for a mutex to be unlocked
+ */
+#define TCB_WAIT_TYPE_WAIT 2
 
 /*!
  * Wait data
  */
-typedef struct TCBWaitData {
+typedef union TCBWaitData {
 
-	// Time at which the thread should stop sleep
+	// Used if type is TCB_WAIT_TYPE_SLEEP
+	// Time at which the thread should stop sleep.
 	double sleepEnd;
 	
-	//
+	// Used if type is TCB_WAIT_TYPE_WAIT
+	HANDLE mtx;
 } TCBWaitData;
 
 /*!
@@ -188,6 +200,17 @@ void prc_destroyTCB(TCB* pcb);
  * Puts the specified thread to sleep for the specified interval.
  */
 void prc_putThreadToSleep(TCB* tcb, u32 ms);
+
+/*!
+ * Sets a thread as waiting on the specified mutex.
+ * The thread will not execute until the mutex is unlocked
+ */
+void prc_putThreadToWait(TCB* tcb, HANDLE mtx);
+
+/*!
+ * Wakes up to ONE thread that is waiting on the specified mutex
+ */
+void prc_wakeOneWaitingThread(HANDLE mtx);
 
 
 //#TODO This can in theory fail, since it pushes stuff to a queue, which might
