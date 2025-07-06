@@ -33,6 +33,17 @@ TEST(memcpy)
 	CHECK(buf[3] == 'A');
 }
 
+TEST(memcmp)
+{
+	CHECK(memcmp("Hello", "Hello", 0) == 0);
+	CHECK(memcmp("Hello", "Hello", 1) == 0);
+	CHECK(memcmp("1ello", "0ello", 1) > 0);
+	CHECK(memcmp("0ello", "1ello", 1) < 0);
+	CHECK(memcmp("Hello", "Hello", 5) == 0);
+	CHECK(memcmp("Hell1", "Hell0", 5) > 0);
+	CHECK(memcmp("Hell0", "Hell1", 5) < 0);
+}
+
 TEST(strcpy)
 {
 	char buf[4];
@@ -162,6 +173,7 @@ void string_tests(void)
 	strlen_tests();
 	memset_tests();
 	memcpy_tests();
+	memcmp_tests();
 	strcpy_tests();
 	strncpy_tests();
 	strcmp_tests();

@@ -10,6 +10,7 @@ int strcmp(const char *str1, const char *str2);
 char* strchr(const char* str, int ch);
 char* strrchr(const char* str, int ch);
 char* strcat(char* dest, const char* src);
+int memcmp(const void* lhs, const void* rhs, size_t count);
 
 /*!
  * Utility macro to create a zeroed struct variable.

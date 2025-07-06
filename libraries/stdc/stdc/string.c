@@ -80,4 +80,21 @@ char* strcat(char* dest, const char* src)
 	return ret;
 }
 
+int memcmp(const void* lhs, const void* rhs, size_t count)
+{
+	assert(lhs && rhs);
+	const unsigned char* ptr1 = (const unsigned char*)lhs;
+	const unsigned char* ptr2 = (const unsigned char*)rhs;
 
+	while(count--) {
+		if (*ptr1 < *ptr2)
+			return -1;
+		else if (*ptr1 > *ptr2)
+			return +1;
+
+		ptr1++;
+		ptr2++;
+	}
+
+	return 0;
+}
