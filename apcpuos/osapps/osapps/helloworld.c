@@ -1,7 +1,9 @@
 #include <stdlib.h>
 #include <appsdk/app_process.h>
+#include <appsdk/app_stdio.h>
 #include <stdc_init.h>
 #include <string.h>
+#include <assert.h>
 
 #include "hwcrt0.h"
 
@@ -34,9 +36,49 @@ void anotherThread(void* cookie)
 	}
 }
 
+const char* bigString = "\
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor1.\
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor2.\
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor3.\
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor4.\
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor5.\
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor6.\
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor7.";
+
+void testFileWrite(void)
+{
+	FILE* f = fopen("12345678.txt", "w");
+	LOG_LOG("fopen = %p", f);
+	
+	int done = fwrite(bigString, 1, strlen(bigString)+1, f);
+	
+	int res = fclose(f);
+	LOG_LOG("fclose=%d", res);
+}
+
+void testFileRead(void)
+{
+	FILE* f = fopen("12345678.txt", "r+");
+	LOG_LOG("fopen = %p", f);
+	
+	char buf[512*2];
+	memset(buf, 0, sizeof(buf));
+	
+	int done = fread(buf, 1, strlen(bigString)+1, f);
+	assert(strcmp(bigString, buf) == 0);
+	
+	int res = fclose(f);
+	LOG_LOG("fclose=%d", res);
+	app_sleep(1000000);
+}
+
 int helloworld_main(void *)
 {
 	LOG_LOG("Hello World!");
+
+	testFileWrite();
+	testFileRead();
+	app_sleep(1000000);
 	
 	defineZeroed(CreateThreadParams, params);
 	

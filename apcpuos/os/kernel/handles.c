@@ -26,13 +26,19 @@ static void handles_mutex_dtr(void* data)
 void handles_thread_dtr(void* data);
 
 /******************************************************************************/
+//                      File handling functions
+/******************************************************************************/
+void handles_file_dtr(void* data);
+
+/******************************************************************************/
 //                      Handle functions
 /******************************************************************************/
 static HandleTypeFuncs handleFuncs[kHandleType_MAX] =
 {
 	{ "N/A"    , handles_type0_dtr }, // Index 0 is not used
 	{ "MUTEX"  , handles_mutex_dtr },
-	{ "THREAD" , handles_thread_dtr }
+	{ "THREAD" , handles_thread_dtr },
+	{ "FILE"   , handles_file_dtr }
 };
 
 // Index 0 is not used, so we can use the value 0 as "No handle"

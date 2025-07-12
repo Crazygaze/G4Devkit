@@ -172,4 +172,26 @@ typedef struct CreateThreadParams_ {
 	void* cookie;
 } CreateThreadParams_;
 
+
+/*!
+ * Maximum length for any path string, including null terminator
+ */
+#define MAX_PATH 128
+
+/*!
+ * Maximum length for the `mode` string passed to fopen, including the null
+ * terminator
+ */
+#define MAX_FILEMODE 4
+
+#define EOF -1
+
+// For internal use
+// Applications don't need to use this directly
+typedef struct FileOpenParams_
+{
+	char filename[MAX_PATH];
+	char mode[MAX_FILEMODE];
+} FileOpenParams_;
+
 #endif

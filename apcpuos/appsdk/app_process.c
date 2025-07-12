@@ -3,8 +3,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdc_init.h>
+#include <string.h>
 #include "utils/bitops.h"
 #include "hwcrt0.h"
+#include "app_stdio.h"
 
 // Bitset to tel which slots are in use or not.
 // There is only of these per process, since the purpose is to control across
@@ -26,25 +28,25 @@ void app_setTlsPtr(u32* tlsSlots);
 
 
 static u32 app_syscall0(
-	__reg("r4") u32)
+	__reg("r4") u32 syscallId)
 INLINEASM("\t\
 swi r4");
 
 static u32 app_syscall1(
-	__reg("r4") u32,
+	__reg("r4") u32 sysCallId,
 	__reg("r0") u32)
 INLINEASM("\t\
 swi r4");
 
 static u32 app_syscall2(
-	__reg("r4") u32,
+	__reg("r4") u32 sysCallId,
 	__reg("r0") u32,
 	__reg("r1") u32)
 INLINEASM("\t\
 swi r4");
 
 static u32 app_syscall3(
-	__reg("r4") u32,
+	__reg("r4") u32 syscallId,
 	__reg("r0") u32,
 	__reg("r1") u32,
 	__reg("r2") u32)
@@ -52,7 +54,7 @@ INLINEASM("\t\
 swi r4");
 
 static u32 app_syscall4(
-	__reg("r4") u32,
+	__reg("r4") u32 syscallId,
 	__reg("r0") u32,
 	__reg("r1") u32,
 	__reg("r2") u32,
@@ -169,8 +171,9 @@ HANDLE app_createThread(const CreateThreadParams* params, void** outStack)
 	// idea.
 	memset(p.stackBegin, 0xCC, stackSize);
 
+	// Although this is not used by this syscall call, the function signature
+	// needs it
 	u32 out[4] = { 0};
-	
 	HANDLE res = (HANDLE) app_syscallGeneric(kSysCall_CreateThread, &p, out);
 		
 	return res;
@@ -338,4 +341,57 @@ void app_unlockMutex(Mutex* mtx)
 	
 	// Wait a thread that might be waiting for the mutex
 	app_syscall1(kSysCall_MutexUnlocked, (u32)mtx->h);
+}
+
+FILE* fopen(const char* filename, const char* mode)
+{
+	if (
+		filename == NULL || mode == NULL ||
+		strlen(filename) >= MAX_PATH ||
+		strlen(mode) >= 4) {
+		return NULL;
+	}
+	
+	FileOpenParams_ params;
+	strncpy(params.filename, filename, sizeof(params.filename));
+	strncpy(params.mode, mode, sizeof(params.mode));
+	
+	// The system call return the OS file handle, and we just cast that to FILE*
+	HANDLE handle = (HANDLE)app_syscall1(kSysCall_OpenFile, (uint32_t)&params);
+	return (FILE*)handle;
+}
+
+int fclose(FILE* stream)
+{
+	return app_closeHandle((HANDLE)stream) ? 0 : EOF;
+}
+
+size_t fwrite(const void* buffer, size_t size, size_t count, FILE* stream)
+{
+	if (buffer==NULL || size==0 || count==0 || stream==NULL)
+		return 0;
+		
+	const size_t bytes = size * count;
+
+	// The system calls takes the number of bytes to write, and returns the
+	// number of bytes written
+	u32 res = app_syscall3(kSysCall_FileWrite,
+		(u32)buffer, bytes, (u32)stream);
+		
+	return res / size;
+}
+
+size_t fread(void *buffer, size_t size, size_t count,  FILE* stream)
+{
+	if (buffer==NULL || size==0 || count==0 || stream==NULL)
+		return 0;
+		
+	const size_t bytes = size * count;
+
+	// The system calls takes the number of bytes to read, and returns the
+	// number of bytes actually read.
+	u32 res = app_syscall3(kSysCall_FileRead,
+		(u32)buffer, bytes, (u32)stream);
+		
+	return res / size;
 }

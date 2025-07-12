@@ -36,6 +36,48 @@
 			"bootfile": true
 		},
 		{
+			"path": ".\\fs\\extern\\fatfs\\source\\diskio.c",
+			"bootfile": false,
+			"enabled": false
+		},
+		{
+			"path": ".\\fs\\extern\\fatfs\\source\\diskio.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\fs\\extern\\fatfs\\source\\ff.c",
+			"bootfile": false,
+			"globalconfiguration": {
+				"name": "-Global-",
+				"compilerOptions": "-dontwarn=64 -dontwarn=362"
+			}
+		},
+		{
+			"path": ".\\fs\\extern\\fatfs\\source\\ff.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\fs\\extern\\fatfs\\source\\ffconf.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\fs\\extern\\fatfs\\source\\ffsystem.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\fs\\extern\\fatfs\\source\\ffunicode.c",
+			"bootfile": false,
+			"enabled": false
+		},
+		{
+			"path": ".\\fs\\extern\\fatfs\\LICENSE.txt",
+			"bootfile": false
+		},
+		{
+			"path": ".\\fs\\extern\\fatfs\\README.txt",
+			"bootfile": false
+		},
+		{
 			"path": ".\\hw\\hwclk.c",
 			"bootfile": false
 		},
@@ -57,6 +99,14 @@
 		},
 		{
 			"path": ".\\hw\\hwcpu.h",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hw\\hwdkc.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hw\\hwdkc.h",
 			"bootfile": false
 		},
 		{

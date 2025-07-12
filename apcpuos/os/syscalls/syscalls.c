@@ -2,8 +2,16 @@
 #include "../kernel/kernel.h"
 #include "../kernel/mmu.h"
 #include "../kernel/handles.h"
+#include "../fs/extern/fatfs/source/ff.h"
 #include <stdlib.h>
 
+/*!
+ * Checks if a userspace addrs and size are valid. If invalid, it causes the
+ * caller to return false.
+ *
+ * NOTE: Since this does a `return false` for the caller, it should NOT be
+ * called while in the scope of a `ADD_USR_KEY` call.
+ */
 #define CHECK_USER_PTR(needsWrite, addr, size) \
 	if (!mmu_checkUserPtr(krn.currTcb->pcb, needsWrite, addr, size)) return false;
 
@@ -58,7 +66,6 @@ bool syscall_createThread(void)
 	u32* out= (u32*)regs[1];
 	
 	CHECK_USER_PTR(true, out, sizeof(u32)*4);
-	
 	CHECK_USER_PTR(false, in, sizeof(*in));
 		
 	ADD_USR_KEY;
@@ -196,8 +203,6 @@ bool syscall_mutexUnlocked(void)
 
 bool syscall_outputDebugString(void)
 {
-	ADD_USR_KEY;
-	
 	// #TODO : Test if the pointer validation is working
 	const char* usrStr= (const char*)krn.currTcb->ctx.gregs[0];
 	
@@ -206,15 +211,181 @@ bool syscall_outputDebugString(void)
 	size = min(size, _STDC_LOG_MAXSTRINGSIZE - 1);
 	CHECK_USER_PTR(false, usrStr, size); 
 	
+	ADD_USR_KEY;
 	// Copy the string to kernel pages, since hardware functions expect physical
 	// addresses and kernel pages are not setup with translation.
 	char str[_STDC_LOG_MAXSTRINGSIZE];
 	memcpy(str, usrStr, size);
 	str[size] = 0;
+	REMOVE_USER_KEY;
 	
 	hwnic_sendDebug((phys_addr)str);
 	
+	return true;
+}
+
+// #TODO : Implement the actual file closing when it destroys the handle
+
+bool syscall_openFile(void)
+{
+	int* regs = krn.currTcb->ctx.gregs;
+	const FileOpenParams_* inParams = (const FileOpenParams_*)regs[0];
+	CHECK_USER_PTR(false, inParams, sizeof(FileOpenParams_)); 
+	
+	ADD_USR_KEY;
+	// Copy the parameters over to a local variable, so we can have a very
+	// small scope for the adding/removing USR_KEY
+	// Also, make sure the strings are null terminated, to catch string
+	// overflows
+	FileOpenParams_ params = *inParams;
 	REMOVE_USER_KEY;
+	
+	params.filename[MAX_PATH - 1] = 0;
+	params.mode[MAX_FILEMODE - 1] = 0;
+	
+	// Conversion according to https://elm-chan.org/fsw/ff/doc/open.html
+	BYTE mode = 0;
+	if (strcmp(params.mode, "r") == 0)
+		mode = FA_READ;
+	else if (strcmp(params.mode, "r+") == 0)
+		mode = FA_READ | FA_WRITE;
+	else if (strcmp(params.mode, "w") == 0)
+		mode = FA_CREATE_ALWAYS | FA_WRITE;
+	else if (strcmp(params.mode, "w+") == 0)
+		mode = FA_CREATE_ALWAYS | FA_WRITE | FA_READ;
+	else if (strcmp(params.mode, "a") == 0)
+		mode = FA_OPEN_APPEND | FA_WRITE;
+	else if (strcmp(params.mode, "a+") == 0)
+		mode = FA_OPEN_APPEND | FA_WRITE | FA_READ;
+	else if (strcmp(params.mode, "wx") == 0)
+		mode = FA_CREATE_NEW | FA_WRITE;
+	else if (strcmp(params.mode, "w+x") == 0)
+		mode = FA_CREATE_NEW | FA_WRITE | FA_READ;
+	else 
+		goto out1;
+	
+	FIL* fp = calloc(sizeof(FIL));
+	if (!fp)
+		goto out1;
+		
+	HANDLE h = handles_create(krn.currTcb->pcb, kHandleType_File, fp);
+	if (!h)
+		goto out2;
+		
+	FRESULT fr = f_open(fp, params.filename, mode);
+	if (fr) {
+		OS_ERR("f_open failed with error %d", fr);
+		OS_ERR("Filename='%s', mode='%s'.", params.filename, params.mode);
+		goto out3;
+	}
+	
+	regs[0] = (u32)h;
+	return true;
+	
+	out3:
+		handles_destroy(h, krn.currTcb->pcb);
+		// the handle destruction will automatically free fp, so lets set it to
+		// NULL so the next `free` doesn't do anything
+		fp = NULL;
+	out2:
+		free(fp);
+	out1:
+		regs[0] = 0;
+		return false;
+}
+
+bool syscall_fileWrite(void)
+{
+	int* regs = krn.currTcb->ctx.gregs;
+	
+	const u8* buffer = (const u8*)regs[0];
+	size_t bytes = regs[1];
+	HANDLE h = (HANDLE)regs[2];
+	
+	CHECK_USER_PTR(false, buffer, bytes);
+	
+	// Get the file struct
+	FIL* fp = (FIL*)handles_getData(h, krn.currTcb->pcb, kHandleType_File);
+	if (!fp) {
+		regs[0] = 0;
+		return true;
+	}
+	
+	//
+	// We can't pass the userspace buffer directly to FatFs, because it will
+	// then pass that directly to hwf, which requires physical addresses.
+	// So, we fix this by writing it in chunks, from our own buffer.
+	// 
+	s8 localBuf[FF_MAX_SS];
+	size_t bytesDone = 0;
+	while (bytes) {
+		size_t len = min(bytes, sizeof(localBuf));
+		
+		ADD_USR_KEY;
+		memcpy(localBuf, buffer, len);
+		REMOVE_USER_KEY;
+		
+		buffer += len;
+		bytes -= len;
+		
+		UINT written = 0;
+		FRESULT fr = f_write(fp, localBuf, len, &written);
+		bytesDone += written;
+		// If there is an error, or we didn't write as many bytes as we expected
+		// then we exit earlier
+		if (fr != FR_OK || written != len)
+			break;
+	}
+
+	regs[0] = bytesDone;
+	return true;
+}
+
+bool syscall_fileRead(void)
+{
+	int* regs = krn.currTcb->ctx.gregs;
+	
+	u8* buffer = (u8*)regs[0];
+	size_t bytes = regs[1];
+	HANDLE h = (HANDLE)regs[2];
+	
+	CHECK_USER_PTR(true, buffer, bytes);
+	
+	// Get the file struct
+	FIL* fp = (FIL*)handles_getData(h, krn.currTcb->pcb, kHandleType_File);
+	if (!fp) {
+		regs[0] = 0;
+		return true;
+	}
+	
+	//
+	// We can't pass the userspace buffer directly to FatFs, because it will
+	// then pass that directly to hwf, which requires physical addresses.
+	// So, we fix this by reading it in chunks into our local buffer
+	// 
+	s8 localBuf[FF_MAX_SS];
+	size_t bytesDone = 0;
+	while (bytes) {
+		size_t len = min(bytes, sizeof(localBuf));
+		
+		UINT read = 0;
+		FRESULT fr = f_read(fp, localBuf, len, &read);
+		bytesDone += read;
+		
+		// If there is an error, or we didn't write as many bytes as we expected
+		// then we exit earlier
+		if (fr != FR_OK || read != len)
+			break;
+		
+		ADD_USR_KEY;
+		memcpy(buffer, localBuf, read);
+		REMOVE_USER_KEY;
+		
+		buffer += len;
+		bytes -= len;
+	}
+
+	regs[0] = bytesDone;
 	return true;
 }
 
@@ -246,6 +417,9 @@ const krn_syscallFunc krn_syscalls[kSysCall_Max] =
 	// 
 	// Disk Drive
 	//
+	syscall_openFile,
+	syscall_fileWrite,
+	syscall_fileRead,
 
 	//
 	// Rendering

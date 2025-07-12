@@ -6,7 +6,7 @@
 //#include "hwscreen.h"
 //#include "hwkeyboard.h"
 #include "hwnic.h"
-//#include "hwdisk.h"
+#include "hwdkc.h"
 
 #include <string.h>
 
@@ -27,7 +27,7 @@ static hw_DrvCreator createFuncs[] = {
 	//{ HWID('S','C','R','0'), &hw_scr_ctor, &hw_scr_dtor},
 	//{ HWID('K','Y','B','0'), &hw_kyb_ctor, &hw_kyb_dtor},
 	{ HWID('N','I','C','0'), &hwnic_ctor, &hwnic_dtor},
-	//{ HWID('D','K','C','0'), &hw_dkc_ctor, &hw_dkc_dtor},
+	{ HWID('D','K','C','0'), &hwdkc_ctor, &hwdkc_dtor},
 	{ 0, NULL, NULL }
 };
 
