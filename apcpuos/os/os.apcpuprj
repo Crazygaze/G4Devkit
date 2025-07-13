@@ -110,6 +110,14 @@
 			"bootfile": false
 		},
 		{
+			"path": ".\\hw\\hwkyb.c",
+			"bootfile": false
+		},
+		{
+			"path": ".\\hw\\hwkyb.h",
+			"bootfile": false
+		},
+		{
 			"path": ".\\hw\\hwnic.c",
 			"bootfile": false
 		},

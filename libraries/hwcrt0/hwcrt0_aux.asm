@@ -40,6 +40,25 @@ public _hw_hwfsmall:
 ; In
 ; r0 - bus
 ; r1 - function number
+public _hw_hwf_0_0:
+	enter 0
+	
+	; build ip register
+	sll ip, r1, 8
+	or ip, ip, r0
+	;
+	hwf ip
+	
+	; hwf puts any error codes in ip
+	mov r0, ip
+	
+	leave
+	ret 0
+	
+;
+; In
+; r0 - bus
+; r1 - function number
 ; r2 - pointer to array of 4 words
 ;	This is used both as input and output
 public _hw_hwf_0_1:
@@ -223,6 +242,29 @@ public _hw_hwf_3_0:
 	leave
 	ret 0
 	
+;
+; In
+; r0 - bus
+; r1 - function number
+; r2 - pointer to array of 4 words
+;	This is used both as input and output
+public _hw_hwf_1_1:
+	enter 0
+	
+	; build ip register
+	sll ip, r1, 8
+	or ip, ip, r0
+	; set inputs
+	ldr r0, [r2 + 4*0]
+	;
+	hwf ip
+	; copy back outputs
+	str [r2 + 4*0], r0
+	; hwf puts any error codes in ip
+	mov r0, ip
+	
+	leave
+	ret 0
 	
 ;
 ; Full hwf call.

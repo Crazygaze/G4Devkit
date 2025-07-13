@@ -194,4 +194,37 @@ typedef struct FileOpenParams_
 	char mode[MAX_FILEMODE];
 } FileOpenParams_;
 
+
+/******************************************************************************/
+//
+// Keyboard
+//
+/******************************************************************************/
+
+//
+// Keys
+//
+#define KEY_BACKSPACE 0x01
+#define KEY_RETURN 0x02
+#define KEY_INSERT 0x03
+#define KEY_DELETE 0x04
+#define KEY_UP 0x05
+#define KEY_DOWN 0x06
+#define KEY_LEFT 0x07
+#define KEY_RIGHT 0x08
+#define KEY_SHIFT 0x09
+#define KEY_CONTROL 0x0A
+#define KEY_TAB 0x0B
+/*
+ * These are the printable characters as defined in
+ * http://en.wikipedia.org/wiki/ASCII ,
+ * in the table "ASCII printable characters"
+ */
+#define KEY_ASCII_FIRST 0x20  // decimal 32 (space)
+#define KEY_ASCII_LAST 0x7E
+
+#define KEY_FLAG_CTRL (1<<0)
+#define KEY_FLAG_SHIFT (1<<1)
+
+
 #endif

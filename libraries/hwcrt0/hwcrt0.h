@@ -123,6 +123,7 @@ int hw_hwfsmall(int bus, int funcNum, HwfSmallData* data);
  * if a function only uses 1 register for output, only `data->regs[0]` will be
  * set. The rest will stay as-is.
  */
+int hw_hwf_0_0(int bus, int funcNum);
 int hw_hwf_0_1(int bus, int funcNum, HwfSmallData* data);
 int hw_hwf_0_2(int bus, int funcNum, HwfSmallData* data);
 int hw_hwf_0_3(int bus, int funcNum, HwfSmallData* data);
@@ -130,7 +131,7 @@ int hw_hwf_0_4(int bus, int funcNum, HwfSmallData* data);
 int hw_hwf_1_0(int bus, int funcNum, HwfSmallData* data);
 int hw_hwf_2_0(int bus, int funcNum, HwfSmallData* data);
 int hw_hwf_3_0(int bus, int funcNum, HwfSmallData* data);
-
+int hw_hwf_1_1(int bus, int funcNum, HwfSmallData* data);
 
 /*! Executes a hwf instruction that needs r0...r3, and f0..f3 */
 int hw_hwffull(int bus, int funcNum, HwfFullData* data);
