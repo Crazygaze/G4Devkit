@@ -14,8 +14,6 @@
 static u8 appTlsStatus[BS_NUMSLOTS(TLS_MAXSLOTS)];
 
 // TLS slot reserved to save the current thread handle.
-// This makes it possible to implement a mutex that doesn't need to make
-// a system call when there is no contention.
 #define TLS_IDX_CURRENTTHREAD 0
 
 // This is intentionally in the .bss section (not .bss_shared), so that the
@@ -78,6 +76,9 @@ void app_threadEntry(ThreadEntryFunc func, void* cookie)
 	app_tlsSet(TLS_IDX_CURRENTTHREAD, (u32)h);
 	
 	func(cookie);
+	
+	// Destroy the thread
+	app_closeHandle(h);
 }
 
 // Entry point for a new process
@@ -394,4 +395,21 @@ size_t fread(void *buffer, size_t size, size_t count,  FILE* stream)
 		(u32)buffer, bytes, (u32)stream);
 		
 	return res / size;
+}
+
+bool app_getMsg(ThreadMsg* msg)
+{
+	app_syscall2(kSysCall_GetMsg, (u32)msg, true);
+	return msg->id == MSG_QUIT ? false : true;
+}
+
+bool app_tryGetMsg(ThreadMsg* msg)
+{
+	bool res = (bool)app_syscall2(kSysCall_GetMsg, (u32)msg, false);
+	return res;
+}
+
+void app_postMsg(HANDLE thread, u32 msgId, u32 param1, u32 param2)
+{
+	app_syscall4(kSysCall_PostMsg, (u32)thread, msgId, param1, param2);
 }

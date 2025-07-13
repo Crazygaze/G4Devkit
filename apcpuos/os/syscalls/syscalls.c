@@ -10,24 +10,17 @@
  * caller to return false.
  *
  * NOTE: Since this does a `return false` for the caller, it should NOT be
- * called while in the scope of a `ADD_USR_KEY` call.
+ * called while in the scope of a `ADD_USER_KEY` call.
  */
 #define CHECK_USER_PTR(needsWrite, addr, size) \
 	if (!mmu_checkUserPtr(krn.currTcb->pcb, needsWrite, addr, size)) return false;
-
-// By default the kernel doesn't have access to user space, to help catch
-// bugs in the kernel.
-// Whenever the kernel needs access to user space memory, it gives itself
-// temporary acess to the user space
-#define ADD_USR_KEY hwcpu_addMMUKeys(MMU_PTE_KEY_USR)
-#define REMOVE_USER_KEY hwcpu_removeMMUKeys(MMU_PTE_KEY_USR)
 
 bool syscall_setupDS(void)
 {
 	const PTKrnLayout* layout = mmu_getKrnPTLayout();
 	u32 size = layout->oriSharedDataEnd - layout->oriSharedDataBegin;
 	
-	ADD_USR_KEY;
+	ADD_USER_KEY;
 	hwcpu_addMMUKeys(MMU_PTE_KEY_ORIGINAL_SHARED);
 	memcpy((u8*)krn.currTcb->pcb->pt->usrDS, (u8*)layout->oriSharedDataBegin, size);
 	hwcpu_removeMMUKeys(MMU_PTE_KEY_ORIGINAL_SHARED);
@@ -68,7 +61,7 @@ bool syscall_createThread(void)
 	CHECK_USER_PTR(true, out, sizeof(u32)*4);
 	CHECK_USER_PTR(false, in, sizeof(*in));
 		
-	ADD_USR_KEY;
+	ADD_USER_KEY;
 	CreateThreadParams_ p = *in;
 	REMOVE_USER_KEY;
 
@@ -84,7 +77,7 @@ bool syscall_createThread(void)
 		(u32)p.cookie);
 		
 	
-	ADD_USR_KEY;
+	ADD_USER_KEY;
 	bool res;
 	if (tcb) {
 		regs[0] = out[0] = (u32)tcb->handle;
@@ -127,7 +120,7 @@ bool syscall_getThreadInfo(void)
 	
 	CHECK_USER_PTR(true, inout, sizeof(ThreadInfo));
 
-	ADD_USR_KEY;
+	ADD_USER_KEY;
 	TCB* targetTcb =
 		handles_getData(inout->thread, krn.currTcb->pcb, kHandleType_Thread);
 		
@@ -201,6 +194,68 @@ bool syscall_mutexUnlocked(void)
 	return true;
 }
 
+bool syscall_getMsg(void)
+{
+	TCB* tcb = krn.currTcb;
+	int* regs = tcb->ctx.gregs;
+	
+	ThreadMsg* outMsg = (ThreadMsg*)regs[0];
+	bool waitForMsg = (bool)regs[1];
+	CHECK_USER_PTR(true, outMsg, sizeof(*outMsg));
+	
+	ADD_USER_KEY;
+	bool hasMsg = queue_ThreadMsg_pop(&tcb->msgqueue, outMsg);
+	REMOVE_USER_KEY;
+	
+	// If there is a message, then we pass control back to the application.
+	// If there isn't, then we put the thread to sleep if required
+	if (hasMsg) {
+		regs[0] = true;
+	} else {
+		if (waitForMsg) {
+			// Put the thread to sleep until a message is available
+			tcb->state = TCB_STATE_BLOCKED;
+			tcb->wait.type = TCB_WAIT_TYPE_WAITING_FOR_MSG;
+			tcb->wait.d.outMsg = outMsg;
+			tcb_enqueue(krn.currTcb, NULL);
+			krn_pickNextTcb();
+			// Since the caller asked to be blocked until a message is received
+			// then by definition, the result of the call will be true, so we
+			// can set it right here.
+			regs[0] = true;
+		} else {
+			regs[0] = false;
+		}
+	}
+	
+	return true;
+}
+
+bool syscall_postMsg(void)
+{
+	TCB* tcb = krn.currTcb;
+	int* regs = tcb->ctx.gregs;
+	
+	HANDLE target = (HANDLE)regs[0];
+	u32 msgId  = regs[1];
+	u32 param1 = regs[2];
+	u32 param2 = regs[3];
+	
+	// The target thread needs to belong to the same process, otherwise any
+	// process could mess up with other processes by sending random messages
+	TCB* targetTcb =
+		handles_getData(target, krn.currTcb->pcb, kHandleType_Thread);
+	if (!targetTcb) {
+		regs[0] = false;
+		return true;
+	}
+	
+	prc_postThreadMsg(targetTcb, msgId, param1, param2);
+	regs[0] = true;
+	
+	return true;
+}
+
 bool syscall_outputDebugString(void)
 {
 	// #TODO : Test if the pointer validation is working
@@ -211,7 +266,7 @@ bool syscall_outputDebugString(void)
 	size = min(size, _STDC_LOG_MAXSTRINGSIZE - 1);
 	CHECK_USER_PTR(false, usrStr, size); 
 	
-	ADD_USR_KEY;
+	ADD_USER_KEY;
 	// Copy the string to kernel pages, since hardware functions expect physical
 	// addresses and kernel pages are not setup with translation.
 	char str[_STDC_LOG_MAXSTRINGSIZE];
@@ -232,9 +287,9 @@ bool syscall_openFile(void)
 	const FileOpenParams_* inParams = (const FileOpenParams_*)regs[0];
 	CHECK_USER_PTR(false, inParams, sizeof(FileOpenParams_)); 
 	
-	ADD_USR_KEY;
+	ADD_USER_KEY;
 	// Copy the parameters over to a local variable, so we can have a very
-	// small scope for the adding/removing USR_KEY
+	// small scope for the adding/removing USER_KEY
 	// Also, make sure the strings are null terminated, to catch string
 	// overflows
 	FileOpenParams_ params = *inParams;
@@ -321,7 +376,7 @@ bool syscall_fileWrite(void)
 	while (bytes) {
 		size_t len = min(bytes, sizeof(localBuf));
 		
-		ADD_USR_KEY;
+		ADD_USER_KEY;
 		memcpy(localBuf, buffer, len);
 		REMOVE_USER_KEY;
 		
@@ -377,7 +432,7 @@ bool syscall_fileRead(void)
 		if (fr != FR_OK || read != len)
 			break;
 		
-		ADD_USR_KEY;
+		ADD_USER_KEY;
 		memcpy(buffer, localBuf, read);
 		REMOVE_USER_KEY;
 		
@@ -405,6 +460,8 @@ const krn_syscallFunc krn_syscalls[kSysCall_Max] =
 	syscall_createMutex,
 	syscall_waitForMutex,
 	syscall_mutexUnlocked,
+	syscall_getMsg,
+	syscall_postMsg,
 	
 	//
 	// System information

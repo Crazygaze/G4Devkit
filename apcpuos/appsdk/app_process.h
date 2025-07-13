@@ -190,5 +190,32 @@ void app_lockMutex(Mutex* mtx);
  */
 void app_unlockMutex(Mutex* mtx);
 
+/*!
+ * Retrieves a message from the current thread's message queue.
+ * If the queue is empty, it blocks until a message is available.
+ *
+ * \param msg
+ *	On exit, it will contain the message.
+ *
+ * \return
+ *	Returns `true` if the thread should continue to run, and `false` if the
+ *	retrieved message was a MSG_QUIT message.
+ *
+ */
+bool app_getMsg(ThreadMsg* msg);
+
+/*!
+ * Tries to retrieve a message without blocking.
+ *
+ * \return
+ *	`true` if a message was retrieved, `false` if no message was retrieved.
+ */
+bool app_tryGetMsg(ThreadMsg* msg);
+
+/*!
+ * Posts a message to the specified thread
+ */
+void app_postMsg(HANDLE thread, u32 msgId, u32 param1, u32 param2);
+
 
 #endif

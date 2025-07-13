@@ -20,6 +20,8 @@ typedef enum SysCallID {
 	kSysCall_CreateMutex,
 	kSysCall_WaitForMutex,
 	kSysCall_MutexUnlocked,
+	kSysCall_GetMsg,
+	kSysCall_PostMsg,
 	
 	//
 	// System information

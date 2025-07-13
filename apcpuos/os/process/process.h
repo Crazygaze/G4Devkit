@@ -70,6 +70,12 @@ QUEUE_TYPEDECLARE(ThreadMsg)
  */
 #define TCB_WAIT_TYPE_WAIT 2
 
+// #MSG: Make use of this
+/*!
+ * The thread is blocked waiting for a message to arrive
+ */
+#define TCB_WAIT_TYPE_WAITING_FOR_MSG 3
+
 /*!
  * Wait data
  */
@@ -81,6 +87,9 @@ typedef union TCBWaitData {
 	
 	// Used if type is TCB_WAIT_TYPE_WAIT
 	HANDLE mtx;
+	
+	// Used if type is TCB_WAIT_TYPE_WAITING_FOR_MSG
+	ThreadMsg* outMsg;
 } TCBWaitData;
 
 /*!
@@ -230,6 +239,11 @@ void tcb_enqueue(TCB* tcb, Queue32* to);
  * Changes the program break for the specified process
  */
 bool prc_setBrk(PCB* pcb, u32 newbrk);
-	
+
+/*!
+ * Posts a message to the specified thread
+ */
+bool prc_postThreadMsg(TCB* tcb, u32 msgId, u32 param1, u32 param2);
+
 
 #endif

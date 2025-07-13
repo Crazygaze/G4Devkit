@@ -5,6 +5,7 @@
 #include "../kernel/mmu.h"
 #include "../kernel/handles.h"
 #include "../kernel/handles.h"
+#include "../syscalls/syscalls.h"
 #include <stdlib.h>
 
 PCB* rootPCB;
@@ -250,6 +251,11 @@ void timedEvent_wakeupThread(void* tcb_, void* data2, void* data3)
 	tcb->wait.type = TCB_WAIT_TYPE_NONE;
 }
 
+static inline void prc_wakeupThread(TCB* tcb)
+{
+	timedEvent_wakeupThread(tcb, NULL, NULL);
+}
+
 void prc_putThreadToSleep(TCB* tcb, u32 ms)
 {
 	OS_LOG("prc_putThreadToSleep: %p, %u", tcb, ms);
@@ -332,4 +338,30 @@ void tcb_enqueue(TCB* tcb, Queue32* to)
 	} else {
 		tcb->queue = NULL;
 	}
+}
+
+bool prc_postThreadMsg(TCB* tcb, u32 msgId, u32 param1, u32 param2)
+{
+	ThreadMsg* msg = queue_ThreadMsg_pushEmpty(&tcb->msgqueue);
+	if (!msg) {
+		OS_ERR("Out of memory");
+		return false;
+	}
+	
+	msg->id = msgId;
+	msg->param1 = param1;
+	msg->param2 = param2;
+	
+	// #MSG : Wait up a thread that is sleeping
+	if (tcb->state == TCB_STATE_BLOCKED &&
+		tcb->wait.type == TCB_WAIT_TYPE_WAITING_FOR_MSG) {
+		prc_wakeupThread(tcb);
+		// Pop the newly added message and copy it over to where the thread
+		// expects it
+		ADD_USER_KEY;
+		queue_ThreadMsg_pop(&tcb->msgqueue, tcb->wait.d.outMsg);
+		REMOVE_USER_KEY;
+	}
+
+	return true;
 }

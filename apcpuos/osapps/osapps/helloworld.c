@@ -7,110 +7,47 @@
 
 #include "hwcrt0.h"
 
-typedef struct Foo {
-	int a;
-	int b;
-	int c;
-	Mutex mtx;
-} Foo;
-
-Foo gFoo;
-
-void* anotherThreadStack;
-volatile int anotherThreadCounter = 0;
-void anotherThread(void* cookie)
+void otherThread(void* cookie)
 {
-	LOG_LOG("Hello from another %s!", (const char*)cookie);
+	LOG_LOG("Hello from other thread: cookie = %s!", (const char*)cookie);
 	int count = 0;
-	while(true)
+	ThreadMsg msg;
+	while(app_getMsg(&msg))
 	{
-		LOG_LOG("Another world: %u!", count++);
-		app_sleep(1000);
-		anotherThreadCounter++;
-		
-		app_lockMutex(&gFoo.mtx);
-		gFoo.c = 1;
-		gFoo.a++;
-		gFoo.b++;
-		app_unlockMutex(&gFoo.mtx);
+		LOG_LOG("Other thread: %u. msgId=%u, param1=%u, param2=%u", count++,
+			msg.id, msg.param1, msg.param2);
+		break;
 	}
-}
-
-const char* bigString = "\
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor1.\
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor2.\
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor3.\
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor4.\
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor5.\
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor6.\
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor7.";
-
-void testFileWrite(void)
-{
-	FILE* f = fopen("12345678.txt", "w");
-	LOG_LOG("fopen = %p", f);
 	
-	int done = fwrite(bigString, 1, strlen(bigString)+1, f);
-	
-	int res = fclose(f);
-	LOG_LOG("fclose=%d", res);
-}
-
-void testFileRead(void)
-{
-	FILE* f = fopen("12345678.txt", "r+");
-	LOG_LOG("fopen = %p", f);
-	
-	char buf[512*2];
-	memset(buf, 0, sizeof(buf));
-	
-	int done = fread(buf, 1, strlen(bigString)+1, f);
-	assert(strcmp(bigString, buf) == 0);
-	
-	int res = fclose(f);
-	LOG_LOG("fclose=%d", res);
-	app_sleep(1000000);
+	LOG_LOG("Quitting other thread");
 }
 
 int helloworld_main(void *)
 {
 	LOG_LOG("Hello World!");
 
-	testFileWrite();
-	testFileRead();
-	app_sleep(1000000);
-	
 	defineZeroed(CreateThreadParams, params);
 	
-	params.entryFunc = anotherThread;
+	params.entryFunc = otherThread;
 	params.stackSize = 1024;
 	params.cookie = "world";
 	
-	app_createMutex(&gFoo.mtx);
+	void* th1Stack;
+	HANDLE th1 = app_createThread(&params, &th1Stack);
 	
-	defineZeroed(ThreadInfo, tinfo);
-	tinfo.thread = app_createThread(&params, &anotherThreadStack);
-	bool res = app_getThreadInfo(&tinfo);
-	
-	static int count = 0;
+	int count = 0;
 	while(true)
 	{
-		LOG_LOG("Helloworld: %u!", count++);
-		app_sleep(1000);
-		if (anotherThreadCounter >= 1) {
-		}
+		LOG_LOG("Main thread: %d", count++);
+		app_sleep(4000);
 		
-		app_lockMutex(&gFoo.mtx);
-		gFoo.c = 2;
-		gFoo.a++;
-		gFoo.b++;
-		app_sleep(100);
-		app_unlockMutex(&gFoo.mtx);
+		app_postMsg(th1, MSG_FIRST_CUSTOM, count, count+1);
+		app_sleep(4000);
+		break;
 	}
 	
-	app_destroyMutex(&gFoo.mtx);
-	app_closeHandle(tinfo.thread);
-	free(anotherThreadStack);
+	app_closeHandle(th1);
+	free(th1Stack);
 
 	return EXIT_SUCCESS;
 }
