@@ -25,9 +25,12 @@ typedef struct PCB
 	
 	PageTable* pt;
 
+	int numActiveTimers;
+	
 	// Putting this in its own struct, so I can use memcpy to copy it over to
 	// any calling applications
 	ProcessInfo info;
+	
 } PCB;
 
 /*!
@@ -87,9 +90,6 @@ typedef union TCBWaitData {
 	
 	// Used if type is TCB_WAIT_TYPE_WAIT
 	HANDLE mtx;
-	
-	// Used if type is TCB_WAIT_TYPE_WAITING_FOR_MSG
-	ThreadMsg* outMsg;
 } TCBWaitData;
 
 /*!

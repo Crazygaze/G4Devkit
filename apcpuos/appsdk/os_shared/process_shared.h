@@ -116,17 +116,6 @@ typedef struct CreateProcessParms{
 } CreateProcessParams;
 
 /*!
- * Thread message.
- * The OS uses this to communicate with the process.
- */
-typedef struct ThreadMsg
-{
-	u32 id;
-	u32 param1;
-	u32 param2;
-} ThreadMsg;
-
-/*!
  * Information required to create a thread
  */
 typedef struct CreateThreadParams {
@@ -226,5 +215,49 @@ typedef struct FileOpenParams_
 #define KEY_FLAG_CTRL (1<<0)
 #define KEY_FLAG_SHIFT (1<<1)
 
+
+/******************************************************************************/
+//
+// Thread message queue
+//
+/******************************************************************************/
+
+/*!
+ * Thread message.
+ * The OS uses this to communicate with the process.
+ */
+typedef struct ThreadMsg
+{
+	u32 id;
+	u32 param1;
+	u32 param2;
+} ThreadMsg;
+
+//
+// Messages
+// 
+#define MSG_QUIT 0
+#define MSG_KEY_PRESSED 1
+#define MSG_KEY_RELEASED 2
+#define MSG_KEY_TYPED 3
+// #MSG : Implement this
+#define MSG_TIMER 4
+// Any message ids >= to this one are reserved for application use.
+#define MSG_FIRST_CUSTOM 50
+
+
+/******************************************************************************/
+//
+// Timers
+//
+/******************************************************************************/
+
+#define TIMER_MAX_INTERVAL_MASK ((1 << 31) -1)
+#define TIMER_MAX_INTERVAL TIMER_MAX_INTERVAL_MASK
+
+/*!
+ * How many timers a process can have active at one time
+ */
+#define TIMER_MAX_TIMERS 10
 
 #endif

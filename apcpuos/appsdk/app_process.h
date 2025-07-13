@@ -217,5 +217,29 @@ bool app_tryGetMsg(ThreadMsg* msg);
  */
 void app_postMsg(HANDLE thread, u32 msgId, u32 param1, u32 param2);
 
+/*!
+ * Sets a timer for the current thread.
+ * When the timer expires, a MSG_TIMER message is posted to the thread's message
+ * queue.
+ *
+ * \param ms
+ *	Timer interval, in milliseconds.
+ *	Maximum supported value is TIMER_MAX_INTERVAL, and accuracy is very much
+ *	dependent on the OS.
+ *	The application should not expect high accuracy.
+ *	
+ * \param repeat
+ *	If true, the timer is kept, and a MSG_TIMER message is posted at the timer
+ *	interval. If false, the timer will be a one-shot timer.
+ *
+ * \param cookie
+ *	Cookie that will be put into `param1` of the message struct.
+ *
+ * \return
+ *	true if the timer was set, false if it fail.
+ *	Each process can only have TIMER_MAX_TIMERS timers active at one time.
+ */
+bool app_setTimer(u32 ms, bool repeat, void* cookie);
+
 
 #endif

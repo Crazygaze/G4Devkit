@@ -399,7 +399,20 @@ size_t fread(void *buffer, size_t size, size_t count,  FILE* stream)
 
 bool app_getMsg(ThreadMsg* msg)
 {
-	app_syscall2(kSysCall_GetMsg, (u32)msg, true);
+	// If the last parameter is `true` and there are no message available,
+	// this system call will block until there is a message available, but
+	// will still return `false`. This is because when waking up the thread,
+	// the kernel can't copy memory onto that thread if it's running within
+	// the context of a different process.
+	// Therefore, it needs to first wake up the thread..
+	//
+	// In short, we can think of this blocking system sporadically aweking
+	// the thread, and so we need to keep calling it until we get a message.
+	while(!app_syscall2(kSysCall_GetMsg, (u32)msg, true))
+	{
+		//
+	}
+	
 	return msg->id == MSG_QUIT ? false : true;
 }
 
@@ -413,3 +426,9 @@ void app_postMsg(HANDLE thread, u32 msgId, u32 param1, u32 param2)
 {
 	app_syscall4(kSysCall_PostMsg, (u32)thread, msgId, param1, param2);
 }
+
+bool app_setTimer(u32 ms, bool repeat, void* cookie)
+{
+	return app_syscall3(kSysCall_SetTimer, ms, repeat, (u32)cookie); 
+}
+

@@ -222,7 +222,7 @@ static void krn_initTimedEvents(void)
 	pqueue_KrnTimedEvent_create(&krn.timedEvents, 4, timedEventCmp);
 }
 
-void krn_addTimedEvent(double execTime, KrnTimedEventFunc func, void* data0,
+bool krn_addTimedEvent(double execTime, KrnTimedEventFunc func, void* data0,
 	void* data1, void* data2)
 {
 	KrnTimedEvent evt;
@@ -233,7 +233,10 @@ void krn_addTimedEvent(double execTime, KrnTimedEventFunc func, void* data0,
 	evt.data2 = data2;
 	
 	bool res = pqueue_KrnTimedEvent_push(&krn.timedEvents, &evt);
-	krnassert(res);
+	if (!res) {
+		OS_ERR("Out of memory");
+	}
+	return res;
 }
 
 #pragma dontwarn 323

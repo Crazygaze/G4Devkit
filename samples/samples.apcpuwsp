@@ -19,7 +19,7 @@
 			"defines": [
 				"_DEBUG",
 				"DEBUG",
-				"_STDC_LOG_VERBOSITY=5"
+				"_STDC_LOG_VERBOSITY=4"
 			],
 			"compilerOptions": "-O0 -g"
 		},

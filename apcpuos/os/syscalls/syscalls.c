@@ -212,19 +212,19 @@ bool syscall_getMsg(void)
 	if (hasMsg) {
 		regs[0] = true;
 	} else {
+	
+		// We need to set the result to false, because when a message awakes
+		// the thread, the kernel will schedule the thread for execution, and
+		// the process will see `false` and call getMsg again to get the actual
+		// message.
+		
+		regs[0] = false;
 		if (waitForMsg) {
 			// Put the thread to sleep until a message is available
 			tcb->state = TCB_STATE_BLOCKED;
 			tcb->wait.type = TCB_WAIT_TYPE_WAITING_FOR_MSG;
-			tcb->wait.d.outMsg = outMsg;
 			tcb_enqueue(krn.currTcb, NULL);
 			krn_pickNextTcb();
-			// Since the caller asked to be blocked until a message is received
-			// then by definition, the result of the call will be true, so we
-			// can set it right here.
-			regs[0] = true;
-		} else {
-			regs[0] = false;
 		}
 	}
 	
@@ -252,6 +252,60 @@ bool syscall_postMsg(void)
 	
 	prc_postThreadMsg(targetTcb, msgId, param1, param2);
 	regs[0] = true;
+	
+	return true;
+}
+
+void timedEvent_threadTimer(void* data1, void* data2, void* data3)
+{
+	TCB* tcb = (TCB*)data1;
+	void* cookie = data3;
+	
+	tcb->pcb->numActiveTimers--;
+	
+	// If it's a repeating timer, then add it back to the queue
+	if ((u32)data2 & (1 << 31)) {
+		u32 ms = (u32)data2 & TIMER_MAX_INTERVAL_MASK;
+		double execTime = krn.intrCurrSecs + ((s32)ms / 1000.0f);
+		if (krn_addTimedEvent(
+				execTime, timedEvent_threadTimer, tcb, data2, cookie)) {
+			tcb->pcb->numActiveTimers++;
+		}
+	}
+	
+	prc_postThreadMsg(tcb, MSG_TIMER, (u32)cookie, 0);
+}
+
+bool syscall_setTimer(void)
+{
+	TCB* tcb = krn.currTcb;
+	int* regs = tcb->ctx.gregs;
+	
+	u32 ms = regs[0] & TIMER_MAX_INTERVAL_MASK;
+	bool repeat = regs[1];
+	void* cookie = (void*)regs[2];
+	
+	if (tcb->pcb->numActiveTimers >= TIMER_MAX_TIMERS) {
+		regs[0] = false;
+		return true;
+	}
+	
+	double execTime = krn.intrCurrSecs + ((s32)ms / 1000.0f);
+	
+	// The second parameter passed to the callback is just a bool but the callback
+	bool res = krn_addTimedEvent(
+		execTime, timedEvent_threadTimer,
+		// data1
+		tcb, // data1
+		// data2. The MSB tells if we should repeat the timer or not
+		(void*)(repeat ? ms|(1<<31) : ms),
+		cookie
+		);
+	
+	if (res)
+		tcb->pcb->numActiveTimers++;
+		
+	regs[0] = res;
 	
 	return true;
 }
@@ -462,6 +516,7 @@ const krn_syscallFunc krn_syscalls[kSysCall_Max] =
 	syscall_mutexUnlocked,
 	syscall_getMsg,
 	syscall_postMsg,
+	syscall_setTimer,
 	
 	//
 	// System information

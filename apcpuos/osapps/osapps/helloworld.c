@@ -12,11 +12,18 @@ void otherThread(void* cookie)
 	LOG_LOG("Hello from other thread: cookie = %s!", (const char*)cookie);
 	int count = 0;
 	ThreadMsg msg;
+	
+	app_setTimer(6000, true, cookie);
+	
 	while(app_getMsg(&msg))
 	{
+		if (msg.id == MSG_TIMER)  {
+			LOG_LOG("Other thread: msgId=%u, param1=%s", 
+				msg.id, (const char*)msg.param1);
+		} else {
 		LOG_LOG("Other thread: %u. msgId=%u, param1=%u, param2=%u", count++,
 			msg.id, msg.param1, msg.param2);
-		break;
+		}
 	}
 	
 	LOG_LOG("Quitting other thread");
@@ -39,9 +46,10 @@ int helloworld_main(void *)
 	while(true)
 	{
 		LOG_LOG("Main thread: %d", count++);
-		app_sleep(4000);
+		app_sleep(40000000);
 		
-		app_postMsg(th1, MSG_FIRST_CUSTOM, count, count+1);
+		//app_postMsg(th1, MSG_FIRST_CUSTOM, count, count+1);
+		//app_postMsg(th1, MSG_QUIT, count, count+1);
 		app_sleep(4000);
 		break;
 	}

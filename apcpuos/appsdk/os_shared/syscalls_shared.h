@@ -22,6 +22,7 @@ typedef enum SysCallID {
 	kSysCall_MutexUnlocked,
 	kSysCall_GetMsg,
 	kSysCall_PostMsg,
+	kSysCall_SetTimer,
 	
 	//
 	// System information

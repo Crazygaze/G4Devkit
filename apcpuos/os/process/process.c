@@ -352,15 +352,16 @@ bool prc_postThreadMsg(TCB* tcb, u32 msgId, u32 param1, u32 param2)
 	msg->param1 = param1;
 	msg->param2 = param2;
 	
-	// #MSG : Wait up a thread that is sleeping
 	if (tcb->state == TCB_STATE_BLOCKED &&
 		tcb->wait.type == TCB_WAIT_TYPE_WAITING_FOR_MSG) {
+		// VERY IMPORTANT:
+		// We wake up the thread, BUT don't copy the message to where the thread
+		// is expecting it, because although we are in kernel mode, we might
+		// be running this function call within the context of a different
+		// process, and thus not using the right page table.
+		// Therefore, we wake up the thread, and the process will have to all
+		// getMsg again.
 		prc_wakeupThread(tcb);
-		// Pop the newly added message and copy it over to where the thread
-		// expects it
-		ADD_USER_KEY;
-		queue_ThreadMsg_pop(&tcb->msgqueue, tcb->wait.d.outMsg);
-		REMOVE_USER_KEY;
 	}
 
 	return true;
