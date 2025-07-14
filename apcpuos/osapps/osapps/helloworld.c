@@ -43,15 +43,22 @@ int helloworld_main(void *)
 	HANDLE th1 = app_createThread(&params, &th1Stack);
 	
 	int count = 0;
-	while(true)
+	ThreadMsg msg;
+	while(app_getMsg(&msg))
 	{
 		LOG_LOG("Main thread: %d", count++);
-		app_sleep(40000000);
+		
+		if (msg.id >= MSG_KEY_PRESSED && msg.id <= MSG_KEY_TYPED) {
+			LOG_LOG("msgId=%u, key=%u('%c'), mods=%u",
+				msg.id,
+				msg.param1,
+				msg.param1 >= KEY_ASCII_FIRST ? (char)msg.param1 : ' ',
+				msg.param2);
+		}
 		
 		//app_postMsg(th1, MSG_FIRST_CUSTOM, count, count+1);
 		//app_postMsg(th1, MSG_QUIT, count, count+1);
-		app_sleep(4000);
-		break;
+		// break;
 	}
 	
 	app_closeHandle(th1);

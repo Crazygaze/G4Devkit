@@ -4,7 +4,6 @@
 #include "syscalls_shared.h"
 #include "utils/bitset.h"
 
-// #TODO : Implement the app_closeHandle function
 
 /*!
  * Operating system handle.
@@ -212,9 +211,16 @@ typedef struct FileOpenParams_
 #define KEY_ASCII_FIRST 0x20  // decimal 32 (space)
 #define KEY_ASCII_LAST 0x7E
 
-#define KEY_FLAG_CTRL (1<<0)
-#define KEY_FLAG_SHIFT (1<<1)
+#define KEY_MOD_CTRL (1<<0)
+#define KEY_MOD_SHIFT (1<<1)
 
+/******************************************************************************/
+//
+// App flags
+//
+/******************************************************************************/
+
+#define APPFLAG_WANTSKEYS (1<<0)
 
 /******************************************************************************/
 //

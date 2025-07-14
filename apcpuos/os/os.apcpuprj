@@ -36,15 +36,6 @@
 			"bootfile": true
 		},
 		{
-			"path": ".\\fs\\extern\\fatfs\\source\\diskio.c",
-			"bootfile": false,
-			"enabled": false
-		},
-		{
-			"path": ".\\fs\\extern\\fatfs\\source\\diskio.h",
-			"bootfile": false
-		},
-		{
 			"path": ".\\fs\\extern\\fatfs\\source\\ff.c",
 			"bootfile": false,
 			"globalconfiguration": {
@@ -63,11 +54,6 @@
 		{
 			"path": ".\\fs\\extern\\fatfs\\source\\ffsystem.c",
 			"bootfile": false
-		},
-		{
-			"path": ".\\fs\\extern\\fatfs\\source\\ffunicode.c",
-			"bootfile": false,
-			"enabled": false
 		},
 		{
 			"path": ".\\fs\\extern\\fatfs\\LICENSE.txt",
