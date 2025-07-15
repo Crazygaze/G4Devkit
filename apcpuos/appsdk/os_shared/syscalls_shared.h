@@ -2,7 +2,6 @@
 #define _appsdk_syscalls_shared_h
 
 #include <stdint.h>
-#include "../app_config.h"
 
 typedef enum SysCallID {
 

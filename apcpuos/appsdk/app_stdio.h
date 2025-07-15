@@ -1,7 +1,6 @@
 #ifndef _appsdk_app_stdio_h
 #define _appsdk_app_stdio_h
 
-#include "app_config.h"
 #include "os_shared/process_shared.h"
 
 //
