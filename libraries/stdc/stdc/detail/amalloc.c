@@ -420,8 +420,15 @@ void* ama_malloc(
 #endif
 
 	ama.cursor_ = node->next;
+	
+	void* ptr = ama_nodeToPtr(node);
+#if _DEBUG
+	// https://en.wikipedia.org/wiki/Magic_number_(programming)#Debug_values
+	// 0xCDCDCDCD :Used to mark uninitialized heap memory
+	memset(ptr, 0xCD, size);
+#endif
 
-	return ama_nodeToPtr(node);
+	return ptr;
 }
 
 /*!
@@ -466,6 +473,12 @@ void ama_free(void* ptr)
 		return;
 	AMANode* node = ama_ptrToNode(ptr);
 	ama_assert(node->size > 0);
+
+	// https://en.wikipedia.org/wiki/Magic_number_(programming)
+	// 0xDDDDDDDD : Used to mark freed heap memory
+#if _DEBUG
+	memset(ptr, 0xDD, node->size);
+#endif
 	ama_freeImpl(node, true);
 }
 

@@ -81,10 +81,10 @@ void krn_pickNextTcb(void);
  *
  * \param execTime time at which the event should be executed
  * \param func Function to execute
- * \param data1,data2,data3 Parameters to pass to the function
+ * \param data0,data1,data2 Parameters to pass to the function
  */
-bool krn_addTimedEvent(double execTime, KrnTimedEventFunc func, void* data1,
-	void* data2, void* data3);
+bool krn_addTimedEvent(double execTime, KrnTimedEventFunc func, void* data0,
+	void* data1, void* data2);
 
 #endif
 

@@ -36,7 +36,7 @@
 /*
  -- Generic allocator for using with the APCPU-OS --
 
-NOTE: The `ama_` prefix stands for "(A)pcu (M)emory (A)alloc".
+NOTE: The `ama_` prefix stands for "(A)pcu (M)emory (A)lloc".
 
 It's not the fastest or the smartest. The main objective is to have something
 that can be used by both the kernel and user space by using the shared-data

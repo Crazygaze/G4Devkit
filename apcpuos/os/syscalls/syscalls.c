@@ -256,57 +256,14 @@ bool syscall_postMsg(void)
 	return true;
 }
 
-void timedEvent_threadTimer(void* data1, void* data2, void* data3)
-{
-	TCB* tcb = (TCB*)data1;
-	void* cookie = data3;
-	
-	tcb->pcb->numActiveTimers--;
-	
-	// If it's a repeating timer, then add it back to the queue
-	if ((u32)data2 & (1 << 31)) {
-		u32 ms = (u32)data2 & TIMER_MAX_INTERVAL_MASK;
-		double execTime = krn.intrCurrSecs + ((s32)ms / 1000.0f);
-		if (krn_addTimedEvent(
-				execTime, timedEvent_threadTimer, tcb, data2, cookie)) {
-			tcb->pcb->numActiveTimers++;
-		}
-	}
-	
-	prc_postThreadMsg(tcb, MSG_TIMER, (u32)cookie, 0);
-}
-
 bool syscall_setTimer(void)
 {
 	TCB* tcb = krn.currTcb;
 	int* regs = tcb->ctx.gregs;
-	
-	u32 ms = regs[0] & TIMER_MAX_INTERVAL_MASK;
+	u32 ms = regs[0];
 	bool repeat = regs[1];
 	void* cookie = (void*)regs[2];
-	
-	if (tcb->pcb->numActiveTimers >= TIMER_MAX_TIMERS) {
-		regs[0] = false;
-		return true;
-	}
-	
-	double execTime = krn.intrCurrSecs + ((s32)ms / 1000.0f);
-	
-	// The second parameter passed to the callback is just a bool but the callback
-	bool res = krn_addTimedEvent(
-		execTime, timedEvent_threadTimer,
-		// data1
-		tcb, // data1
-		// data2. The MSB tells if we should repeat the timer or not
-		(void*)(repeat ? ms|(1<<31) : ms),
-		cookie
-		);
-	
-	if (res)
-		tcb->pcb->numActiveTimers++;
-		
-	regs[0] = res;
-	
+	regs[0] = prc_addThreadTimer(tcb, ms, repeat, cookie);
 	return true;
 }
 

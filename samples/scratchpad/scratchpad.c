@@ -1,7 +1,3 @@
-int vara = 1;
-int varb = 2;
-int varc;
-
 typedef struct ROMInfo
 {
 	// .text start address and size in bytes
@@ -33,27 +29,17 @@ extern ROMInfo gROMInfo;
 	#define INLINEASM(str) =str
 #endif
 
-void hwcpu_set_ds(int val)
-INLINEASM("\t\
-mov r11, r0");
-	
 
-void derp(void);
-
-int main(void)
+ROMInfo* foo(void)
 {
-	ROMInfo* rom = &gROMInfo;
-	int* pa = &vara;
-	int* pb = &varb;
-	int* pc = &varc;
-	
-	hwcpu_set_ds(rom->dataSharedAddr);
-	int* pa2 = &vara;
-	int* pb2 = &varb;
-	int* pc2 = &varc;
-	
-	while (1) {
-	}
-	return 0;
+	return &gROMInfo;
 }
+
+void main(void)
+{
+	ROMInfo* rom = foo();
+	gROMInfo.dataAddr = gROMInfo.dataAddr;
+}
+
+
 

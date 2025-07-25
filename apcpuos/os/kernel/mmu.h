@@ -187,7 +187,7 @@ void mmu_destroyPT(PageTable* pt);
  * \param vbegin, vend Virtual addresses to set. vend is exclusive.
  *
  * \param allocPages if true, it will allocate physical pages. If false, it will
- * not allocate physica pages and therefore trying to access the address will
+ * not allocate physical pages and therefore trying to access the address will
  * cause an Abort.
  *
  * \param rwxbits Values for the RWX bits. Note that the keys bits are set

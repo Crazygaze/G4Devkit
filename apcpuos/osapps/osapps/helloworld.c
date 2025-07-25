@@ -13,17 +13,18 @@ void otherThread(void* cookie)
 	int count = 0;
 	ThreadMsg msg;
 	
-	app_setTimer(6000, true, cookie);
+	app_setTimer(10000, true, cookie);
 	
 	while(app_getMsg(&msg))
 	{
 		if (msg.id == MSG_TIMER)  {
-			LOG_LOG("Other thread: msgId=%u, param1=%s", 
-				msg.id, (const char*)msg.param1);
+			LOG_LOG("Other thread: %u. msgId=%u, param1=%s", 
+				count, msg.id, (const char*)msg.param1);
 		} else {
-		LOG_LOG("Other thread: %u. msgId=%u, param1=%u, param2=%u", count++,
-			msg.id, msg.param1, msg.param2);
+			LOG_LOG("Other thread: %u. msgId=%u, param1=%u, param2=%u", count,
+				msg.id, msg.param1, msg.param2);
 		}
+		count++;
 	}
 	
 	LOG_LOG("Quitting other thread");
@@ -31,7 +32,8 @@ void otherThread(void* cookie)
 
 int helloworld_main(void *)
 {
-	LOG_LOG("Hello World!");
+	u32 stack = app_calcUsedStack(app_getCurrentThread());
+	LOG_LOG("Hello World!. Stack = %u", stack);
 
 	defineZeroed(CreateThreadParams, params);
 	
@@ -56,9 +58,8 @@ int helloworld_main(void *)
 				msg.param2);
 		}
 		
-		//app_postMsg(th1, MSG_FIRST_CUSTOM, count, count+1);
-		//app_postMsg(th1, MSG_QUIT, count, count+1);
-		// break;
+		app_postMsg(th1, MSG_FIRST_CUSTOM, count, count+1);
+		app_postMsg(th1, MSG_QUIT, count, count+1);
 	}
 	
 	app_closeHandle(th1);
@@ -66,3 +67,6 @@ int helloworld_main(void *)
 
 	return EXIT_SUCCESS;
 }
+
+
+

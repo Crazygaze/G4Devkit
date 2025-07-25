@@ -76,13 +76,20 @@ TCB* prc_createTCB(PCB* pcb, ThreadEntryFunc func, u32 stackBegin, u32 stackEnd,
 		return NULL;
 }
 
+void timedEvent_wakeupThread(void* tcb_, void* data2, void* data3);
+void timedEvent_threadTimer(void* data0, void* data1, void* data2);
+
 static bool timedEvent_removeThreads(const KrnTimedEvent* evt, u32 cookie)
 {
-	if ((u32)evt->data0 == cookie)
+	if ((u32)evt->data0 != cookie)
+		return false;
+
+	if (evt->func == timedEvent_wakeupThread ||
+		evt->func == timedEvent_threadTimer)
 		return true;
 	else
 		return false;
-} 
+}
 
 /*!
  * Destroys a TCB
@@ -98,17 +105,10 @@ void prc_destroyTCBImpl(TCB* tcb)
 	// Remove from all queues
 	tcb_enqueue(tcb, NULL);
 	
-	// If the thread is currently sleeping, we need to remove it from the
-	// timed events queue
-	if (tcb->state == TCB_STATE_BLOCKED) {
-		if (tcb->wait.type == TCB_WAIT_TYPE_SLEEP) {
-			pqueue_KrnTimedEvent_remove(
-				&krn.timedEvents,
-				timedEvent_removeThreads,
-				(u32)tcb);
-		}
-	}
-	
+	// Remove any timed events using this TCB
+	pqueue_KrnTimedEvent_remove(
+		&krn.timedEvents, timedEvent_removeThreads, (u32)tcb);
+
 	tcb->state = TCB_STATE_DONE;
 	linkedlist_remove(tcb);
 
@@ -251,6 +251,27 @@ void timedEvent_wakeupThread(void* tcb_, void* data2, void* data3)
 	tcb->wait.type = TCB_WAIT_TYPE_NONE;
 }
 
+void timedEvent_threadTimer(void* data0, void* data1, void* data2)
+{
+	TCB* tcb = (TCB*)data0;
+	u32 bits = (u32)data1;
+	void* cookie = data2;
+	
+	tcb->pcb->numActiveTimers--;
+	
+	// If it's a repeating timer, then add it back to the queue
+	if (bits & (1 << 31)) {
+		u32 ms = bits & TIMER_MAX_INTERVAL_MASK;
+		double execTime = krn.intrCurrSecs + ((s32)ms / 1000.0f);
+		if (krn_addTimedEvent(
+				execTime, timedEvent_threadTimer, tcb, (void*)bits, cookie)) {
+			tcb->pcb->numActiveTimers++;
+		}
+	}
+	
+	prc_postThreadMsg(tcb, MSG_TIMER, (u32)cookie, 0);
+}
+
 static inline void prc_wakeupThread(TCB* tcb)
 {
 	timedEvent_wakeupThread(tcb, NULL, NULL);
@@ -292,6 +313,33 @@ void prc_wakeOneWaitingThread(HANDLE mtx)
 			return;
 		}
 	}
+}
+
+bool prc_addThreadTimer(TCB* tcb, u32 ms, bool repeat, void* cookie)
+{
+	ms &= TIMER_MAX_INTERVAL_MASK;
+	
+	if (tcb->pcb->numActiveTimers >= TIMER_MAX_TIMERS) {
+		OS_ERR("prc_addThreadTimer: %p. Thread timer limit", tcb);
+		return false;
+	}
+	
+	double execTime = krn.intrCurrSecs + ((s32)ms / 1000.0f);
+	
+	// The second parameter passed to the callback is just a bool but the callback
+	bool res = krn_addTimedEvent(
+		execTime, timedEvent_threadTimer,
+		// data0
+		tcb,
+		// data1: The MSB tells if we should repeat the timer or not
+		(void*)(repeat ? ms | (1 << 31) : ms),
+		// data2
+		cookie);
+
+	if (res)
+		tcb->pcb->numActiveTimers++;
+		
+	return res; 
 }
 
 bool prc_setBrk(PCB* pcb, u32 newbrk)

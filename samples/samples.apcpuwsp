@@ -116,7 +116,7 @@
 		{
 			"file": ".\\scratchpad\\scratchpad.apcpuprj",
 			"virtualFolder": "temp",
-			"enabled": false
+			"enabled": true
 		}
 	]
 }

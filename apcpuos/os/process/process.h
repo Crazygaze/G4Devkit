@@ -221,6 +221,11 @@ void prc_putThreadToWait(TCB* tcb, HANDLE mtx);
  */
 void prc_wakeOneWaitingThread(HANDLE mtx);
 
+/*!
+ * Adds a timer to the specified thread, so that it pushes a MSG_TIMER message
+ * to the thread message queue when the timer expires
+ */
+bool prc_addThreadTimer(TCB* tcb, u32 ms, bool repeat, void* cookie);
 
 //#TODO This can in theory fail, since it pushes stuff to a queue, which might
 // need to expand. Therefore, it should return false.
