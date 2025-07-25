@@ -113,8 +113,8 @@ void prc_destroyTCBImpl(TCB* tcb)
 	linkedlist_remove(tcb);
 
 	queue_ThreadMsg_destroy(&tcb->msgqueue);
-	
-	if (krn.currTcb==tcb)
+
+	if (krn.currTcb == tcb)
 		krn_pickNextTcb();
 	
 	free(tcb);
@@ -204,6 +204,13 @@ static void prc_destroyPCBImpl(PCB* pcb)
 	krnassert(pcb);
 	OS_LOG("Destroying process %p (%s)", pcb, pcb->info.name);
 	
+	// If we are destroying the current PCB, then we need to switch to another
+	// page table before deleting the PCB's page table, otherwise we can't
+	// keep executing.
+	if (krn.currTcb->pcb == pcb) {
+		hwcpu_set_crpt((u32)mmu_getKrnOnlyPT()->data);
+	}
+	
 	linkedlist_remove(pcb);
 	mmu_destroyPT(pcb->pt);
 	
@@ -213,6 +220,7 @@ static void prc_destroyPCBImpl(PCB* pcb)
 	prc_destroyTCBImpl(pcb->mainthread);
 	
 	handles_destroyPrcHandles(pcb);
+
 	free(pcb);
 }
 
@@ -407,7 +415,7 @@ bool prc_postThreadMsg(TCB* tcb, u32 msgId, u32 param1, u32 param2)
 		// is expecting it, because although we are in kernel mode, we might
 		// be running this function call within the context of a different
 		// process, and thus not using the right page table.
-		// Therefore, we wake up the thread, and the process will have to all
+		// Therefore, we wake up the thread, and the process will have to call
 		// getMsg again.
 		prc_wakeupThread(tcb);
 	}
