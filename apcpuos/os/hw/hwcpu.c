@@ -13,6 +13,40 @@ static hwcpu_Drv cpuDrv;
 // function. Assuming it is not variadic. You should check for possible
 // compiler bugs"
 #pragma dontwarn 323
+
+static bool hwcpu_tryGrowStack(void)
+{
+
+	// - Only the main thread of a process has dynamic stack
+	// - The only valid way to make the stack grow is to attempt a write
+	//	 operation. Any other kind of operation means it's a bug in the process.
+	if ((krn.currTcb != krn.currTcb->pcb->mainthread) ||
+		(krn.intrData.reason & MMU_PTE_W) == 0)
+		return false;
+		
+	PageTable* pt = krn.currTcb->pcb->pt;
+	u32 failedAddr = krn.intrData.data2;
+	if (failedAddr >= pt->stackBegin && failedAddr < pt->stackEnd) {
+		OS_LOG("Growing stack for tcb %p", krn.currTcb);
+		mmu_ppBeginTransaction(pt);
+		bool res = mmu_setUsrRange(pt, failedAddr, failedAddr+1, true, MMU_PTE_RW);
+		mmu_ppFinishTransaction(res);
+		mmu_debugdumpState();
+		mmu_debugdumpPT(pt);
+		
+		ADD_USER_KEY;
+		// Initialize the new page to 0xCC, so the code that calculates used
+		// stack works
+		krn.currTcb->stackMappedBegin = MMU_PAGE_TO_ADDR(MMU_ADDR_TO_PAGE(failedAddr));
+		memset((void*)krn.currTcb->stackMappedBegin, 0xCC, MMU_PAGE_SIZE);
+		REMOVE_USER_KEY;
+		
+		return res;
+	} else {
+		return false;
+	}
+}
+
 void hwcpu_handler(void)
 {
 	CpuException type = hwcpu_getExceptionType(krn.intrData.reason);
@@ -27,10 +61,14 @@ void hwcpu_handler(void)
 			// Do nothing for now
 			
 			// #TODO : The application should be killed if it tries to call a
-			// non-existant system call
+			// non-existent system call
 		}
 	} else if (type == kCpuException_DebugBreak) {
 	
+	} else if (type == kCpuException_Abort && hwcpu_tryGrowStack()) {
+		// Successfully allocated more stack pages
+		u32* regs = krn.currTcb->ctx.gregs;
+		regs[CPU_REG_PC] = krn.intrData.data1;
 	} else {
 		OS_ERR("App crashed with: reason=%u", krn.intrData.reason);
 	}

@@ -152,9 +152,9 @@ void krn_doCrash(void)
  * the irq handling context and this function is called from assembly.
  * Signature for a Driver's irq handler.
  * \param reason Interrupt reason
- * \param interruptedCtxPa Physical address where the interrupted context as saved to
- * \param lastDecodedPC Last decoded pc value.
- * \param info Extra info, 
+ * \param interruptedCtx Physical address where the interrupted context as saved to
+ * \param data1 Last decoded pc value.
+ * \param data2 The failed address (if applicable)
  */
 FullCpuCtx* krn_irqHandler(u32 reason, FullCpuCtx* interruptedCtx, u32 data1, u32 data2)
 {

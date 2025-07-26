@@ -117,6 +117,9 @@ typedef struct TCB
 	// mistake
 	u32 stackEnd;
 	u32 stackBegin;
+	// Since a process's main thread can have dynamic stack, this indicates the
+	// virtual address where it actually begins at the moment
+	u32 stackMappedBegin;
 	
 	// Pointer to the tls array.
 	// This points to where in the thread's stack the tls array is.

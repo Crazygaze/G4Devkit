@@ -34,7 +34,7 @@ int helloworld_main(void *)
 {
 	u32 stack = app_calcUsedStack(app_getCurrentThread());
 	LOG_LOG("Hello World!. Stack = %u", stack);
-
+	
 	defineZeroed(CreateThreadParams, params);
 	
 	params.entryFunc = otherThread;
@@ -60,6 +60,7 @@ int helloworld_main(void *)
 		
 		app_postMsg(th1, MSG_FIRST_CUSTOM, count, count+1);
 		app_postMsg(th1, MSG_QUIT, count, count+1);
+		break;
 	}
 	
 	app_closeHandle(th1);

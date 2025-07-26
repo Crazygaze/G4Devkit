@@ -187,7 +187,7 @@ u32 app_calcUsedStack(HANDLE thread)
 	if (!app_getThreadInfo(&tinfo))
 		return 0;
 	
-	u32* ptr = (u32*)tinfo.stackBegin;
+	u32* ptr = (u32*)tinfo.stackMappedBegin;
 	u32* end = (u32*)tinfo.stackEnd;
 	while(*ptr == 0xCCCCCCCC && ptr < end)
 		ptr++;

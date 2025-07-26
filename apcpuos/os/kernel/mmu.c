@@ -4,6 +4,7 @@
 #include "utils/bitops.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include "../syscalls/syscalls.h"
 
 /*!
  * Physical Page information.
@@ -293,6 +294,9 @@ void mmu_ppFinishTransaction(bool commit)
 	mmu.ptTransaction = NULL;
 }
 
+// #TODO : When releasing a page, it's contents should be zeroed or set to a 
+// magic value
+
 /*!
  * Releases all the pages owned by the specified page table
  * \return The total number of pages released
@@ -311,6 +315,9 @@ u32 mmu_freePages(PageTable* pt)
 	
 	return count;
 }
+
+// #TODO : When releasing a page, it's contents should be zeroed or set to a 
+// magic value
 
 void mmu_freePageRange(PageTable* pt, u32 vbegin, u32 vend)
 {
@@ -569,8 +576,9 @@ PageTable* mmu_createUsrPT(u32 stackSize, u32 heapNPages)
 	pt->data = (u32*)&pt[1];
 	pt->data[0] = MMU_PAGE_TO_ADDR(npages);
 	pt->usrDS = usr.sharedDataBegin;
-	pt->stackEnd= usr.stackEnd;
+	pt->stackEnd = usr.stackEnd;
 	pt->stackBegin = usr.stackBegin;
+	pt->stackMappedBegin = MMU_PAGE_TO_ADDR(MMU_ADDR_TO_PAGE(usr.stackEnd-1));
 	pt->heapBegin = usr.heapBegin;
 	pt->heapEnd= usr.heapEnd;
 	pt->brk = usr.heapBegin;
@@ -611,7 +619,7 @@ PageTable* mmu_createUsrPT(u32 stackSize, u32 heapNPages)
 	// to detect stack overflows and allocate pages as needed
 	
 	// Allocate 1 page of stack and all the pages for data_shared pages
-	if (!mmu_setUsrRange(pt, usr.stackEnd-1, usr.sharedDataEnd, true, MMU_PTE_RW)) {
+	if (!mmu_setUsrRange(pt, pt->stackMappedBegin, usr.sharedDataEnd, true, MMU_PTE_RW)) {
 		goto out2;
 	}
 	
@@ -684,6 +692,12 @@ bool mmu_checkUserPtr(struct PCB* pcb, bool needsWrite, void* addr, u32 size)
 {
 	const u8* begin = (const u8*)addr;
 	const u8* end = begin + size;
+	
+	// If we are trying to validate a pointer for a process running in kernel
+	// mode, then assume it's fine
+	if (pcb->pt == mmu.krnOnlyPT) {
+		return true;
+	}
 
 	if (begin >= mmu_userSpaceBeginAddr() ||
 		(needsWrite == false &&
@@ -808,14 +822,15 @@ void mmu_debugdumpState(void)
 				use = 'H';
 			else if (vaddr < mmu.krn.ioEnd)
 				use = 'I';
-			else if (vaddr < owner->pt->heapEnd)
+			else if (owner && vaddr < owner->pt->heapEnd)
 				use = 'H';
-			else if (vaddr < owner->pt->stackEnd)
+			else if (owner && vaddr < owner->pt->stackEnd)
 				use = 'S';
 			else
 				use = 'S';
-			
-			sprintf(ptr, " |%c%3u:%8s", use, i, owner->info.name);
+
+			sprintf(ptr, " |%c%3u:%8s", use, i,
+				owner ? owner->info.name : "????????");
 		}
 		else {
 			sprintf(ptr, " | %3u:        ", i);
@@ -831,3 +846,18 @@ void mmu_debugdumpState(void)
 		}
 	}
 }
+
+void* mmu_startTempPTSwap(PageTable* tempPT)
+{
+	void* pt = (void*)hwcpu_get_crpt();
+	hwcpu_set_crpt((u32)tempPT->data);
+	ADD_USER_KEY;
+	return pt;
+}
+
+void mmu_endTempPTSwap(void* savedPt)
+{
+	REMOVE_USER_KEY;
+	hwcpu_set_crpt((u32)savedPt);
+}
+

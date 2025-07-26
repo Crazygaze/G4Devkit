@@ -34,6 +34,7 @@ typedef struct PageTable
 	
 	u32 stackEnd; // What value to set the main thread's `sp` register to
 	u32 stackBegin;
+	u32 stackMappedBegin; // Where the actual mapped part of the stack begins
 
 	// #TODO : See if this is being used. If not, remove it.
 	u32 heapBegin;
@@ -246,5 +247,22 @@ u32 mmu_calcKrnUsedStack(void);
  * \param addr,size Memory range to check
  */
 bool mmu_checkUserPtr(struct PCB* pcb, bool needsWrite, void* addr, u32 size);
+
+/*!
+ * Temporarily swaps to the specified page table so that the kernel can access
+ * memory through that page table.
+ *
+ * Typical use is:
+ * ```
+ * void* savedPt = mmu_startTempPTSwap(pcb->pt);
+ * // ... do the work
+ * mmu_endTempPTSwap(savedPt);
+ */
+void* mmu_startTempPTSwap(PageTable* tempPT);
+
+/*!
+ * Ends a temporary page table swap
+ */
+void mmu_endTempPTSwap(void* savedPt);
 
 #endif

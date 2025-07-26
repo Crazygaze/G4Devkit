@@ -96,7 +96,7 @@ typedef struct ProcessInfo {
 /*!
  * Information required to create a process.
  */
-typedef struct CreateProcessParms{
+typedef struct CreateProcessParams{
 	char name[PRC_NAME_SIZE];
 
 	// The process's `main` function
@@ -148,6 +148,7 @@ typedef struct ThreadInfo {
 	HANDLE thread;
 	void* stackBegin;
 	void* stackEnd;
+	void* stackMappedBegin;
 } ThreadInfo;
 
 

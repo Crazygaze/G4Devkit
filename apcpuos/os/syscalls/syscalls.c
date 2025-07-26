@@ -127,6 +127,7 @@ bool syscall_getThreadInfo(void)
 	if (targetTcb) {
 		inout->stackBegin = (void*)targetTcb->stackBegin;
 		inout->stackEnd = (void*)targetTcb->stackEnd;
+		inout->stackMappedBegin = (void*)targetTcb->stackMappedBegin;
 		regs[0] = true;
 	} else {
 		regs[0] = false;

@@ -52,6 +52,9 @@ TCB* prc_createTCB(PCB* pcb, ThreadEntryFunc func, u32 stackBegin, u32 stackEnd,
 		isMainThread = true;
 	}
 
+	tcb->stackMappedBegin = (isMainThread && pcb->pt->stackMappedBegin) ?
+		pcb->pt->stackMappedBegin : tcb->stackBegin;
+
 	tcb->ctx.gregs[CPU_REG_DS] = pcb->pt->usrDS;
 	tcb->ctx.gregs[CPU_REG_SP] = stackEnd;
 	tcb->ctx.gregs[CPU_REG_PC] = isMainThread ? (u32)app_startup : (u32)app_threadEntry;
@@ -172,11 +175,11 @@ PCB* prc_createPCB(const char* name, PrcEntryFunc entryFunc, bool kernelMode,
 		tcb->ctx.gregs[3] = pcb->pt->brk - pcb->pt->heapBegin;
 	}
 	
-	// Copy the .data_shared/.bss_shared over to to the new process
-	
-	
 	pcb->pt->owner = pcb;
 	krn.pidCounter++;
+	
+	mmu_debugdumpState();
+	mmu_debugdumpPT(pcb->pt);
 	
 	if (rootPCB == NULL) {
 		rootPCB = pcb;
@@ -186,6 +189,21 @@ PCB* prc_createPCB(const char* name, PrcEntryFunc entryFunc, bool kernelMode,
 		linkedlist_addAfter(rootPCB->previous, pcb);
 	}
 	
+	//
+	// Initialize the PCB's main thread stack to 0xCC, so the stack calculation
+	// functions work
+	// 
+	{
+		// Temporarily switch to the new process's page table, so we can
+		// initialize it's stack
+		void* savedPt = mmu_startTempPTSwap(pcb->pt);
+		
+		u32 size = tcb->stackEnd - tcb->stackMappedBegin;
+		memset((void*)tcb->stackMappedBegin, 0xCC, size);
+		
+		mmu_endTempPTSwap(savedPt);
+	}
+		
 	return pcb;
 	
 	out2:

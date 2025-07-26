@@ -582,6 +582,15 @@ INLINEASM("\
 ");
 
 /*!
+ * Gets the currently applied mmu keys
+ */
+uint32_t hwcpu_getMMUKeys(void)
+INLINEASM("\
+\tgetcr r0, crflags\n\
+\tand r0, r0, " STRINGIFY(MMU_PTE_KEYS_MASK) "\n\
+");
+
+/*!
  * Adds the specified mmu keys to the current context
  */
 void hwcpu_addMMUKeys(uint32_t keys)
