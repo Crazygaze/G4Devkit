@@ -241,7 +241,7 @@ bool krn_addTimedEvent(double execTime, KrnTimedEventFunc func, void* data0,
 
 #pragma dontwarn 323
 /*!
- * Exectes any due events
+ * Executes any due events
  */
 static void krn_checkTimedEvents(void)
 {
